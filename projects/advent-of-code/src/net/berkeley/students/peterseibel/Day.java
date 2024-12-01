@@ -10,15 +10,15 @@ import java.util.*;
 
 public interface Day {
 
-  public static Day number(int day, boolean test) {
+  public static Day number(int day) {
     return switch (day) {
-      case 1 -> new Day01(test);
+      case 1 -> new Day01();
       default -> throw new RuntimeException("Day %d not implemented yet!".formatted(day));
     };
   }
 
-  public void part1() throws IOException;
+  public void part1(boolean test) throws IOException;
 
-  public void part2() throws IOException;
+  public void part2(boolean test) throws IOException;
 
 }

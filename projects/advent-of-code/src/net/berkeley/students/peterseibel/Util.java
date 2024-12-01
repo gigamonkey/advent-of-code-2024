@@ -13,8 +13,8 @@ public class Util {
    * Get the name of the input file for a given day and part and whether it's
    * the test input or the real input.
    */
-  public static Path input(int day, int part, boolean test) {
-    return Path.of("inputs/day-%02d-part-%d%s.txt".formatted(day, part, test ? "-test" : ""));
+  public static Path input(int day, boolean test) {
+    return Path.of("inputs/day-%02d%s.txt".formatted(day, test ? "-test" : ""));
   }
 
   /**
