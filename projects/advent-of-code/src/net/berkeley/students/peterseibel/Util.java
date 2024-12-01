@@ -1,13 +1,13 @@
 package net.berkeley.students.peterseibel;
 
+import static java.nio.file.Files.exists;
 import static java.nio.file.Files.lines;
 import static java.nio.file.Files.readString;
-import static java.nio.file.Files.exists;
 
-import java.util.stream.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.stream.*;
 
 public class Util {
 
@@ -37,5 +37,4 @@ public class Util {
     var p = expectedPath(day, part, test);
     return exists(p) ? Optional.of(readString(p).trim()) : Optional.empty();
   }
-
 }
