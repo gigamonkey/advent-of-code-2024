@@ -2,7 +2,7 @@ SHELL		:= bash -O globstar
 USERNAME	:= peterseibel
 MAIN_CLASS	:= net.berkeley.students.$(USERNAME).AdventOfCode
 
-all: build
+all: build run
 
 run:
 	java -cp classes $(MAIN_CLASS)
