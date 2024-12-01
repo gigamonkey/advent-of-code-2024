@@ -1,4 +1,4 @@
-package net.berkeley.students.peterseibel;
+package com.gigamonkeys.aoc2024;
 
 import static java.nio.file.Files.lines;
 

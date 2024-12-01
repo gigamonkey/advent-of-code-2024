@@ -1,8 +1,8 @@
-package net.berkeley.students.peterseibel;
+package com.gigamonkeys.aoc2024;
 
 import static java.nio.file.Files.lines;
 import static java.util.stream.Collectors.*;
-import static net.berkeley.students.peterseibel.Util.*;
+import static com.gigamonkeys.aoc2024.Util.*;
 
 import java.io.*;
 import java.nio.file.*;

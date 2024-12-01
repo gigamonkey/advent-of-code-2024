@@ -1,9 +1,7 @@
 SHELL		:= bash -O globstar
-USERNAME	:= peterseibel
-MAIN_CLASS	:= net.berkeley.students.$(USERNAME).AdventOfCode
-
-DAY := 1
-PART := 2
+MAIN_CLASS	:= com.gigamonkeys.aoc2024.AdventOfCode
+DAY		:= 1
+PART		:= 2
 
 all: build run
 
@@ -18,17 +16,3 @@ classes:
 
 clean:
 	rm -rf classes
-
-init: src/net/berkeley/students/$(USERNAME)/AdventOfCode.java
-
-src/net/berkeley/students/$(USERNAME)/AdventOfCode.java: | src/net/berkeley/students/$(USERNAME)
-	echo "package net.berkeley.students.$(USERNAME);" > $@
-	echo "" >> $@
-	echo "public class $$(basename $@ .java) {" >> $@
-	echo "  public static void main(String[] args) {" >> $@
-	echo "    System.out.println(\"Welcome to Advent of Code!\");" >> $@
-	echo "  }" >> $@
-	echo "}" >> $@
-
-src/net/berkeley/students/$(USERNAME):
-	mkdir -p $@
