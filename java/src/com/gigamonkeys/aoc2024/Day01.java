@@ -1,8 +1,9 @@
 package com.gigamonkeys.aoc2024;
 
+import static com.gigamonkeys.aoc2024.Util.*;
 import static java.nio.file.Files.lines;
 import static java.util.stream.Collectors.*;
-import static com.gigamonkeys.aoc2024.Util.*;
+import static java.lang.Math.*;
 
 import java.io.*;
 import java.nio.file.*;
@@ -29,23 +30,25 @@ public class Day01 extends Day {
   }
 
   public String part1(boolean test) throws IOException {
-    var cols = data(test);
-    Collections.sort(cols.left());
-    Collections.sort(cols.right());
-    return String.valueOf(
-      IntStream.range(0, cols.left().size())
-        .map(i -> {
-          return Math.abs(cols.left().get(i) - cols.right().get(i));
-        })
-        .sum()
-    );
+    switch (data(test)) {
+      case Columns(var left, var right) -> {
+        Collections.sort(left);
+        Collections.sort(right);
+        return String.valueOf(
+          IntStream.range(0, left.size()).map(i -> abs(left.get(i) - right.get(i))).sum()
+        );
+      }
+    }
   }
 
   public String part2(boolean test) throws IOException {
-    var cols = data(test);
-    var freq = cols.right().stream().collect(groupingBy(n -> n, counting()));
-    return String.valueOf(
-      (cols.left().stream().mapToInt(n -> n * freq.getOrDefault(n, 0L).intValue()).sum())
-    );
+    switch (data(test)) {
+      case Columns(var left, var right) -> {
+        var freq = right.stream().collect(groupingBy(n -> n, counting()));
+        return String.valueOf(
+          left.stream().mapToInt(n -> n * freq.getOrDefault(n, 0L).intValue()).sum()
+        );
+      }
+    }
   }
 }
