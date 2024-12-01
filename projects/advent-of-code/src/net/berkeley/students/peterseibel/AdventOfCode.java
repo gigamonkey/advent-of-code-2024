@@ -10,11 +10,13 @@ public class AdventOfCode {
 
   public static void main(String[] args) throws IOException {
     System.out.println("Welcome to Advent of Code!");
-    Day day = Day.number(1);
 
-    day.part1(true);
-    day.part1(false);
-    day.part2(true);
-    day.part2(false);
+    var day = Integer.parseInt(args[0]);
+    var part = Integer.parseInt(args[1]);
+
+    var d = Day.number(day);
+
+    d.part(part, true);
+    d.part(part, false);
   }
 }

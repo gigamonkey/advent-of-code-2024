@@ -17,6 +17,13 @@ public interface Day {
     };
   }
 
+  public default void part(int part, boolean test) throws IOException {
+    switch (part) {
+      case 1 -> part1(test);
+      case 2 -> part2(test);
+    };
+  }
+
   public void part1(boolean test) throws IOException;
 
   public void part2(boolean test) throws IOException;

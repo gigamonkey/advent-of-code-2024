@@ -2,10 +2,13 @@ SHELL		:= bash -O globstar
 USERNAME	:= peterseibel
 MAIN_CLASS	:= net.berkeley.students.$(USERNAME).AdventOfCode
 
+DAY := 1
+PART := 2
+
 all: build run
 
 run:
-	java -cp classes $(MAIN_CLASS)
+	java -cp classes $(MAIN_CLASS) $(DAY) $(PART)
 
 build: | classes
 	javac -d classes -Xdiags:verbose -Xlint:all $(shell ls src/**/*.java)
