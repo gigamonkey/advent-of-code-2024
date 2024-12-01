@@ -12,5 +12,7 @@ public class AdventOfCode {
     System.out.println("Welcome to Advent of Code!");
     new Day01(true).part1();
     new Day01(false).part1();
+    new Day01(true).part2();
+    new Day01(false).part2();
   }
 }
