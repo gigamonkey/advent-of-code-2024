@@ -10,9 +10,9 @@ public class AdventOfCode {
 
   public static void main(String[] args) throws IOException {
     System.out.println("Welcome to Advent of Code!");
-    new Day01(true).part1();
-    new Day01(false).part1();
-    new Day01(true).part2();
-    new Day01(false).part2();
+    Day.number(1, true).part1();
+    Day.number(1, false).part1();
+    Day.number(1, true).part2();
+    Day.number(1, false).part2();
   }
 }

@@ -8,7 +8,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
-public class Day01 {
+public class Day01 implements Day {
 
   private final boolean test;
 
