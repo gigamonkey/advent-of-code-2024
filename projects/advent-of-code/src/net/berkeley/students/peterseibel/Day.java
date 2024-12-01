@@ -8,7 +8,13 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
-public interface Day {
+public abstract class Day {
+
+  private final int day;
+
+  public Day(int day) {
+    this.day = day;
+  }
 
   public static Day number(int day) {
     return switch (day) {
@@ -17,15 +23,20 @@ public interface Day {
     };
   }
 
-  public default void part(int part, boolean test) throws IOException {
-    switch (part) {
+  public void part(int part, boolean test) throws IOException {
+    String result = switch (part) {
       case 1 -> part1(test);
       case 2 -> part2(test);
+      default -> "No part " + part;
     };
+
+    Optional<String> expected = Util.expected(day, part, test);
+    System.out.printf("got: %s; expected: %s\n", result, expected);
+
   }
 
-  public void part1(boolean test) throws IOException;
+  public abstract String part1(boolean test) throws IOException;
 
-  public void part2(boolean test) throws IOException;
+  public abstract String part2(boolean test) throws IOException;
 
 }

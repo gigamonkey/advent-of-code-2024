@@ -9,7 +9,9 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
-public class Day01 implements Day {
+public class Day01 extends Day {
+
+  public Day01() { super(1); }
 
   private record Columns(List<Integer> left, List<Integer> right) {
     public void add(String[] parts) {
@@ -24,21 +26,21 @@ public class Day01 implements Day {
     return cols;
   }
 
-  public void part1(boolean test) throws IOException {
+  public String part1(boolean test) throws IOException {
     var cols = data(test);
     Collections.sort(cols.left());
     Collections.sort(cols.right());
-    System.out.println(
+    return String.valueOf(
       IntStream.range(0, cols.left().size()).map(i ->  {
           return Math.abs(cols.left().get(i) - cols.right().get(i));
         }).sum()
     );
   }
 
-  public void part2(boolean test) throws IOException {
+  public String part2(boolean test) throws IOException {
     var cols = data(test);
     var freq = cols.right().stream().collect(groupingBy(n -> n, counting()));
-    System.out.println(cols.left().stream().mapToInt(n -> n * freq.getOrDefault(n, 0L).intValue()).sum());
+    return String.valueOf((cols.left().stream().mapToInt(n -> n * freq.getOrDefault(n, 0L).intValue()).sum()));
   }
 
 }

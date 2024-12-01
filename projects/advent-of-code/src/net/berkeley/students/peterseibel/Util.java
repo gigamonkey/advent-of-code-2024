@@ -20,7 +20,7 @@ public class Util {
   }
 
   private static Path expectedPath(int day, int part, boolean test) {
-    return Path.of("inputs/day-%02d/part-%d-%s.expected".formatted(day, test ? "test" : "real"));
+    return Path.of("inputs/day-%02d/part-%d%s.expected".formatted(day, part, test ? "-test" : ""));
   }
 
   /**
@@ -33,7 +33,7 @@ public class Util {
   /**
    * Contents of expected file.
    */
-  public Optional<String> expected(int day, int part, boolean test) throws IOException {
+  public static Optional<String> expected(int day, int part, boolean test) throws IOException {
     var p = expectedPath(day, part, test);
     return exists(p) ? Optional.of(readString(p).trim()) : Optional.empty();
   }
