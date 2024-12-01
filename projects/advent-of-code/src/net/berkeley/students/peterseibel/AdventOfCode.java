@@ -10,6 +10,6 @@ public class AdventOfCode {
 
   public static void main(String[] args) throws IOException {
     System.out.println("Welcome to Advent of Code!");
-    new Day01().part1(false);
+    new Day01().part1(true);
   }
 }
