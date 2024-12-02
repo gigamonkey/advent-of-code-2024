@@ -30,25 +30,26 @@ public class Day01 extends Day {
   }
 
   public String part1(boolean test) throws IOException {
-    switch (data(test)) {
+    return switch (data(test)) {
       case Columns(var left, var right) -> {
         Collections.sort(left);
         Collections.sort(right);
-        return String.valueOf(
+        yield String.valueOf(
           IntStream.range(0, left.size()).map(i -> abs(left.get(i) - right.get(i))).sum()
         );
       }
-    }
+    };
   }
 
+
   public String part2(boolean test) throws IOException {
-    switch (data(test)) {
+    return switch (data(test)) {
       case Columns(var left, var right) -> {
         var freq = right.stream().collect(groupingBy(n -> n, counting()));
-        return String.valueOf(
+        yield String.valueOf(
           left.stream().mapToInt(n -> n * freq.getOrDefault(n, 0L).intValue()).sum()
         );
       }
-    }
+    };
   }
 }
