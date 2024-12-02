@@ -1,9 +1,9 @@
 package com.gigamonkeys.aoc2024;
 
 import static com.gigamonkeys.aoc2024.Util.*;
+import static java.lang.Math.*;
 import static java.nio.file.Files.lines;
 import static java.util.stream.Collectors.*;
-import static java.lang.Math.*;
 
 import java.io.*;
 import java.nio.file.*;
@@ -40,7 +40,6 @@ public class Day01 extends Day {
       }
     };
   }
-
 
   public String part2(boolean test) throws IOException {
     return switch (data(test)) {

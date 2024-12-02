@@ -1,14 +1,16 @@
 package com.gigamonkeys.aoc2024;
 
 import static com.gigamonkeys.aoc2024.Util.*;
-import static java.nio.file.Files.lines;
-import static java.util.stream.Collectors.*;
 import static java.lang.Math.*;
+import static java.nio.file.Files.lines;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.*;
+import static java.util.stream.IntStream.range;
 
-import java.util.function.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.function.*;
 import java.util.stream.*;
 
 public class Day02 extends Day {
@@ -20,7 +22,9 @@ public class Day02 extends Day {
   }
 
   private List<int[]> data(boolean test) throws IOException {
-    return columns(input(2, test)).map(ss -> Arrays.stream(ss).mapToInt(s -> Integer.parseInt(s)).toArray()).toList();
+    return columns(input(2, test))
+      .map(ss -> stream(ss).mapToInt(s -> Integer.parseInt(s)).toArray())
+      .toList();
   }
 
   public String part1(boolean test) throws IOException {
@@ -32,22 +36,22 @@ public class Day02 extends Day {
   }
 
   private boolean isSafe(int[] levels) {
-    if (isStrictlySafe(levels)) return true;
-    return IntStream.range(0, levels.length)
-      .mapToObj(i -> without(levels, i))
-      .anyMatch(this::isStrictlySafe);
+    return (
+      isStrictlySafe(levels) ||
+      range(0, levels.length).mapToObj(i -> without(levels, i)).anyMatch(this::isStrictlySafe)
+    );
   }
 
   private int[] without(int[] levels, int idx) {
-    return IntStream.range(0, levels.length).filter(i -> i != idx).map(i -> levels[i]).toArray();
+    return range(0, levels.length).filter(i -> i != idx).map(i -> levels[i]).toArray();
   }
 
   private boolean isStrictlySafe(int[] levels) {
     var deltas = deltas(levels);
-    return Arrays.stream(deltas).allMatch(GAP_OKAY.and(d -> signum(d) == signum(deltas[0])));
+    return stream(deltas).allMatch(GAP_OKAY.and(d -> signum(d) == signum(deltas[0])));
   }
 
   private int[] deltas(int[] levels) {
-    return IntStream.range(0, levels.length - 1).map(i -> levels[i] - levels[i + 1]).toArray();
+    return range(0, levels.length - 1).map(i -> levels[i] - levels[i + 1]).toArray();
   }
 }
