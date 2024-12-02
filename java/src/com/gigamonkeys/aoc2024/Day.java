@@ -19,6 +19,7 @@ public abstract class Day {
   public static Day number(int day) {
     return switch (day) {
       case 1 -> new Day01();
+      case 2 -> new Day02();
       default -> throw new RuntimeException("Day %d not implemented yet!".formatted(day));
     };
   }

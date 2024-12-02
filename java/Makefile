@@ -1,7 +1,7 @@
 SHELL		:= bash -O globstar
 MAIN_CLASS	:= com.gigamonkeys.aoc2024.AdventOfCode
-DAY		:= 1
-PART		:= 2
+DAY		:= 2
+PART		:= 1
 
 sources = $(shell ls src/**/*.java)
 
