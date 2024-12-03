@@ -2,13 +2,13 @@ package com.gigamonkeys.aoc2024;
 
 import static com.gigamonkeys.aoc2024.Util.*;
 import static java.lang.Math.*;
-import static java.nio.file.Files.lines;
 import static java.util.stream.Collectors.*;
 
-import java.io.*;
-import java.nio.file.*;
-import java.util.*;
-import java.util.stream.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.IntStream;
 
 public class Day01 extends Day {
 
@@ -18,8 +18,8 @@ public class Day01 extends Day {
 
   private record Columns(List<Integer> left, List<Integer> right) {
     public void add(String[] parts) {
-      left.add(Integer.parseInt(parts[0]));
-      right.add(Integer.parseInt(parts[1]));
+      left.add(Integer.valueOf(parts[0]));
+      right.add(Integer.valueOf(parts[1]));
     }
   }
 

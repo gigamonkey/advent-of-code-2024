@@ -1,10 +1,6 @@
 package com.gigamonkeys.aoc2024;
 
-import static java.nio.file.Files.lines;
-
-import java.io.*;
-import java.nio.file.*;
-import java.util.*;
+import java.io.IOException;
 
 public class AdventOfCode {
 
