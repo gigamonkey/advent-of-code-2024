@@ -20,6 +20,7 @@ public abstract class Day {
     return switch (day) {
       case 1 -> new Day01();
       case 2 -> new Day02();
+      case 3 -> new Day03();
       default -> throw new RuntimeException("Day %d not implemented yet!".formatted(day));
     };
   }
@@ -44,6 +45,14 @@ public abstract class Day {
       },
       () -> System.out.printf("Day %d, part %d: %s - no expected value yet.%n", day, part, result)
     );
+  }
+
+  /**
+   * Get the name of the input file for based on whether it's the test input or
+   * the real input.
+   */
+  public Path input(boolean test) {
+    return Path.of("inputs/day-%02d/%s.txt".formatted(day, test ? "test" : "real"));
   }
 
   public abstract String part1(boolean test) throws IOException;

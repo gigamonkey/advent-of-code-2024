@@ -11,14 +11,6 @@ import java.util.stream.*;
 
 public class Util {
 
-  /**
-   * Get the name of the input file for a given day and part and whether it's
-   * the test input or the real input.
-   */
-  public static Path input(int day, boolean test) {
-    return Path.of("inputs/day-%02d/%s.txt".formatted(day, test ? "test" : "real"));
-  }
-
   private static Path expectedPath(int day, int part, boolean test) {
     return Path.of("inputs/day-%02d/part-%d%s.expected".formatted(day, part, test ? "-test" : ""));
   }
@@ -28,6 +20,13 @@ public class Util {
    */
   public static Stream<String[]> columns(Path p) throws IOException {
     return lines(p).map(line -> line.split("\\s+"));
+  }
+
+  /**
+   * Text of file.
+   */
+  public static String text(Path p) throws IOException {
+    return readString(p).trim();
   }
 
   /**

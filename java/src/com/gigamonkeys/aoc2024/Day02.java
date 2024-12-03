@@ -22,7 +22,7 @@ public class Day02 extends Day {
   }
 
   private List<int[]> data(boolean test) throws IOException {
-    return columns(input(2, test))
+    return columns(input(test))
       .map(ss -> stream(ss).mapToInt(s -> Integer.parseInt(s)).toArray())
       .toList();
   }

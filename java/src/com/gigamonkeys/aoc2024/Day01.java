@@ -25,7 +25,7 @@ public class Day01 extends Day {
 
   private Columns data(boolean test) throws IOException {
     var cols = new Columns(new ArrayList<>(), new ArrayList<>());
-    columns(input(1, test)).forEach(cols::add);
+    columns(input(test)).forEach(cols::add);
     return cols;
   }
 
