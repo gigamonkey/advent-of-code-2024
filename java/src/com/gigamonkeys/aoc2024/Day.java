@@ -33,6 +33,16 @@ public abstract class Day {
     }
   }
 
+  /**
+   * Solve part1 for the given input.
+   */
+  public abstract String part1(Path input) throws IOException;
+
+  /**
+   * Solve part2 for the given input.
+   */
+  public abstract String part2(Path input) throws IOException;
+
   public boolean part(int part, boolean test) throws IOException {
     String result =
       (switch (part) {
@@ -58,15 +68,10 @@ public abstract class Day {
   }
 
   /**
-   * Get the name of the input file for based on whether it's the test input or
-   * the real input.
+   * Get the Path of the input file for either the test or real input.
    */
-  public Path input(boolean test) {
-    return Path.of("inputs/day-%02d/%s.txt".formatted(day, test ? "test" : "real"));
-  }
-
-  public Path input(int part, boolean test) {
-    // Special case for some days tat have different test input for part 2
+  private Path input(int part, boolean test) {
+    // Special case for some days that have different test input for part 2
     if (test && part == 2) {
       var p2 = Path.of("inputs/day-%02d/test2.txt".formatted(day));
       if (exists(p2)) return p2;
@@ -76,16 +81,8 @@ public abstract class Day {
     return Path.of("inputs/day-%02d/%s.txt".formatted(day, test ? "test" : "real"));
   }
 
-  public Optional<String> expected(int part, boolean test) throws IOException {
-    var p = expectedPath(part, test);
+  private Optional<String> expected(int part, boolean test) throws IOException {
+    var p = Path.of("inputs/day-%02d/part-%d%s.expected".formatted(day, part, test ? "-test" : ""));
     return exists(p) ? Optional.of(readString(p).trim()) : Optional.empty();
-  }
-
-  public abstract String part1(Path input) throws IOException;
-
-  public abstract String part2(Path input) throws IOException;
-
-  private Path expectedPath(int part, boolean test) {
-    return Path.of("inputs/day-%02d/part-%d%s.expected".formatted(day, part, test ? "-test" : ""));
   }
 }

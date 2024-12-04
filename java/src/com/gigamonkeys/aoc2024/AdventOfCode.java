@@ -16,9 +16,11 @@ public class AdventOfCode {
   public static void main(String[] args) throws IOException {
     System.out.println("Welcome to Advent of Code!");
 
+    int start = args.length > 0 && args[0].equals("--all") ? 1 : MAX_DAY;
+
     boolean okay = true;
 
-    for (var day = 1; day <= MAX_DAY; day++) {
+    for (var day = start; day <= MAX_DAY; day++) {
       for (var part = 1; part <= 2; part++) {
         var d = Day.number(day);
         okay &= d.part(part, true);

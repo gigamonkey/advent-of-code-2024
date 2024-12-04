@@ -21,12 +21,6 @@ public class Day01 extends Day {
     }
   }
 
-  private Columns data(boolean test) throws IOException {
-    var cols = new Columns(new ArrayList<>(), new ArrayList<>());
-    columns(input(test)).forEach(cols::add);
-    return cols;
-  }
-
   private Columns data(Path input) throws IOException {
     var cols = new Columns(new ArrayList<>(), new ArrayList<>());
     columns(input).forEach(cols::add);
@@ -45,25 +39,6 @@ public class Day01 extends Day {
 
   public String part2(Path input) throws IOException {
     return switch (data(input)) {
-      case Columns(var left, var right) -> {
-        var freq = right.stream().collect(groupingBy(n -> n, counting()));
-        yield String.valueOf(left.stream().mapToInt(n -> n * freq.getOrDefault(n, 0L).intValue()).sum());
-      }
-    };
-  }
-
-  public String part1(boolean test) throws IOException {
-    return switch (data(test)) {
-      case Columns(var left, var right) -> {
-        Collections.sort(left);
-        Collections.sort(right);
-        yield String.valueOf(range(0, left.size()).map(i -> abs(left.get(i) - right.get(i))).sum());
-      }
-    };
-  }
-
-  public String part2(boolean test) throws IOException {
-    return switch (data(test)) {
       case Columns(var left, var right) -> {
         var freq = right.stream().collect(groupingBy(n -> n, counting()));
         yield String.valueOf(left.stream().mapToInt(n -> n * freq.getOrDefault(n, 0L).intValue()).sum());
