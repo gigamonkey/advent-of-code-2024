@@ -16,6 +16,7 @@ public abstract class Day {
     days.add(new Day01());
     days.add(new Day02());
     days.add(new Day03());
+    days.add(new Day04());
   }
 
   private final int day;
