@@ -11,10 +11,6 @@ import java.util.stream.*;
 
 public class Util {
 
-  private static Path expectedPath(int day, int part, boolean test) {
-    return Path.of("inputs/day-%02d/part-%d%s.expected".formatted(day, part, test ? "-test" : ""));
-  }
-
   /**
    * Stream of whitespace delimited columnar inputs.
    */
@@ -27,13 +23,5 @@ public class Util {
    */
   public static String text(Path p) throws IOException {
     return readString(p).trim();
-  }
-
-  /**
-   * Contents of expected file.
-   */
-  public static Optional<String> expected(int day, int part, boolean test) throws IOException {
-    var p = expectedPath(day, part, test);
-    return exists(p) ? Optional.of(readString(p).trim()) : Optional.empty();
   }
 }

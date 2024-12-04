@@ -1,6 +1,6 @@
 package com.gigamonkeys.aoc2024;
 
-import static com.gigamonkeys.aoc2024.Util.*;
+import static com.gigamonkeys.aoc2024.Util.columns;
 import static java.lang.Math.*;
 import static java.util.stream.Collectors.*;
 
@@ -11,10 +11,6 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class Day01 extends Day {
-
-  public Day01() {
-    super(1);
-  }
 
   private record Columns(List<Integer> left, List<Integer> right) {
     public void add(String[] parts) {
