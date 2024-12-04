@@ -2,12 +2,12 @@ package com.gigamonkeys.aoc2024;
 
 import static com.gigamonkeys.aoc2024.Util.text;
 import static java.lang.Integer.*;
-import static java.util.regex.Pattern.compile;
 import static java.nio.file.Files.lines;
+import static java.util.regex.Pattern.compile;
 
-import java.util.*;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.*;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
@@ -38,27 +38,6 @@ public class Day04 extends Day {
     return String.valueOf(count);
   }
 
-  private boolean xmas(int[][] grid, int r, int c) {
-    return grid[r][c] == 'A' && (diag1(grid, r, c) || diag3(grid, r, c)) && (diag2(grid, r, c) || diag4(grid, r, c));
-  }
-
-  private boolean diag1(int[][] grid, int r, int c) {
-    return atAndInDirection(grid, MAS, r - 1, c - 1, 1, 1);
-  }
-
-  private boolean diag2(int[][] grid, int r, int c) {
-    return atAndInDirection(grid, MAS, r + 1, c - 1, -1, 1);
-  }
-
-  private boolean diag3(int[][] grid, int r, int c) {
-    return atAndInDirection(grid, MAS, r + 1, c + 1, -1, -1);
-  }
-
-  private boolean diag4(int[][] grid, int r, int c) {
-    return atAndInDirection(grid, MAS, r - 1, c + 1, 1, -1);
-  }
-
-
   private int at(int[][] grid, int r, int c) {
     int count = 0;
     for (int dr = -1; dr <= 1; dr++) {
@@ -84,7 +63,27 @@ public class Day04 extends Day {
     return 0 <= r && r < grid.length && 0 <= c && c < grid[0].length;
   }
 
+  private boolean xmas(int[][] grid, int r, int c) {
+    return grid[r][c] == 'A' && diag1(grid, r, c) && diag2(grid, r, c);
+  }
 
+  private boolean diag1(int[][] grid, int r, int c) {
+    for (int d = -1; d <= 1; d += 2) {
+      if (atAndInDirection(grid, MAS, r - d, c - d, d, d)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean diag2(int[][] grid, int r, int c) {
+    for (int d = -1; d <= 1; d += 2) {
+      if (atAndInDirection(grid, MAS, r + d, c - d, -d, d)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   private int[][] data(Path input) throws IOException {
     return lines(input).map(line -> line.codePoints().toArray()).toArray(int[][]::new);
