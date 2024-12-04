@@ -35,8 +35,8 @@ public abstract class Day {
   public boolean part(int part, boolean test) throws IOException {
     String result =
       (switch (part) {
-          case 1 -> part1(test);
-          case 2 -> part2(test);
+          case 1 -> part1(input(part, test));
+          case 2 -> part2(input(part, test));
           default -> "No part " + part;
         }).trim();
 
@@ -64,14 +64,25 @@ public abstract class Day {
     return Path.of("inputs/day-%02d/%s.txt".formatted(day, test ? "test" : "real"));
   }
 
+  public Path input(int part, boolean test) {
+    // Special case for some days tat have different test input for part 2
+    if (test && part == 2) {
+      var p2 = Path.of("inputs/day-%02d/test2.txt".formatted(day));
+      if (exists(p2)) return p2;
+    }
+
+    // The normal case.
+    return Path.of("inputs/day-%02d/%s.txt".formatted(day, test ? "test" : "real"));
+  }
+
   public Optional<String> expected(int part, boolean test) throws IOException {
     var p = expectedPath(part, test);
     return exists(p) ? Optional.of(readString(p).trim()) : Optional.empty();
   }
 
-  public abstract String part1(boolean test) throws IOException;
+  public abstract String part1(Path input) throws IOException;
 
-  public abstract String part2(boolean test) throws IOException;
+  public abstract String part2(Path input) throws IOException;
 
   private Path expectedPath(int part, boolean test) {
     return Path.of("inputs/day-%02d/part-%d%s.expected".formatted(day, part, test ? "-test" : ""));

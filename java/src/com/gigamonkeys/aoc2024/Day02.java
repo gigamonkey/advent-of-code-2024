@@ -6,6 +6,7 @@ import static java.util.Arrays.*;
 import static java.util.stream.IntStream.*;
 
 import java.io.IOException;
+import java.nio.file.*;
 import java.util.List;
 import java.util.function.IntPredicate;
 
@@ -13,18 +14,16 @@ public class Day02 extends Day {
 
   private static final IntPredicate GAP_OKAY = n -> 1 <= abs(n) && abs(n) <= 3;
 
-  private List<int[]> data(boolean test) throws IOException {
-    return columns(input(test))
-      .map(ss -> stream(ss).mapToInt(s -> Integer.parseInt(s)).toArray())
-      .toList();
+  private List<int[]> data(Path input) throws IOException {
+    return columns(input).map(ss -> stream(ss).mapToInt(s -> Integer.parseInt(s)).toArray()).toList();
   }
 
-  public String part1(boolean test) throws IOException {
-    return String.valueOf(data(test).stream().filter(this::isStrictlySafe).count());
+  public String part1(Path input) throws IOException {
+    return String.valueOf(data(input).stream().filter(this::isStrictlySafe).count());
   }
 
-  public String part2(boolean test) throws IOException {
-    return String.valueOf(data(test).stream().filter(this::isSafe).count());
+  public String part2(Path input) throws IOException {
+    return String.valueOf(data(input).stream().filter(this::isSafe).count());
   }
 
   private boolean isStrictlySafe(int[] levels) {
@@ -38,12 +37,14 @@ public class Day02 extends Day {
 
   private boolean isSafe(int[] levels) {
     return (
-      isStrictlySafe(levels) ||
-      range(0, levels.length).mapToObj(i -> without(levels, i)).anyMatch(this::isStrictlySafe)
+      isStrictlySafe(levels) || range(0, levels.length).mapToObj(i -> without(levels, i)).anyMatch(this::isStrictlySafe)
     );
   }
 
   private int[] without(int[] levels, int idx) {
-    return range(0, levels.length).filter(i -> i != idx).map(i -> levels[i]).toArray();
+    int[] wo = new int[levels.length - 1];
+    System.arraycopy(levels, 0, wo, 0, idx);
+    System.arraycopy(levels, idx + 1, wo, idx, wo.length - idx);
+    return wo;
   }
 }

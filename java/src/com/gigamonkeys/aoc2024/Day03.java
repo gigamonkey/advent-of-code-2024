@@ -14,13 +14,12 @@ public class Day03 extends Day {
   private static final Pattern MUL = compile("mul\\((\\d{1,3}),(\\d{1,3})\\)");
   private static final Pattern MUL_2 = compile("(?:mul\\((\\d{1,3}),(\\d{1,3})\\))|(do(?:n't)?\\(\\))");
 
-  public String part1(boolean test) throws IOException {
-    return String.valueOf(MUL.matcher(text(input(test))).results().mapToInt(this::mul).sum());
+  public String part1(Path input) throws IOException {
+    return String.valueOf(MUL.matcher(text(input)).results().mapToInt(this::mul).sum());
   }
 
-  public String part2(boolean test) throws IOException {
-    // Day 3 for some reason has different sample input for part2
-    var testdata = text(test ? Path.of("inputs/day-03/test2.txt") : input(test));
+  public String part2(Path input) throws IOException {
+    var testdata = text(input);
     var enabled = true;
     var total = 0;
     var i = MUL_2.matcher(testdata).results().iterator();
