@@ -1,18 +1,17 @@
 package com.gigamonkeys.aoc2024;
 
-import static com.gigamonkeys.aoc2024.Util.*;
-import static java.lang.Integer.*;
 import static java.nio.file.Files.lines;
 import static java.util.Collections.emptySet;
-import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.*;
 import static java.util.stream.IntStream.range;
 
-import java.io.*;
-import java.nio.file.*;
-import java.util.*;
-import java.util.regex.*;
-import java.util.stream.*;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class PrintQueue implements Solution {
 
@@ -39,9 +38,7 @@ public class PrintQueue implements Solution {
     return (a, b) ->
       mustPreceed.getOrDefault(a, emptySet()).contains(b)
         ? -1
-        : mustPreceed.getOrDefault(b, emptySet()).contains(a)
-        ? 1
-        : 0;
+        : mustPreceed.getOrDefault(b, emptySet()).contains(a) ? 1 : 0;
   }
 
   private <T> boolean inOrder(List<T> list, Comparator<T> cmp) {

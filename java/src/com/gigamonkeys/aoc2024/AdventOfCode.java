@@ -5,10 +5,10 @@ import static java.nio.file.Files.lines;
 import static java.nio.file.Files.readString;
 import static java.time.temporal.ChronoUnit.DAYS;
 
-import java.nio.file.*;
-import java.util.*;
 import java.io.IOException;
+import java.nio.file.*;
 import java.time.*;
+import java.util.*;
 
 public class AdventOfCode {
 
@@ -39,10 +39,10 @@ public class AdventOfCode {
   public boolean runPart(Solution s, int day, int part, boolean test) throws IOException {
     String result =
       (switch (part) {
-        case 1 -> s.part1(input(day, part, test));
-        case 2 -> s.part2(input(day, part, test));
-        default -> "No part " + part;
-      }).trim();
+          case 1 -> s.part1(input(day, part, test));
+          case 2 -> s.part2(input(day, part, test));
+          default -> "No part " + part;
+        }).trim();
 
     Optional<String> expected = expected(day, part, test);
 
@@ -80,7 +80,6 @@ public class AdventOfCode {
   }
 
   public void run(int start) throws IOException {
-
     var okay = true;
 
     for (var day = start; day <= MAX_DAY; day++) {
@@ -101,7 +100,6 @@ public class AdventOfCode {
       System.out.println("\nUh oh!");
     }
   }
-
 
   public static void main(String[] args) throws IOException {
     System.out.println("Welcome to Advent of Code!");
