@@ -24,4 +24,8 @@ public class Util {
   public static String text(Path p) throws IOException {
     return readString(p).trim();
   }
+
+  public static int[][] characterGrid(Path p) throws IOException {
+    return lines(p).map(line -> line.codePoints().toArray()).toArray(int[][]::new);
+  }
 }

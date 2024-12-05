@@ -1,6 +1,6 @@
 package com.gigamonkeys.aoc2024;
 
-import static com.gigamonkeys.aoc2024.Util.text;
+import static com.gigamonkeys.aoc2024.Util.*;
 import static java.lang.Integer.*;
 import static java.nio.file.Files.lines;
 import static java.util.regex.Pattern.compile;
@@ -17,7 +17,7 @@ public class Day04 extends Day {
   private static final int[] MAS = "MAS".codePoints().toArray();
 
   public String part1(Path input) throws IOException {
-    var grid = data(input);
+    var grid = characterGrid(input);
     int count = 0;
     for (int r = 0; r < grid.length; r++) {
       for (int c = 0; c < grid[0].length; c++) {
@@ -28,7 +28,7 @@ public class Day04 extends Day {
   }
 
   public String part2(Path input) throws IOException {
-    var grid = data(input);
+    var grid = characterGrid(input);
     int count = 0;
     for (int r = 0; r < grid.length; r++) {
       for (int c = 0; c < grid[0].length; c++) {
@@ -85,7 +85,4 @@ public class Day04 extends Day {
     return false;
   }
 
-  private int[][] data(Path input) throws IOException {
-    return lines(input).map(line -> line.codePoints().toArray()).toArray(int[][]::new);
-  }
 }

@@ -1,6 +1,6 @@
 package com.gigamonkeys.aoc2024;
 
-import static com.gigamonkeys.aoc2024.Util.text;
+import static com.gigamonkeys.aoc2024.Util.*;
 import static java.lang.Integer.*;
 import static java.nio.file.Files.lines;
 import static java.util.regex.Pattern.compile;
