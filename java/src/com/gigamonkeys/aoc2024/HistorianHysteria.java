@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class Day01 implements Solution {
+public class HistorianHysteria implements Solution {
 
   private record Columns(List<Integer> left, List<Integer> right) {
     public void add(String[] parts) {

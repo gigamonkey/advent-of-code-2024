@@ -21,11 +21,11 @@ public class AdventOfCode {
   public static final List<Solution> days = new ArrayList<>();
 
   static {
-    days.add(new Day01());
-    days.add(new Day02());
-    days.add(new Day03());
-    days.add(new Day04());
-    days.add(new Day05());
+    days.add(new HistorianHysteria());
+    days.add(new RedNosedReports());
+    days.add(new MullItOver());
+    days.add(new CeresSearch());
+    days.add(new PrintQueue());
   }
 
   private Optional<Solution> number(int day) {
