@@ -84,5 +84,4 @@ public class Day04 extends Day {
     }
     return false;
   }
-
 }
