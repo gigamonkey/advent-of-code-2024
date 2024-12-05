@@ -1,8 +1,6 @@
-# Advent of code
+# Advent of code - 2024
 
-In this project we'll start using packages. I'll walk you through how to use the
-Makefile to set up your first package.
+This year I assigned Advent of Code to my Software Engineering class and set up
+a leaderboard for them and other students and teachers at Berkeley High.
 
-If you want you can use the Makefile to build the project in the terminal with
-the `make` command. First you'll need to set the MAIN_CLASS variable in the
-Makefile to the name of your main class.
+I'm doing it in Java since that's what I'm teaching for 3/4 of my classes.
