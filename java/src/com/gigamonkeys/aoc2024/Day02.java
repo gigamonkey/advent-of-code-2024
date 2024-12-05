@@ -10,7 +10,7 @@ import java.nio.file.*;
 import java.util.List;
 import java.util.function.IntPredicate;
 
-public class Day02 extends Day {
+public class Day02 implements Day {
 
   private static final IntPredicate GAP_OKAY = n -> 1 <= abs(n) && abs(n) <= 3;
 

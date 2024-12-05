@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.regex.*;
 import java.util.stream.*;
 
-public class Day05 extends Day {
+public class Day05 implements Day {
 
   public String part1(Path input) throws IOException {
     var mustPreceed = mustPreceed(input);

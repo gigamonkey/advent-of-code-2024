@@ -36,26 +36,26 @@ public class AdventOfCode {
     }
   }
 
-  public boolean runPart(Day day, int part, boolean test) throws IOException {
+  public boolean runPart(Day s, int day, int part, boolean test) throws IOException {
     String result =
       (switch (part) {
-        case 1 -> day.part1(input(day.day(), part, test));
-        case 2 -> day.part2(input(day.day(), part, test));
+        case 1 -> s.part1(input(day, part, test));
+        case 2 -> s.part2(input(day, part, test));
         default -> "No part " + part;
       }).trim();
 
-    Optional<String> expected = expected(day.day(), part, test);
+    Optional<String> expected = expected(day, part, test);
 
     if (expected.isPresent()) {
       var e = expected.get();
       if (e.equals(result)) {
-        System.out.printf("Day %d, part %d: %s - ok!%n", day.day(), part, result);
+        System.out.printf("Day %d, part %d: %s - ok!%n", day, part, result);
         return true;
       } else {
-        System.out.printf("Day %d, part %d: %s - Ooops. Expected: %s%n", day.day(), part, result, e);
+        System.out.printf("Day %d, part %d: %s - Ooops. Expected: %s%n", day, part, result, e);
       }
     } else {
-      System.out.printf("Day %d, part %d: %s - no expected value yet.%n", day.day(), part, result);
+      System.out.printf("Day %d, part %d: %s - no expected value yet.%n", day, part, result);
     }
     return false;
   }
@@ -85,9 +85,9 @@ public class AdventOfCode {
 
     for (var day = start; day <= MAX_DAY; day++) {
       for (var part = 1; part <= 2; part++) {
-        var d = number(day);
-        okay &= runPart(d, part, true);
-        okay &= runPart(d, part, false);
+        var s = number(day);
+        okay &= runPart(s, day, part, true);
+        okay &= runPart(s, day, part, false);
       }
     }
 
