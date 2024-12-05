@@ -28,11 +28,11 @@ public class AdventOfCode {
     days.add(new Day05());
   }
 
-  private Solution number(int day) {
+  private Optional<Solution> number(int day) {
     if ((day - 1) < days.size()) {
-      return days.get(day - 1);
+      return Optional.of(days.get(day - 1));
     } else {
-      throw new RuntimeException("Day %d not implemented yet!".formatted(day));
+      return Optional.empty();
     }
   }
 
@@ -84,10 +84,14 @@ public class AdventOfCode {
     var okay = true;
 
     for (var day = start; day <= MAX_DAY; day++) {
-      for (var part = 1; part <= 2; part++) {
-        var s = number(day);
-        okay &= runPart(s, day, part, true);
-        okay &= runPart(s, day, part, false);
+      var s = number(day);
+      if (s.isPresent()) {
+        for (var part = 1; part <= 2; part++) {
+          okay &= runPart(s.get(), day, part, true);
+          okay &= runPart(s.get(), day, part, false);
+        }
+      } else {
+        System.out.println("*** Day %d not implemented yet! ***".formatted(day));
       }
     }
 
