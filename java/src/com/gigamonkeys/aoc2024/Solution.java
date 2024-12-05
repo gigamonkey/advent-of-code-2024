@@ -3,7 +3,7 @@ package com.gigamonkeys.aoc2024;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public interface Day {
+public interface Solution {
 
   /**
    * Solve part1 for the given input.

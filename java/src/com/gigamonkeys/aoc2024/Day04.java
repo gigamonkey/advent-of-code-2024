@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
-public class Day04 implements Day {
+public class Day04 implements Solution {
 
   private static final int[] XMAS = "XMAS".codePoints().toArray();
   private static final int[] MAS = "MAS".codePoints().toArray();

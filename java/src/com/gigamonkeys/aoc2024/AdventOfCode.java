@@ -18,7 +18,7 @@ public class AdventOfCode {
 
   private static final int MAX_DAY = (int) DAYS.between(START, NOW) + 1;
 
-  public static final List<Day> days = new ArrayList<>();
+  public static final List<Solution> days = new ArrayList<>();
 
   static {
     days.add(new Day01());
@@ -28,7 +28,7 @@ public class AdventOfCode {
     days.add(new Day05());
   }
 
-  private Day number(int day) {
+  private Solution number(int day) {
     if ((day - 1) < days.size()) {
       return days.get(day - 1);
     } else {
@@ -36,7 +36,7 @@ public class AdventOfCode {
     }
   }
 
-  public boolean runPart(Day s, int day, int part, boolean test) throws IOException {
+  public boolean runPart(Solution s, int day, int part, boolean test) throws IOException {
     String result =
       (switch (part) {
         case 1 -> s.part1(input(day, part, test));
@@ -79,9 +79,9 @@ public class AdventOfCode {
     return exists(p) ? Optional.of(readString(p).trim()) : Optional.empty();
   }
 
-  public boolean run(int start) throws IOException {
+  public void run(int start) throws IOException {
 
-    boolean okay = true;
+    var okay = true;
 
     for (var day = start; day <= MAX_DAY; day++) {
       for (var part = 1; part <= 2; part++) {
@@ -91,21 +91,17 @@ public class AdventOfCode {
       }
     }
 
-    return okay;
-  }
-
-
-  public static void main(String[] args) throws IOException {
-    System.out.println("Welcome to Advent of Code!");
-
-    int start = args.length > 0 && args[0].equals("--all") ? 1 : MAX_DAY;
-    var aoc = new AdventOfCode();
-    boolean okay = aoc.run(start);
-
     if (okay) {
       System.out.println("\nAll okay!");
     } else {
       System.out.println("\nUh oh!");
     }
+  }
+
+
+  public static void main(String[] args) throws IOException {
+    System.out.println("Welcome to Advent of Code!");
+    int start = args.length > 0 && args[0].equals("--all") ? 1 : MAX_DAY;
+    new AdventOfCode().run(start);
   }
 }
