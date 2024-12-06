@@ -7,9 +7,9 @@ import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.*;
 import static java.util.stream.IntStream.range;
 
-import java.util.*;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -20,10 +20,7 @@ public class GuardGallivant2 implements Solution {
 
   private record Cell(int row, int col) {
     public boolean inBounds(int[][] grid) {
-      return (
-        0 <= row && row < grid.length &&
-        0 <= col && col < grid[row].length
-      );
+      return (0 <= row && row < grid.length && 0 <= col && col < grid[row].length);
     }
   }
 
@@ -55,9 +52,7 @@ public class GuardGallivant2 implements Solution {
     }
 
     boolean inBounds(Cell cell) {
-      var x = cell.inBounds(grid);
-      //if (!x) System.out.println("*** OUT");
-      return x;
+      return cell.inBounds(grid);
     }
 
     int at(Cell c) {
@@ -76,19 +71,16 @@ public class GuardGallivant2 implements Solution {
     }
 
     private boolean move() {
-      //System.out.println("dir: " + dRow + "," + dCol);
       Cell next = new Cell(row + dRow, col + dCol);
       while (inBounds(next) && at(next) == '#') {
         turnRight();
         next = new Cell(row + dRow, col + dCol);
       }
-      //System.out.println("Moving from " + cell() + " to " + next);
       row = next.row();
       col = next.col();
       return inBounds(next);
     }
   }
-
 
   public String part1(Path input) throws IOException {
     int[][] grid = characterGrid(input);
@@ -113,18 +105,17 @@ public class GuardGallivant2 implements Solution {
     for (int r = 0; r < grid.length; r++) {
       for (int c = 0; c < grid[r].length; c++) {
         if (grid[r][c] == '.') {
-          //System.out.println("Checking %d,%d".formatted(r, c));
           int[][] copy = copyGrid(grid);
           copy[r][c] = '#';
           Walker w = new Walker(copy);
           Set<Cell> visited = new HashSet<>();
 
+          // Just gonna detect loops in the dumbest possible way
           int count = 0;
           do {
             visited.add(w.cell());
             if (count++ >= cells) {
               obstacles.add(new Cell(r, c));
-              //System.out.println("Found loop");
               break;
             }
           } while (w.move());

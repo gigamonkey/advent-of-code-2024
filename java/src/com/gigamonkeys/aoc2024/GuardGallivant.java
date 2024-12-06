@@ -7,9 +7,9 @@ import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.*;
 import static java.util.stream.IntStream.range;
 
-import java.util.*;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -19,7 +19,6 @@ import java.util.Set;
 public class GuardGallivant implements Solution {
 
   private record Cell(int r, int c) {
-
     public boolean inBounds(int[][] grid) {
       return 0 <= r && r < grid.length && 0 <= c && c < grid[r].length;
     }
@@ -28,7 +27,6 @@ public class GuardGallivant implements Solution {
   private record Foo(Cell cell, Direction direction) {}
 
   public enum Direction {
-
     NORTH(-1, 0),
     EAST(0, 1),
     SOUTH(1, 0),
@@ -42,8 +40,13 @@ public class GuardGallivant implements Solution {
       this.dc = dc;
     }
 
-    public int dr() { return dr; }
-    public int dc() { return dc; }
+    public int dr() {
+      return dr;
+    }
+
+    public int dc() {
+      return dc;
+    }
 
     public Direction rightTurn() {
       return Direction.class.getEnumConstants()[(ordinal() + 1) % 4];
@@ -62,7 +65,6 @@ public class GuardGallivant implements Solution {
   }
 
   public String part2(Path input) throws IOException {
-
     int[][] grid = characterGrid(input);
 
     //System.out.println(grid.length + " by " + grid[0].length);
@@ -74,7 +76,6 @@ public class GuardGallivant implements Solution {
     Set<Cell> obstacles = new HashSet<>();
 
     while (p.cell().inBounds(grid)) {
-
       path.add(p);
 
       // Where we might place an obstacle
@@ -143,7 +144,6 @@ public class GuardGallivant implements Solution {
   }
 
   private boolean isLoopToRight(int[][] grid, Foo foo, Set<Foo> history, Cell obstacle) {
-
     Set<Foo> path = new HashSet<>(history);
     Foo current = move2(grid, foo, obstacle);
     while (true) {

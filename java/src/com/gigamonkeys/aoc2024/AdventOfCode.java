@@ -57,13 +57,14 @@ public class AdventOfCode {
   }
 
   private String result(Solution s, int day, int part, boolean test) throws IOException {
-    return (switch (part) {
+    return (
+      switch (part) {
         case 1 -> s.part1(input(day, part, test));
         case 2 -> s.part2(input(day, part, test));
         default -> "No part " + part;
-      }).trim();
+      }
+    ).trim();
   }
-
 
   /**
    * Get the Path of the input file for either the test or real input.
