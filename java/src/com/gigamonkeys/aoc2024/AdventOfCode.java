@@ -26,6 +26,7 @@ public class AdventOfCode {
     days.add(new MullItOver());
     days.add(new CeresSearch());
     days.add(new PrintQueue());
+    days.add(new GuardGallivant());
   }
 
   private Optional<Solution> number(int day) {
@@ -37,28 +38,32 @@ public class AdventOfCode {
   }
 
   public boolean runPart(Solution s, int day, int part, boolean test) throws IOException {
-    String result =
-      (switch (part) {
-          case 1 -> s.part1(input(day, part, test));
-          case 2 -> s.part2(input(day, part, test));
-          default -> "No part " + part;
-        }).trim();
-
+    String label = test ? "test" : "real";
+    String result = result(s, day, part, test);
     Optional<String> expected = expected(day, part, test);
 
     if (expected.isPresent()) {
       var e = expected.get();
       if (e.equals(result)) {
-        System.out.printf("✅ Day %d, part %d: %s%n", day, part, result);
+        System.out.printf("✅ Day %d, part %d (%s): %s%n", day, part, label, result);
         return true;
       } else {
-        System.out.printf("❌ Day %d, part %d: %s. Expected: %s%n", day, part, result, e);
+        System.out.printf("❌ Day %d, part %d (%s): %s. Expected: %s%n", day, part, label, result, e);
       }
     } else {
-      System.out.printf("🟡 Day %d, part %d: %s - no expected value yet.%n", day, part, result);
+      System.out.printf("🟡 Day %d, part %d (%s): %s - no expected value yet.%n", day, part, label, result);
     }
     return false;
   }
+
+  private String result(Solution s, int day, int part, boolean test) throws IOException {
+    return (switch (part) {
+        case 1 -> s.part1(input(day, part, test));
+        case 2 -> s.part2(input(day, part, test));
+        default -> "No part " + part;
+      }).trim();
+  }
+
 
   /**
    * Get the Path of the input file for either the test or real input.
