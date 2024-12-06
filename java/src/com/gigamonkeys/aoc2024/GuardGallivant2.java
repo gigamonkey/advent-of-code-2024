@@ -58,12 +58,15 @@ public class GuardGallivant2 implements Solution {
 
     private final int[][] grid;
     private Cell position;
+    private Set<Foo> path = new HashSet<>();
+    private boolean hasLooped = false;
 
     private Direction direction = Direction.NORTH;
 
     Walker(int[][] grid) {
       this.grid = grid;
       this.position = findStart();
+      path.add(new Foo(position, direction));
     }
 
     final Cell findStart() {
@@ -77,10 +80,6 @@ public class GuardGallivant2 implements Solution {
       throw new Error("wat!");
     }
 
-    boolean inBounds(Cell cell) {
-      return cell.inBounds(grid);
-    }
-
     int at(Cell c) {
       return grid[c.row()][c.col()];
     }
@@ -89,14 +88,21 @@ public class GuardGallivant2 implements Solution {
       return position;
     }
 
-    private boolean move() {
+    boolean move() {
       Cell next = new Cell(position.row() + direction.dr(), position.col() + direction.dc());
-      while (inBounds(next) && at(next) == '#') {
+      while (next.inBounds(grid) && at(next) == '#') {
         direction = direction.rightTurn();
         next = new Cell(position.row() + direction.dr(), position.col() + direction.dc());
       }
       position = next;
-      return inBounds(next);
+      Foo nextFoo = new Foo(position, direction);
+      hasLooped |= path.contains(nextFoo);
+      path.add(nextFoo);
+      return position.inBounds(grid);
+    }
+
+    boolean hasLooped() {
+      return hasLooped;
     }
   }
 
@@ -118,9 +124,7 @@ public class GuardGallivant2 implements Solution {
 
     int cells = grid.length * grid[0].length;
 
-    Set<Foo> paths = new HashSet<>();
     Set<Cell> obstacles = new HashSet<>();
-    Set<Cell> obstacles2 = new HashSet<>();
 
     for (int r = 0; r < grid.length; r++) {
       for (int c = 0; c < grid[r].length; c++) {
@@ -130,11 +134,9 @@ public class GuardGallivant2 implements Solution {
           Walker w = new Walker(copy);
           Set<Cell> visited = new HashSet<>();
 
-          // Just gonna detect loops in the dumbest possible way
-          int count = 0;
           do {
             visited.add(w.cell());
-            if (count++ >= cells) {
+            if (w.hasLooped()) {
               obstacles.add(new Cell(r, c));
               break;
             }
