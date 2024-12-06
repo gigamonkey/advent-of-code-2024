@@ -18,11 +18,41 @@ import java.util.Set;
 
 public class GuardGallivant2 implements Solution {
 
+  public enum Direction {
+
+    NORTH(-1, 0),
+    EAST(0, 1),
+    SOUTH(1, 0),
+    WEST(0, -1);
+
+    private final int dr;
+    private final int dc;
+
+    Direction(int dr, int dc) {
+      this.dr = dr;
+      this.dc = dc;
+    }
+
+    public int dr() {
+      return dr;
+    }
+
+    public int dc() {
+      return dc;
+    }
+
+    public Direction rightTurn() {
+      return Direction.class.getEnumConstants()[(ordinal() + 1) % 4];
+    }
+  }
+
   private record Cell(int row, int col) {
     public boolean inBounds(int[][] grid) {
       return (0 <= row && row < grid.length && 0 <= col && col < grid[row].length);
     }
   }
+
+  private record Foo(Cell cell, Direction direction) {}
 
   private static class Walker {
 
@@ -30,8 +60,7 @@ public class GuardGallivant2 implements Solution {
     private int row;
     private int col;
 
-    private int dRow = -1;
-    private int dCol = 0;
+    private Direction direction = Direction.NORTH;
 
     Walker(int[][] grid) {
       this.grid = grid;
@@ -59,22 +88,15 @@ public class GuardGallivant2 implements Solution {
       return grid[c.row()][c.col()];
     }
 
-    void turnRight() {
-      var tmpDRow = dRow == 0 ? dCol : 0;
-      var tmpDCol = dCol == 0 ? -dRow : 0;
-      dRow = tmpDRow;
-      dCol = tmpDCol;
-    }
-
     Cell cell() {
       return new Cell(row, col);
     }
 
     private boolean move() {
-      Cell next = new Cell(row + dRow, col + dCol);
+      Cell next = new Cell(row + direction.dr(), col + direction.dc());
       while (inBounds(next) && at(next) == '#') {
-        turnRight();
-        next = new Cell(row + dRow, col + dCol);
+        direction = direction.rightTurn();
+        next = new Cell(row + direction.dr(), col + direction.dc());
       }
       row = next.row();
       col = next.col();
@@ -100,7 +122,9 @@ public class GuardGallivant2 implements Solution {
 
     int cells = grid.length * grid[0].length;
 
+    Set<Foo> paths = new HashSet<>();
     Set<Cell> obstacles = new HashSet<>();
+    Set<Cell> obstacles2 = new HashSet<>();
 
     for (int r = 0; r < grid.length; r++) {
       for (int c = 0; c < grid[r].length; c++) {
