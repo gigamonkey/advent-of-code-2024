@@ -10,17 +10,16 @@ import static java.util.stream.IntStream.range;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.*;
 
 public class GuardGallivant implements Solution {
 
   public enum Direction {
-
     NORTH,
     EAST,
     SOUTH,
@@ -79,7 +78,9 @@ public class GuardGallivant implements Solution {
       throw new RuntimeException("wat! no guard!!!");
     }
 
-    Cell position() { return position; }
+    Cell position() {
+      return position;
+    }
 
     int at(Cell c) {
       return grid[c.row()][c.col()];
