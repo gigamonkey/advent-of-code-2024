@@ -58,6 +58,7 @@ public class GuardGallivant2 implements Solution {
   private static class Walker {
 
     private final int[][] grid;
+    private final Optional<Cell> obstacle;
     private Cell position;
     private Set<Foo> path = new HashSet<>();
     private boolean hasLooped = false;
@@ -65,7 +66,12 @@ public class GuardGallivant2 implements Solution {
     private Direction direction = Direction.NORTH;
 
     Walker(int[][] grid) {
+      this(grid, Optional.empty());
+    }
+
+    Walker(int[][] grid, Optional<Cell> obstacle) {
       this.grid = grid;
+      this.obstacle = obstacle;
       this.position = findStart();
       path.add(new Foo(position, direction));
     }
@@ -91,7 +97,7 @@ public class GuardGallivant2 implements Solution {
 
     boolean move() {
       Cell next = new Cell(position.row() + direction.dr(), position.col() + direction.dc());
-      while (next.inBounds(grid) && at(next) == '#') {
+      while (next.inBounds(grid) && (at(next) == '#' || obstacle.map(next::equals).orElse(false))) {
         direction = direction.rightTurn();
         next = new Cell(position.row() + direction.dr(), position.col() + direction.dc());
       }
@@ -128,17 +134,13 @@ public class GuardGallivant2 implements Solution {
     Set<Cell> obstacles = new HashSet<>();
 
     allCandidates(grid).forEach(cell -> {
-        int r = cell.row();
-        int c = cell.col();
-        int[][] copy = copyGrid(grid);
-        copy[r][c] = '#';
-        Walker w = new Walker(copy);
+        Walker w = new Walker(grid, Optional.of(cell));
         Set<Cell> visited = new HashSet<>();
 
         do {
           visited.add(w.cell());
           if (w.hasLooped()) {
-            obstacles.add(new Cell(r, c));
+            obstacles.add(cell);
             break;
           }
         } while (w.move());
