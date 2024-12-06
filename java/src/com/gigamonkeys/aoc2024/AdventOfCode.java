@@ -49,13 +49,13 @@ public class AdventOfCode {
     if (expected.isPresent()) {
       var e = expected.get();
       if (e.equals(result)) {
-        System.out.printf("Day %d, part %d: %s - ok!%n", day, part, result);
+        System.out.printf("✅ Day %d, part %d: %s%n", day, part, result);
         return true;
       } else {
-        System.out.printf("Day %d, part %d: %s - Ooops. Expected: %s%n", day, part, result, e);
+        System.out.printf("❌ Day %d, part %d: %s. Expected: %s%n", day, part, result, e);
       }
     } else {
-      System.out.printf("Day %d, part %d: %s - no expected value yet.%n", day, part, result);
+      System.out.printf("🟡 Day %d, part %d: %s - no expected value yet.%n", day, part, result);
     }
     return false;
   }
@@ -90,7 +90,7 @@ public class AdventOfCode {
           okay &= runPart(s.get(), day, part, false);
         }
       } else {
-        System.out.println("*** Day %d not implemented yet! ***".formatted(day));
+        System.out.println("⚠️ Day %d not implemented yet".formatted(day));
       }
     }
 
