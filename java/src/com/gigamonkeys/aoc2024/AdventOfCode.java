@@ -39,10 +39,10 @@ public class AdventOfCode {
 
   public boolean runPart(Solution s, int day, int part, boolean test) throws IOException {
     String label = test ? "test" : "real";
-    String result = result(s, day, part, test);
     Optional<String> expected = expected(day, part, test);
 
     if (expected.isPresent()) {
+      String result = result(s, day, part, test);
       var e = expected.get();
       if (e.equals(result)) {
         System.out.printf("✅ Day %d, part %d (%s): %s%n", day, part, label, result);
@@ -51,7 +51,7 @@ public class AdventOfCode {
         System.out.printf("❌ Day %d, part %d (%s): %s. Expected: %s%n", day, part, label, result, e);
       }
     } else {
-      System.out.printf("🟡 Day %d, part %d (%s): %s - no expected value yet.%n", day, part, label, result);
+      System.out.printf("🟡 Day %d, part %d (%s): no expected value yet.%n", day, part, label);
     }
     return false;
   }
