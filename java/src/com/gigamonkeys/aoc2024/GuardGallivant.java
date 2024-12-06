@@ -53,14 +53,14 @@ public class GuardGallivant implements Solution {
     }
   }
 
-  private record Foo(Cell cell, Direction direction) {}
+  private record Visit(Cell cell, Direction direction) {}
 
   private static class Walker {
 
     private final int[][] grid;
     private final Optional<Cell> obstacle;
     private Cell position;
-    private Set<Foo> path = new HashSet<>();
+    private Set<Visit> path = new HashSet<>();
     private boolean hasLooped = false;
 
     private Direction direction = Direction.NORTH;
@@ -73,7 +73,7 @@ public class GuardGallivant implements Solution {
       this.grid = grid;
       this.obstacle = obstacle;
       this.position = findStart();
-      path.add(new Foo(position, direction));
+      path.add(new Visit(position, direction));
     }
 
     final Cell findStart() {
@@ -84,17 +84,13 @@ public class GuardGallivant implements Solution {
           }
         }
       }
-      throw new Error("wat!");
+      throw new RuntimeException("wat! no guard!!!");
     }
 
     Cell position() { return position; }
 
     int at(Cell c) {
       return grid[c.row()][c.col()];
-    }
-
-    Cell cell() {
-      return position;
     }
 
     boolean move() {
@@ -104,9 +100,9 @@ public class GuardGallivant implements Solution {
         next = new Cell(position.row() + direction.dr(), position.col() + direction.dc());
       }
       position = next;
-      Foo nextFoo = new Foo(position, direction);
-      hasLooped |= path.contains(nextFoo);
-      path.add(nextFoo);
+      Visit nextVisit = new Visit(position, direction);
+      hasLooped |= path.contains(nextVisit);
+      path.add(nextVisit);
       return position.inBounds(grid);
     }
 
@@ -122,7 +118,7 @@ public class GuardGallivant implements Solution {
     Set<Cell> visited = new HashSet<>();
 
     do {
-      visited.add(w.cell());
+      visited.add(w.position());
     } while (w.move());
 
     return String.valueOf(visited.size());
