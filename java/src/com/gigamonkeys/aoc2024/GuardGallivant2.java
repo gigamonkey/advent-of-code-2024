@@ -131,36 +131,25 @@ public class GuardGallivant2 implements Solution {
   public String part2(Path input) throws IOException {
     int[][] grid = characterGrid(input);
 
-    int cells = grid.length * grid[0].length;
-
     Set<Cell> obstacles = new HashSet<>();
 
-    pathCandidates(grid).forEach(cell -> {
-        Walker w = new Walker(grid, Optional.of(cell));
-        Set<Cell> visited = new HashSet<>();
+    Walker main = new Walker(grid);
 
-        do {
-          visited.add(w.cell());
-          if (w.hasLooped()) {
-            obstacles.add(cell);
-            break;
-          }
-        } while (w.move());
-      }
-    );
+    Cell cell = main.position();
+    while (cell.inBounds(grid)) {
+      Walker w = new Walker(grid, Optional.of(cell));
+      do {
+        if (w.hasLooped()) {
+          obstacles.add(cell);
+          break;
+        }
+      } while (w.move());
+
+      main.move();
+      cell = main.position();
+    }
     return String.valueOf(obstacles.size());
   }
-
-  private Stream<Cell> pathCandidates(int[][] grid) {
-    Walker w = new Walker(grid);
-    return Stream.iterate(
-      w.position(),
-      c -> c.inBounds(grid),
-      c -> {
-        w.move();
-        return w.position();
-      });
-  };
 
   private static int[][] copyGrid(int[][] grid) {
     int[][] copy = new int[grid.length][];
