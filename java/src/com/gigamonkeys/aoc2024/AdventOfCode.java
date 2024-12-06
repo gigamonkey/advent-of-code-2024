@@ -26,7 +26,7 @@ public class AdventOfCode {
     days.add(new MullItOver());
     days.add(new CeresSearch());
     days.add(new PrintQueue());
-    days.add(new GuardGallivant());
+    days.add(new GuardGallivant2());
   }
 
   private Optional<Solution> number(int day) {

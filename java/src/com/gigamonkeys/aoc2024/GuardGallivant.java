@@ -1,6 +1,5 @@
 package com.gigamonkeys.aoc2024;
 
-
 import static com.gigamonkeys.aoc2024.Util.*;
 import static java.lang.Integer.parseInt;
 import static java.nio.file.Files.lines;
@@ -56,7 +55,6 @@ public class GuardGallivant implements Solution {
     Foo p = new Foo(findStart(grid), Direction.NORTH);
     Set<Cell> visited = new HashSet<>();
     while (p.cell().inBounds(grid)) {
-      //System.out.println(p.cell());
       visited.add(p.cell());
       p = move(grid, p);
     }
@@ -64,32 +62,28 @@ public class GuardGallivant implements Solution {
   }
 
   public String part2(Path input) throws IOException {
-    // Walk the route but whenever we are on a cell we have previously occupied
-    // and the cell to our right has been previously occupied while we were
-    // going in the direction we'd be going if we turned right and the cell in
-    // front of us is not the starting position, putting an obstacle in that
-    // cell would create a loop because it would make us turn right and into a
-    // path we've already been on.
+
     int[][] grid = characterGrid(input);
+
+    //System.out.println(grid.length + " by " + grid[0].length);
+
     Cell start = findStart(grid);
     Foo p = new Foo(start, Direction.NORTH);
 
-    Set<Foo> foos = new HashSet<>();
-    Set<Cell> visited = new HashSet<>();
+    Set<Foo> path = new HashSet<>();
     Set<Cell> obstacles = new HashSet<>();
 
     while (p.cell().inBounds(grid)) {
 
-      visited.add(p.cell());
-      foos.add(p);
+      path.add(p);
 
       // Where we might place an obstacle
       Cell next = next(p);
+
       if (next.inBounds(grid) && !next.equals(start) && at(grid, next) != '#') {
-        // Explore where we'd end up if we took a right turn now from our
-        // current position. This will either take us off the board or into a
-        // loop.
-        if (isLoopToRight(grid, p, foos, next)) {
+        // Explore where we'd end up if next was actually an obstacle. This will
+        // either take us off the board or into a loop.
+        if (isLoopToRight(grid, p, path, next)) {
           //System.out.println("Adding obstacle at " + next + " from " + p);
           obstacles.add(next);
         }
@@ -115,7 +109,7 @@ public class GuardGallivant implements Solution {
     Direction d = foo.direction();
     var next = next(foo);
     if (next.inBounds(grid)) {
-      if (grid[next.r()][next.c()] == '#') {
+      if (at(grid, next) == '#') {
         return move(grid, new Foo(cell, d.rightTurn()));
       }
     }
@@ -127,25 +121,17 @@ public class GuardGallivant implements Solution {
     Direction d = foo.direction();
     var next = next(foo);
     if (next.inBounds(grid)) {
-      if (grid[next.r()][next.c()] == '#' || next.equals(extra)) {
-        return move(grid, new Foo(cell, d.rightTurn()));
+      if (at(grid, next) == '#' || next.equals(extra)) {
+        return move2(grid, new Foo(cell, d.rightTurn()), extra);
       }
     }
     return new Foo(next, d);
   }
 
-
   private Cell next(Foo foo) {
     Cell cell = foo.cell();
     Direction d = foo.direction();
     return new Cell(cell.r() + d.dr(), cell.c() + d.dc());
-  }
-
-  private Foo toRight(Foo foo) {
-    Cell cell = foo.cell();
-    Direction d = foo.direction();
-    Direction newD = d.rightTurn();
-    return new Foo(new Cell(cell.r() + newD.dr(), cell.c() + newD.dc()), newD);
   }
 
   private int at(int[][] grid, Cell cell) {
@@ -156,38 +142,16 @@ public class GuardGallivant implements Solution {
     return new Foo(next(foo), foo.direction());
   }
 
-  private Set<Foo> pathToRight(int[][] grid, Foo foo, Set<Foo> history) {
-    // Current
-    Cell cell = foo.cell();
-    Direction d = foo.direction();
-
-    Direction newD = d.rightTurn();
-    Set<Foo> foos = new HashSet<>(history);
-
-    foo = new Foo(cell, newD);
-    while (foo.cell().inBounds(grid) && !foos.contains(foo)) {
-      foos.add(foo);
-      foo = move(grid, foo);
-    }
-    return foos;
-  }
-
-
   private boolean isLoopToRight(int[][] grid, Foo foo, Set<Foo> history, Cell obstacle) {
 
-    Foo start = new Foo(foo.cell(), foo.direction().rightTurn());
-    //Set<Foo> foos = new HashSet<>(history);
-    Set<Foo> foos = new HashSet<>();
-    foos.add(foo);
-
-    Foo current = move2(grid, start, obstacle);
+    Set<Foo> path = new HashSet<>(history);
+    Foo current = move2(grid, foo, obstacle);
     while (true) {
       if (!current.cell().inBounds(grid)) return false;
-      if (foos.contains(current)) {
-        //System.out.println("Found loop at " + current);
+      if (path.contains(current)) {
         return true;
       }
-      foos.add(current);
+      path.add(current);
       current = move2(grid, current, obstacle);
     }
   }
