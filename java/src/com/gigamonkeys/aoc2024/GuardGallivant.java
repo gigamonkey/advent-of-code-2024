@@ -21,25 +21,17 @@ public class GuardGallivant implements Solution {
 
   public enum Direction {
 
-    NORTH(-1, 0),
-    EAST(0, 1),
-    SOUTH(1, 0),
-    WEST(0, -1);
-
-    private final int dr;
-    private final int dc;
-
-    Direction(int dr, int dc) {
-      this.dr = dr;
-      this.dc = dc;
-    }
+    NORTH,
+    EAST,
+    SOUTH,
+    WEST;
 
     public int dr() {
-      return dr;
+      return 1 - Math.abs(ordinal() - 2);
     }
 
     public int dc() {
-      return dc;
+      return 1 - Math.abs(1 - ordinal());
     }
 
     public Direction rightTurn() {
