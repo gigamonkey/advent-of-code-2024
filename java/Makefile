@@ -12,6 +12,17 @@ all: build run
 run:
 	$(run) --all
 
+
+inputs/day-%:
+	mkdir -p $@
+	touch $@/part-1-test.expected
+	touch $@/part-1.expected
+	touch $@/part-2-test.expected
+	touch $@/part-2.expected
+	touch $@/real.txt
+	touch $@/test.txt
+
+
 build: | classes
 	javac -d classes -Xdiags:verbose -Xlint:all $(sources)
 
