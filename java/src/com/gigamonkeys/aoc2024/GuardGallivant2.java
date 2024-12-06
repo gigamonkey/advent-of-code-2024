@@ -87,6 +87,8 @@ public class GuardGallivant2 implements Solution {
       throw new Error("wat!");
     }
 
+    Cell position() { return position; }
+
     int at(Cell c) {
       return grid[c.row()][c.col()];
     }
@@ -133,7 +135,7 @@ public class GuardGallivant2 implements Solution {
 
     Set<Cell> obstacles = new HashSet<>();
 
-    allCandidates(grid).forEach(cell -> {
+    pathCandidates(grid).forEach(cell -> {
         Walker w = new Walker(grid, Optional.of(cell));
         Set<Cell> visited = new HashSet<>();
 
@@ -149,43 +151,16 @@ public class GuardGallivant2 implements Solution {
     return String.valueOf(obstacles.size());
   }
 
-  private Stream<Cell> allCandidates(int[][] grid) {
-    return range(0, grid.length)
-      .boxed()
-      .flatMap(r -> {
-          return range(0, grid[r].length).mapToObj(c -> new Cell(r, c));
-        })
-      .filter(c -> grid[c.row()][c.col()] == '.');
+  private Stream<Cell> pathCandidates(int[][] grid) {
+    Walker w = new Walker(grid);
+    return Stream.iterate(
+      w.position(),
+      c -> c.inBounds(grid),
+      c -> {
+        w.move();
+        return w.position();
+      });
   };
-
-
-  public String part2Bruteforce(Path input) throws IOException {
-    int[][] grid = characterGrid(input);
-
-    int cells = grid.length * grid[0].length;
-
-    Set<Cell> obstacles = new HashSet<>();
-
-    for (int r = 0; r < grid.length; r++) {
-      for (int c = 0; c < grid[r].length; c++) {
-        if (grid[r][c] == '.') {
-          int[][] copy = copyGrid(grid);
-          copy[r][c] = '#';
-          Walker w = new Walker(copy);
-          Set<Cell> visited = new HashSet<>();
-
-          do {
-            visited.add(w.cell());
-            if (w.hasLooped()) {
-              obstacles.add(new Cell(r, c));
-              break;
-            }
-          } while (w.move());
-        }
-      }
-    }
-    return String.valueOf(obstacles.size());
-  }
 
   private static int[][] copyGrid(int[][] grid) {
     int[][] copy = new int[grid.length][];
