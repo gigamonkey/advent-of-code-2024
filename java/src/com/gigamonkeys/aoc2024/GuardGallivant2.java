@@ -10,6 +10,7 @@ import static java.util.stream.IntStream.range;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -120,6 +121,43 @@ public class GuardGallivant2 implements Solution {
   }
 
   public String part2(Path input) throws IOException {
+    int[][] grid = characterGrid(input);
+
+    int cells = grid.length * grid[0].length;
+
+    Set<Cell> obstacles = new HashSet<>();
+
+    allCandidates(grid).forEach(cell -> {
+        int r = cell.row();
+        int c = cell.col();
+        int[][] copy = copyGrid(grid);
+        copy[r][c] = '#';
+        Walker w = new Walker(copy);
+        Set<Cell> visited = new HashSet<>();
+
+        do {
+          visited.add(w.cell());
+          if (w.hasLooped()) {
+            obstacles.add(new Cell(r, c));
+            break;
+          }
+        } while (w.move());
+      }
+    );
+    return String.valueOf(obstacles.size());
+  }
+
+  private Stream<Cell> allCandidates(int[][] grid) {
+    return range(0, grid.length)
+      .boxed()
+      .flatMap(r -> {
+          return range(0, grid[r].length).mapToObj(c -> new Cell(r, c));
+        })
+      .filter(c -> grid[c.row()][c.col()] == '.');
+  };
+
+
+  public String part2Bruteforce(Path input) throws IOException {
     int[][] grid = characterGrid(input);
 
     int cells = grid.length * grid[0].length;
