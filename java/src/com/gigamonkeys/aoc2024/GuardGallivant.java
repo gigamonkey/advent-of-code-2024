@@ -73,25 +73,25 @@ public class GuardGallivant implements Solution {
     int[][] grid = characterGrid(input);
     Cell start = findStart(grid);
     Foo p = new Foo(start, Direction.NORTH);
+
     Set<Foo> foos = new HashSet<>();
     Set<Cell> visited = new HashSet<>();
     Set<Cell> obstacles = new HashSet<>();
+
     while (p.cell().inBounds(grid)) {
 
-      // Previously occpupied cell
-      // Where we might place the obstacle
+      // Where we might place an obstacle
       Cell next = next(p);
 
       if (!next.equals(start)) {
-        // Looking to the right, can we see a cell that we've previously
-        // occupied moving in the same direction
-        Set<Foo> path = pathToRight(grid, p);
-        //System.out.println("%s - %s".formatted(p, path));
-        if (path.stream().anyMatch(foos::contains)) {
-          //System.out.println("Adding " + next);
+        // Looking to the right from where we are, can we see a cell that we've
+        // previously occupied moving in the same direction. If so, turning
+        // right now would cause us to enter a loop.
+
+        // Explore where we'd end up if we took a right turn now. This will
+        // either take us off the board or into a loop
+        if (loopToRight(grid, p, foos)) {
           obstacles.add(next);
-        } else {
-          //System.out.println("Not adding " + next);
         }
       }
       visited.add(p.cell());
@@ -146,20 +146,38 @@ public class GuardGallivant implements Solution {
     return new Foo(next(foo), foo.direction());
   }
 
-  private Set<Foo> pathToRight(int[][] grid, Foo foo) {
+  private Set<Foo> pathToRight(int[][] grid, Foo foo, Set<Foo> history) {
     // Current
     Cell cell = foo.cell();
     Direction d = foo.direction();
 
     Direction newD = d.rightTurn();
-    Set<Foo> foos = new HashSet<>();
+    Set<Foo> foos = new HashSet<>(history);
 
-    foo = nextFoo(new Foo(cell, newD));
-    while (foo.cell().inBounds(grid) && at(grid, foo.cell()) != '#') {
+    foo = new Foo(cell, newD);
+    while (foo.cell().inBounds(grid) && !foos.contains(foo)) {
       foos.add(foo);
-      foo = nextFoo(foo);
+      foo = move(grid, foo);
     }
     return foos;
+  }
+
+
+  private boolean loopToRight(int[][] grid, Foo foo, Set<Foo> history) {
+    // Current
+    Cell cell = foo.cell();
+    Direction d = foo.direction();
+
+    Direction newD = d.rightTurn();
+    Set<Foo> foos = new HashSet<>(history);
+
+    foo = new Foo(cell, newD);
+    while (true) {
+      if (!foo.cell().inBounds(grid)) return false;
+      if (foos.contains(foo)) return true;
+      foos.add(foo);
+      foo = move(grid, foo);
+    }
   }
 
 
