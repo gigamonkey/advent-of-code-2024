@@ -57,16 +57,13 @@ public class GuardGallivant2 implements Solution {
   private static class Walker {
 
     private final int[][] grid;
-    private int row;
-    private int col;
+    private Cell position;
 
     private Direction direction = Direction.NORTH;
 
     Walker(int[][] grid) {
       this.grid = grid;
-      Cell start = findStart();
-      this.row = start.row();
-      this.col = start.col();
+      this.position = findStart();
     }
 
     final Cell findStart() {
@@ -89,17 +86,16 @@ public class GuardGallivant2 implements Solution {
     }
 
     Cell cell() {
-      return new Cell(row, col);
+      return position;
     }
 
     private boolean move() {
-      Cell next = new Cell(row + direction.dr(), col + direction.dc());
+      Cell next = new Cell(position.row() + direction.dr(), position.col() + direction.dc());
       while (inBounds(next) && at(next) == '#') {
         direction = direction.rightTurn();
-        next = new Cell(row + direction.dr(), col + direction.dc());
+        next = new Cell(position.row() + direction.dr(), position.col() + direction.dc());
       }
-      row = next.row();
-      col = next.col();
+      position = next;
       return inBounds(next);
     }
   }
