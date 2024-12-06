@@ -1,5 +1,6 @@
 package com.gigamonkeys.aoc2024;
 
+import static java.lang.Integer.parseInt;
 import static java.nio.file.Files.lines;
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.*;
@@ -15,15 +16,17 @@ import java.util.Set;
 
 public class PrintQueue implements Solution {
 
+  private record Rule(Integer before, Integer after) {}
+
   public String part1(Path input) throws IOException {
-    var mustPreceed = mustPreceed(input);
-    var cmp = byOrderingRules(mustPreceed);
+    var rules = rules(input);
+    var cmp = byOrderingRules(rules);
     return String.valueOf(updates(input).stream().filter(u -> inOrder(u, cmp)).mapToInt(this::middle).sum());
   }
 
   public String part2(Path input) throws IOException {
-    var mustPreceed = mustPreceed(input);
-    var cmp = byOrderingRules(mustPreceed);
+    var rules = rules(input);
+    var cmp = byOrderingRules(rules);
     return String.valueOf(
       updates(input)
         .stream()
@@ -34,11 +37,8 @@ public class PrintQueue implements Solution {
     );
   }
 
-  private Comparator<Integer> byOrderingRules(Map<Integer, Set<Integer>> mustPreceed) {
-    return (a, b) ->
-      mustPreceed.getOrDefault(a, emptySet()).contains(b)
-        ? -1
-        : mustPreceed.getOrDefault(b, emptySet()).contains(a) ? 1 : 0;
+  private Comparator<Integer> byOrderingRules(Set<Rule> rules) {
+    return (a, b) -> rules.contains(new Rule(a, b)) ? -1 : rules.contains(new Rule(b, a)) ? 1 : 0;
   }
 
   private <T> boolean inOrder(List<T> list, Comparator<T> cmp) {
@@ -49,11 +49,12 @@ public class PrintQueue implements Solution {
     return list.get(list.size() / 2);
   }
 
-  private Map<Integer, Set<Integer>> mustPreceed(Path input) throws IOException {
+  private Set<Rule> rules(Path input) throws IOException {
     return lines(input)
       .filter(line -> line.matches("\\d+\\|\\d+"))
-      .map(line -> Arrays.stream(line.split("\\|")).map(Integer::valueOf).toList())
-      .collect(groupingBy(pair -> pair.get(0), mapping(pair -> pair.get(1), toSet())));
+      .map(line -> line.split("\\|"))
+      .map(pair -> new Rule(parseInt(pair[0]), parseInt(pair[1])))
+      .collect(toSet());
   }
 
   private List<List<Integer>> updates(Path input) throws IOException {
