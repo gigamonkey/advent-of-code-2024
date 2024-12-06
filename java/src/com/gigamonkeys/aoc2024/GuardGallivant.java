@@ -80,23 +80,20 @@ public class GuardGallivant implements Solution {
 
     while (p.cell().inBounds(grid)) {
 
-      // Where we might place an obstacle
-      Cell next = next(p);
-
-      if (!next.equals(start)) {
-        // Looking to the right from where we are, can we see a cell that we've
-        // previously occupied moving in the same direction. If so, turning
-        // right now would cause us to enter a loop.
-
-        // Explore where we'd end up if we took a right turn now. This will
-        // either take us off the board or into a loop
-        if (loopToRight(grid, p, foos)) {
-          obstacles.add(next);
-        }
-      }
       visited.add(p.cell());
       foos.add(p);
 
+      // Where we might place an obstacle
+      Cell next = next(p);
+      if (next.inBounds(grid) && !next.equals(start) && at(grid, next) != '#') {
+        // Explore where we'd end up if we took a right turn now from our
+        // current position. This will either take us off the board or into a
+        // loop.
+        if (isLoopToRight(grid, p, foos, next)) {
+          //System.out.println("Adding obstacle at " + next + " from " + p);
+          obstacles.add(next);
+        }
+      }
       p = move(grid, p);
     }
     return String.valueOf(obstacles.size());
@@ -124,6 +121,19 @@ public class GuardGallivant implements Solution {
     }
     return new Foo(next, d);
   }
+
+  private Foo move2(int[][] grid, Foo foo, Cell extra) {
+    Cell cell = foo.cell();
+    Direction d = foo.direction();
+    var next = next(foo);
+    if (next.inBounds(grid)) {
+      if (grid[next.r()][next.c()] == '#' || next.equals(extra)) {
+        return move(grid, new Foo(cell, d.rightTurn()));
+      }
+    }
+    return new Foo(next, d);
+  }
+
 
   private Cell next(Foo foo) {
     Cell cell = foo.cell();
@@ -163,25 +173,22 @@ public class GuardGallivant implements Solution {
   }
 
 
-  private boolean loopToRight(int[][] grid, Foo foo, Set<Foo> history) {
-    // Current
-    Cell cell = foo.cell();
-    Direction d = foo.direction();
+  private boolean isLoopToRight(int[][] grid, Foo foo, Set<Foo> history, Cell obstacle) {
 
-    Direction newD = d.rightTurn();
-    Set<Foo> foos = new HashSet<>(history);
+    Foo start = new Foo(foo.cell(), foo.direction().rightTurn());
+    //Set<Foo> foos = new HashSet<>(history);
+    Set<Foo> foos = new HashSet<>();
+    foos.add(foo);
 
-    foo = new Foo(cell, newD);
+    Foo current = move2(grid, start, obstacle);
     while (true) {
-      if (!foo.cell().inBounds(grid)) return false;
-      if (foos.contains(foo)) return true;
-      foos.add(foo);
-      foo = move(grid, foo);
+      if (!current.cell().inBounds(grid)) return false;
+      if (foos.contains(current)) {
+        //System.out.println("Found loop at " + current);
+        return true;
+      }
+      foos.add(current);
+      current = move2(grid, current, obstacle);
     }
   }
-
-
-
-
-
 }
