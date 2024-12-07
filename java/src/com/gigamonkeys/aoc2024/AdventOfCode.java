@@ -28,7 +28,7 @@ public class AdventOfCode {
     days.add(new CeresSearch());
     days.add(new PrintQueue());
     days.add(new GuardGallivant());
-    days.add(new Day07());
+    days.add(new BridgeRepair());
   }
 
   private Optional<Solution> number(int day) {
