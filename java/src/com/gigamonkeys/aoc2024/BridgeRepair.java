@@ -25,13 +25,20 @@ public class BridgeRepair implements Solution {
   }
 
   public String part1(Path input) throws IOException {
-    List<BinaryOperator<BigInteger>> ops = List.of(BigInteger::add, BigInteger::multiply);
-    return solve(input, list -> solutions(list, ops));
+    return solve(input, list -> solutions(list, List.of(BigInteger::add, BigInteger::multiply)));
   }
 
   public String part2(Path input) throws IOException {
-    List<BinaryOperator<BigInteger>> ops = List.of(BigInteger::add, BigInteger::multiply, BridgeRepair::concat);
-    return solve(input, list -> solutions(list, ops));
+    return solve(input, list -> solutions(list, List.of(BigInteger::add, BigInteger::multiply, BridgeRepair::concat)));
+  }
+
+  private String solve(Path input, Function<List<BigInteger>, Stream<BigInteger>> solutions) throws IOException {
+    return lines(input)
+      .map(this::parseLine)
+      .filter(eq -> eq.solveable(solutions))
+      .map(Equation::value)
+      .reduce(BigInteger.ZERO, BigInteger::add)
+      .toString();
   }
 
   private static Stream<BigInteger> solutions(List<BigInteger> numbers, List<BinaryOperator<BigInteger>> ops) {
@@ -54,15 +61,6 @@ public class BridgeRepair implements Solution {
 
   private static BigInteger concat(BigInteger a, BigInteger b) {
     return new BigInteger(a.toString() + b.toString());
-  }
-
-  private String solve(Path input, Function<List<BigInteger>, Stream<BigInteger>> solutions) throws IOException {
-    return lines(input)
-      .map(this::parseLine)
-      .filter(eq -> eq.solveable(solutions))
-      .map(Equation::value)
-      .reduce(BigInteger.ZERO, BigInteger::add)
-      .toString();
   }
 
   private Equation parseLine(String line) {
