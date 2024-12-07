@@ -149,12 +149,4 @@ public class GuardGallivant implements Solution {
     }
     return String.valueOf(obstacles.size());
   }
-
-  private static int[][] copyGrid(int[][] grid) {
-    int[][] copy = new int[grid.length][];
-    for (int i = 0; i < copy.length; i++) {
-      copy[i] = Arrays.copyOf(grid[i], grid[i].length);
-    }
-    return copy;
-  }
 }
