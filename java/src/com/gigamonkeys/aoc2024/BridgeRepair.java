@@ -10,21 +10,15 @@ import java.util.regex.*;
 
 public class BridgeRepair implements Solution {
 
-  private static final List<Op> ALL_OPS = List.of(
-    new Op(0, (a, b) -> a + b),
-    new Op(1, (a, b) -> a * b),
-    new Op(0, (a, b) -> Long.valueOf("" + a + b))
-  );
-
   private static final Pattern p = Pattern.compile("^(\\d+):\\s+(\\d+(\\s+\\d+)*)$");
 
-  record Equation(long value, List<Long> numbers) {}
+  private static final List<BinaryOperator<Long>> ALL_OPS = List.of(
+    (a, b) -> a + b,
+    (a, b) -> a * b,
+    (a, b) -> Long.valueOf("" + a + b)
+  );
 
-  record Op(long identity, BinaryOperator<Long> op) {
-    public Optional<Long> apply(Optional<Long> soFar, long next) {
-      return Optional.of(op.apply(soFar.orElse(identity), next));
-    }
-  }
+  record Equation(long value, List<Long> numbers) {}
 
   public String part1(Path input) throws IOException {
     return solve(input, ALL_OPS.subList(0, 2));
@@ -34,25 +28,29 @@ public class BridgeRepair implements Solution {
     return solve(input, ALL_OPS);
   }
 
-  private String solve(Path input, List<Op> ops) throws IOException {
+  private String solve(Path input, List<BinaryOperator<Long>> ops) throws IOException {
     return String.valueOf(
       lines(input)
         .map(this::parseLine)
-        .filter(eq -> check(eq.value(), eq.numbers(), Optional.empty(), ops))
+        .filter(eq -> {
+          var first = eq.numbers().get(0);
+          var rest = eq.numbers().subList(1, eq.numbers().size());
+          return check(eq.value(), first, rest, ops);
+        })
         .mapToLong(Equation::value)
         .sum()
     );
   }
 
-  private boolean check(long value, List<Long> nums, Optional<Long> soFar, List<Op> ops) {
+  private boolean check(long value, long soFar, List<Long> nums, List<BinaryOperator<Long>> ops) {
     if (nums.size() == 0) {
-      return soFar.map(n -> n == value).orElse(false);
+      return soFar == value;
     } else {
       var rest = nums.subList(1, nums.size());
       return ops
         .stream()
         .anyMatch(op -> {
-          return check(value, rest, op.apply(soFar, nums.get(0)), ops);
+          return check(value, op.apply(soFar, nums.get(0)), rest, ops);
         });
     }
   }
