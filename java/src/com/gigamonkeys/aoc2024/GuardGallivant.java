@@ -107,10 +107,10 @@ public class GuardGallivant implements Solution {
     boolean move() {
       previous = new Visit(position, direction);
       path.add(previous);
-      Cell next = new Cell(position.row() + direction.dr(), position.col() + direction.dc());
-      while (next.inBounds(grid) && (at(next) == '#' || obstacle.map(next::equals).orElse(false))) {
+      Cell next = next();
+      while (next.inBounds(grid) && isObstacle(next)) {
         direction = direction.rightTurn();
-        next = new Cell(position.row() + direction.dr(), position.col() + direction.dc());
+        next = next();
       }
       position = next;
       Visit nextVisit = new Visit(position, direction);
@@ -120,6 +120,10 @@ public class GuardGallivant implements Solution {
         //System.out.println("Noted loop at %s from %s".formatted(next, previous));
       }
       return position.inBounds(grid);
+    }
+
+    boolean isObstacle(Cell next) {
+      return at(next) == '#' || obstacle.map(next::equals).orElse(false);
     }
 
     Cell next() {
