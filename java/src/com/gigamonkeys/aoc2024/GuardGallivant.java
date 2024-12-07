@@ -106,9 +106,11 @@ public class GuardGallivant implements Solution {
       return new Cell(position.row() + direction.rowChange(), position.col() + direction.columnChange());
     }
 
-    boolean hasLooped() {
+    boolean causesLoop() {
+      while (!hasLooped && move()) {}
       return hasLooped;
     }
+
   }
 
   public String part1(Path input) throws IOException {
@@ -137,7 +139,7 @@ public class GuardGallivant implements Solution {
     while (cell.inBounds(grid)) {
       if (main.at(cell) == '.' && !considered.contains(cell)) {
         considered.add(cell);
-        if (causesLoop(main.copyWithObstacle())) {
+        if (main.copyWithObstacle().causesLoop()) {
           obstacles.add(cell);
         }
       }
@@ -146,11 +148,6 @@ public class GuardGallivant implements Solution {
       cell = main.position();
     }
     return String.valueOf(obstacles.size());
-  }
-
-  private boolean causesLoop(Walker w) {
-    while (!w.hasLooped() && w.move()) {}
-    return w.hasLooped();
   }
 
   private static int[][] copyGrid(int[][] grid) {
