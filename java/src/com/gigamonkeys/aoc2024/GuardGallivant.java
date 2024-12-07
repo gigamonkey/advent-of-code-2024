@@ -131,24 +131,22 @@ public class GuardGallivant implements Solution {
   public String part2(Path input) throws IOException {
     int[][] grid = characterGrid(input);
 
-    Set<Cell> obstacles = new HashSet<>();
-    Set<Cell> considered = new HashSet<>();
-
     Walker main = new Walker(grid);
+    Set<Cell> considered = new HashSet<>();
+    int obstacles = 0;
 
-    int count = 0;
     Cell cell = main.position();
     while (cell.inBounds(grid)) {
       if (main.at(cell) == '.' && !considered.contains(cell)) {
         considered.add(cell);
         if (main.copyWithObstacle().causesLoop()) {
-          obstacles.add(cell);
+          obstacles++;
         }
       }
 
       main.move();
       cell = main.position();
     }
-    return String.valueOf(obstacles.size());
+    return String.valueOf(obstacles);
   }
 }
