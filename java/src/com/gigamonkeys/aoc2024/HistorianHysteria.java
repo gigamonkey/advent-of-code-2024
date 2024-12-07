@@ -3,14 +3,13 @@ package com.gigamonkeys.aoc2024;
 import static com.gigamonkeys.aoc2024.Util.columns;
 import static java.lang.Math.*;
 import static java.util.stream.Collectors.*;
-import static java.util.stream.IntStream.range;
+import static java.util.stream.IntStream.*;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class HistorianHysteria implements Solution {
 

@@ -1,21 +1,13 @@
 package com.gigamonkeys.aoc2024;
 
-import static com.gigamonkeys.aoc2024.Util.*;
-import static java.lang.Integer.parseInt;
-import static java.nio.file.Files.lines;
-import static java.util.Collections.emptySet;
-import static java.util.stream.Collectors.*;
-import static java.util.stream.IntStream.range;
+import static com.gigamonkeys.aoc2024.Util.characterGrid;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.*;
 
 public class GuardGallivant implements Solution {
 

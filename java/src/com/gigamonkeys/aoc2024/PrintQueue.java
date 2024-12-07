@@ -1,17 +1,15 @@
 package com.gigamonkeys.aoc2024;
 
-import static java.lang.Integer.parseInt;
-import static java.nio.file.Files.lines;
-import static java.util.Collections.emptySet;
+import static java.lang.Integer.*;
+import static java.nio.file.Files.*;
 import static java.util.stream.Collectors.*;
-import static java.util.stream.IntStream.range;
+import static java.util.stream.IntStream.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class PrintQueue implements Solution {

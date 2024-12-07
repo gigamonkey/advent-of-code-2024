@@ -1,15 +1,9 @@
 package com.gigamonkeys.aoc2024;
 
 import static com.gigamonkeys.aoc2024.Util.*;
-import static java.lang.Integer.*;
-import static java.nio.file.Files.lines;
-import static java.util.regex.Pattern.compile;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.regex.MatchResult;
-import java.util.regex.Pattern;
 
 public class CeresSearch implements Solution {
 

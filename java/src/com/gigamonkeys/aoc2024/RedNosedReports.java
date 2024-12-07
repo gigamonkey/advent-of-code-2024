@@ -6,7 +6,7 @@ import static java.util.Arrays.*;
 import static java.util.stream.IntStream.*;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.IntPredicate;
 

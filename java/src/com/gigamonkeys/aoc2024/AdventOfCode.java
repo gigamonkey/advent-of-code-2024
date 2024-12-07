@@ -1,14 +1,15 @@
 package com.gigamonkeys.aoc2024;
 
-import static java.nio.file.Files.exists;
-import static java.nio.file.Files.lines;
-import static java.nio.file.Files.readString;
-import static java.time.temporal.ChronoUnit.DAYS;
+import static java.nio.file.Files.*;
+import static java.time.temporal.ChronoUnit.*;
 
 import java.io.IOException;
-import java.nio.file.*;
-import java.time.*;
-import java.util.*;
+import java.nio.file.Path;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class AdventOfCode {
 
