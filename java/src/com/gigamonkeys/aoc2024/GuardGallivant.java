@@ -59,7 +59,6 @@ public class GuardGallivant implements Solution {
       this.direction = direction;
       this.extraObstacle = Optional.ofNullable(extraObstacle);
       this.path = path;
-      this.path.add(new Visit(position, direction));
     }
 
     static Cell findStart(int[][] grid) {
@@ -88,9 +87,7 @@ public class GuardGallivant implements Solution {
     }
 
     Walker copyWithObstacle() {
-      var newPath = new HashSet<>(path);
-      newPath.remove(new Visit(position, direction));
-      return new Walker(grid, previous.cell(), previous.direction(), newPath, position);
+      return new Walker(grid, previous.cell(), previous.direction(), new HashSet<>(path), position);
     }
 
     Cell position() {
