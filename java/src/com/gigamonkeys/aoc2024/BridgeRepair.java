@@ -24,7 +24,6 @@ public class BridgeRepair implements Solution {
       var rest = numbers.subList(1, numbers.size());
       return BridgeRepair.check(value, first, rest, ops);
     }
-
   }
 
   public String part1(Path input) throws IOException {
@@ -46,11 +45,7 @@ public class BridgeRepair implements Solution {
       return soFar == value;
     } else {
       var rest = nums.subList(1, nums.size());
-      return ops
-        .stream()
-        .anyMatch(op -> {
-          return check(value, op.apply(soFar, nums.get(0)), rest, ops);
-        });
+      return ops.stream().anyMatch(op -> check(value, op.apply(soFar, nums.get(0)), rest, ops));
     }
   }
 
