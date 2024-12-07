@@ -25,11 +25,11 @@ public class GuardGallivant implements Solution {
     SOUTH,
     WEST;
 
-    public int dr() {
+    public int rowChange() {
       return 1 - Math.abs(ordinal() - 2);
     }
 
-    public int dc() {
+    public int columnChange() {
       return 1 - Math.abs(1 - ordinal());
     }
 
@@ -49,43 +49,28 @@ public class GuardGallivant implements Solution {
   private static class Walker {
 
     private final int[][] grid;
-    private final Optional<Cell> obstacle;
+    private final Optional<Cell> extraObstacle;
+    private final Set<Visit> path;
 
     private Cell position;
-    private Set<Visit> path = new HashSet<>();
-    private boolean hasLooped = false;
+    private Direction direction;
     private Visit previous = null;
-
-    private Direction direction = Direction.NORTH;
+    private boolean hasLooped = false;
 
     Walker(int[][] grid) {
-      this(grid, Optional.empty());
+      this(grid, findStart(grid), Direction.NORTH, new HashSet<>(), null);
     }
 
-    Walker(int[][] grid, Optional<Cell> obstacle) {
+    Walker(int[][] grid, Cell position, Direction direction, Set<Visit> path, Cell extraObstacle) {
       this.grid = grid;
-      this.obstacle = obstacle;
-      this.position = findStart();
-      path.add(new Visit(position, direction));
-    }
-
-    Walker(int[][] grid, Cell start, Direction d, Set<Visit> path, Cell obstacle) {
-      this.grid = grid;
-      this.obstacle = Optional.of(obstacle);
-      this.position = start;
-      this.direction = d;
+      this.position = position;
+      this.direction = direction;
+      this.extraObstacle = Optional.ofNullable(extraObstacle);
       this.path = path;
-      path.add(new Visit(start, d));
+      this.path.add(new Visit(position, direction));
     }
 
-    Walker copyWithObstacle() {
-      //System.out.println("position: %s, %s; previous: %s".formatted(position, direction, previous));
-      Set<Visit> newPath = new HashSet<>(path);
-      newPath.remove(new Visit(position, direction));
-      return new Walker(grid, previous.cell(), previous.direction(), newPath, position);
-    }
-
-    final Cell findStart() {
+    static Cell findStart(int[][] grid) {
       for (int r = 0; r < grid.length; r++) {
         for (int c = 0; c < grid[r].length; c++) {
           if (grid[r][c] == '^') {
@@ -96,6 +81,26 @@ public class GuardGallivant implements Solution {
       throw new RuntimeException("wat! no guard!!!");
     }
 
+    boolean move() {
+      previous = new Visit(position, direction);
+      path.add(previous);
+
+      var next = next();
+      while (next.inBounds(grid) && isObstacle(next)) {
+        direction = direction.rightTurn();
+        next = next();
+      }
+      position = next;
+      hasLooped |= path.contains(new Visit(position, direction));
+      return position.inBounds(grid);
+    }
+
+    Walker copyWithObstacle() {
+      var newPath = new HashSet<>(path);
+      newPath.remove(new Visit(position, direction));
+      return new Walker(grid, previous.cell(), previous.direction(), newPath, position);
+    }
+
     Cell position() {
       return position;
     }
@@ -104,30 +109,12 @@ public class GuardGallivant implements Solution {
       return grid[c.row()][c.col()];
     }
 
-    boolean move() {
-      previous = new Visit(position, direction);
-      path.add(previous);
-      Cell next = next();
-      while (next.inBounds(grid) && isObstacle(next)) {
-        direction = direction.rightTurn();
-        next = next();
-      }
-      position = next;
-      Visit nextVisit = new Visit(position, direction);
-      boolean wasLooped = hasLooped;
-      hasLooped |= path.contains(nextVisit);
-      if (!wasLooped && hasLooped) {
-        //System.out.println("Noted loop at %s from %s".formatted(next, previous));
-      }
-      return position.inBounds(grid);
-    }
-
     boolean isObstacle(Cell next) {
-      return at(next) == '#' || obstacle.map(next::equals).orElse(false);
+      return at(next) == '#' || extraObstacle.map(next::equals).orElse(false);
     }
 
     Cell next() {
-      return new Cell(position.row() + direction.dr(), position.col() + direction.dc());
+      return new Cell(position.row() + direction.rowChange(), position.col() + direction.columnChange());
     }
 
     boolean hasLooped() {
@@ -152,16 +139,16 @@ public class GuardGallivant implements Solution {
     int[][] grid = characterGrid(input);
 
     Set<Cell> obstacles = new HashSet<>();
+    Set<Cell> considered = new HashSet<>();
 
     Walker main = new Walker(grid);
 
     int count = 0;
     Cell cell = main.position();
     while (cell.inBounds(grid)) {
-      if (main.at(cell) == '.' ) {
-        count++;
-        Walker w = new Walker(grid, Optional.of(cell));
-        //Walker w = main.copyWithObstacle();
+      if (main.at(cell) == '.' && !considered.contains(cell)) {
+        considered.add(cell);
+        Walker w = main.copyWithObstacle();
         do {
           if (w.hasLooped()) {
             obstacles.add(cell);
@@ -173,7 +160,6 @@ public class GuardGallivant implements Solution {
       main.move();
       cell = main.position();
     }
-    System.out.println("count: %d".formatted(count));
     return String.valueOf(obstacles.size());
   }
 
