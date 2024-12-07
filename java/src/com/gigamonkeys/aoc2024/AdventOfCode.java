@@ -46,14 +46,14 @@ public class AdventOfCode {
     if (expected.isPresent()) {
       long start = System.nanoTime();
       String result = result(s, day, part, test);
-      double elapsed = (System.nanoTime() - start) / 1e9;
+      long elapsed = Math.round((System.nanoTime() - start) / 1e6);
       var e = expected.get();
       if (e.equals(result)) {
-        System.out.printf("✅ Day %d, part %d (%s): %s (%f seconds)%n", day, part, label, result, elapsed);
+        System.out.printf("✅ Day %d, part %d (%s): %s (%d ms)%n", day, part, label, result, elapsed);
         return true;
       } else {
         System.out.printf(
-          "❌ Day %d, part %d (%s): %s. Expected: %s (%f seconds)%n",
+          "❌ Day %d, part %d (%s): %s. Expected: %s (%d ms)%n",
           day,
           part,
           label,
