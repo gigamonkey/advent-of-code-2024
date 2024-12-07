@@ -37,7 +37,7 @@ public class BridgeRepair implements Solution {
 
   private String solve(Path input, List<BinaryOperator<Long>> ops) throws IOException {
     return String.valueOf(
-      lines(input).map(this::parseLine).filter(eq -> eq.check(ops)).mapToLong(Equation::value).sum()
+      lines(input).parallel().map(this::parseLine).filter(eq -> eq.check(ops)).mapToLong(Equation::value).sum()
     );
   }
 
