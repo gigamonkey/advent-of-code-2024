@@ -1,10 +1,11 @@
 package com.gigamonkeys.aoc2024;
 
 import static java.nio.file.Files.lines;
+import static java.util.Arrays.stream;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.regex.Pattern;
 
@@ -54,7 +55,7 @@ public class BridgeRepair implements Solution {
     if (m.matches()) {
       return new Equation(
         Long.valueOf(m.group(1)),
-        Arrays.stream(m.group(2).split("\\s+")).map(Long::valueOf).toList()
+        stream(m.group(2).split("\\s+")).map(Long::valueOf).toList()
       );
     } else {
       throw new RuntimeException("Bad line: '%s'".formatted(line));
