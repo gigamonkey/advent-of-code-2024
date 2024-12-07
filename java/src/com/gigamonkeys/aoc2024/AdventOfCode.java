@@ -52,7 +52,15 @@ public class AdventOfCode {
         System.out.printf("✅ Day %d, part %d (%s): %s (%f seconds)%n", day, part, label, result, elapsed);
         return true;
       } else {
-        System.out.printf("❌ Day %d, part %d (%s): %s. Expected: %s (%f seconds)%n", day, part, label, result, e, elapsed);
+        System.out.printf(
+          "❌ Day %d, part %d (%s): %s. Expected: %s (%f seconds)%n",
+          day,
+          part,
+          label,
+          result,
+          e,
+          elapsed
+        );
       }
     } else {
       System.out.printf("🟡 Day %d, part %d (%s): no expected value yet.%n", day, part, label);

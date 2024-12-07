@@ -113,7 +113,6 @@ public class GuardGallivant implements Solution {
       }
       return hasLooped;
     }
-
   }
 
   public String part1(Path input) throws IOException {
