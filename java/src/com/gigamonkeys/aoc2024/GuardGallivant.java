@@ -140,19 +140,22 @@ public class GuardGallivant implements Solution {
     while (cell.inBounds(grid)) {
       if (main.at(cell) == '.' && !considered.contains(cell)) {
         considered.add(cell);
-        Walker w = main.copyWithObstacle();
-        do {
-          if (w.hasLooped()) {
-            obstacles.add(cell);
-            break;
-          }
-        } while (w.move());
+        if (goodObstacle(main.copyWithObstacle())) {
+          obstacles.add(cell);
+        }
       }
 
       main.move();
       cell = main.position();
     }
     return String.valueOf(obstacles.size());
+  }
+
+  private boolean goodObstacle(Walker w) {
+    do {
+      if (w.hasLooped()) return true;
+    } while (w.move());
+    return false;
   }
 
   private static int[][] copyGrid(int[][] grid) {
