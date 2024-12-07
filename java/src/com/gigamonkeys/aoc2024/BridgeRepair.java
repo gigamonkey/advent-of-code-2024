@@ -18,7 +18,14 @@ public class BridgeRepair implements Solution {
     (a, b) -> Long.valueOf("" + a + b)
   );
 
-  record Equation(long value, List<Long> numbers) {}
+  record Equation(long value, List<Long> numbers) {
+    boolean check(List<BinaryOperator<Long>> ops) {
+      var first = numbers.get(0);
+      var rest = numbers.subList(1, numbers.size());
+      return BridgeRepair.check(value, first, rest, ops);
+    }
+
+  }
 
   public String part1(Path input) throws IOException {
     return solve(input, ALL_OPS.subList(0, 2));
@@ -30,19 +37,11 @@ public class BridgeRepair implements Solution {
 
   private String solve(Path input, List<BinaryOperator<Long>> ops) throws IOException {
     return String.valueOf(
-      lines(input)
-        .map(this::parseLine)
-        .filter(eq -> {
-          var first = eq.numbers().get(0);
-          var rest = eq.numbers().subList(1, eq.numbers().size());
-          return check(eq.value(), first, rest, ops);
-        })
-        .mapToLong(Equation::value)
-        .sum()
+      lines(input).map(this::parseLine).filter(eq -> eq.check(ops)).mapToLong(Equation::value).sum()
     );
   }
 
-  private boolean check(long value, long soFar, List<Long> nums, List<BinaryOperator<Long>> ops) {
+  private static boolean check(long value, long soFar, List<Long> nums, List<BinaryOperator<Long>> ops) {
     if (nums.size() == 0) {
       return soFar == value;
     } else {
