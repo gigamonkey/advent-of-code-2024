@@ -72,7 +72,7 @@ public class GuardGallivant implements Solution {
       throw new RuntimeException("wat! no guard!!!");
     }
 
-    boolean move() {
+    void move() {
       previous = new Visit(position, direction);
       path.add(previous);
 
@@ -83,7 +83,6 @@ public class GuardGallivant implements Solution {
       }
       position = next;
       hasLooped |= path.contains(new Visit(position, direction));
-      return position.inBounds(grid);
     }
 
     Walker copyWithObstacle() {
@@ -107,7 +106,9 @@ public class GuardGallivant implements Solution {
     }
 
     boolean causesLoop() {
-      while (!hasLooped && move()) {}
+      while (!hasLooped && position.inBounds(grid)) {
+        move();
+      }
       return hasLooped;
     }
 
@@ -121,7 +122,8 @@ public class GuardGallivant implements Solution {
 
     do {
       visited.add(w.position());
-    } while (w.move());
+      w.move();
+    } while (w.position().inBounds(grid));
 
     return String.valueOf(visited.size());
   }
