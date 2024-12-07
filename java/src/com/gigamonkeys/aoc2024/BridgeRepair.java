@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.BinaryOperator;
-import java.util.regex.*;
+import java.util.regex.Pattern;
 
 public class BridgeRepair implements Solution {
 
@@ -50,7 +50,7 @@ public class BridgeRepair implements Solution {
   }
 
   private Equation parseLine(String line) {
-    Matcher m = p.matcher(line);
+    var m = p.matcher(line);
     if (m.matches()) {
       return new Equation(
         Long.valueOf(m.group(1)),
