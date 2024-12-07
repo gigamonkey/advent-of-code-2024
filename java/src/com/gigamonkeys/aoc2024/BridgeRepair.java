@@ -19,23 +19,23 @@ public class BridgeRepair implements Solution {
   Pattern p = Pattern.compile("^(\\d+):\\s+(\\d+(\\s+\\d+)*)$");
 
   record Equation(BigInteger value, List<BigInteger> numbers) {
-    boolean solveable(Function<List<BigInteger>, Stream<BigInteger>> solutions) {
-      return solutions.apply(numbers).anyMatch(n -> n.equals(value));
+    boolean solveable(List<BinaryOperator<BigInteger>> ops) {
+      return solutions(numbers, ops).anyMatch(value::equals);
     }
   }
 
   public String part1(Path input) throws IOException {
-    return solve(input, list -> solutions(list, List.of(BigInteger::add, BigInteger::multiply)));
+    return solve(input, List.of(BigInteger::add, BigInteger::multiply));
   }
 
   public String part2(Path input) throws IOException {
-    return solve(input, list -> solutions(list, List.of(BigInteger::add, BigInteger::multiply, BridgeRepair::concat)));
+    return solve(input, List.of(BigInteger::add, BigInteger::multiply, BridgeRepair::concat));
   }
 
-  private String solve(Path input, Function<List<BigInteger>, Stream<BigInteger>> solutions) throws IOException {
+  private String solve(Path input, List<BinaryOperator<BigInteger>> ops) throws IOException {
     return lines(input)
       .map(this::parseLine)
-      .filter(eq -> eq.solveable(solutions))
+      .filter(eq -> eq.solveable(ops))
       .map(Equation::value)
       .reduce(BigInteger.ZERO, BigInteger::add)
       .toString();
