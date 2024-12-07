@@ -4,6 +4,9 @@ MAIN_CLASS	:= com.gigamonkeys.aoc2024.AdventOfCode
 sources = $(shell ls src/**/*.java)
 run = java -cp classes $(MAIN_CLASS)
 
+#foo: build
+#	java -cp classes com.gigamonkeys.aoc2024.BridgeRepair
+
 today: build
 	$(run)
 
