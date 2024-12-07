@@ -24,48 +24,36 @@ public class BridgeRepair implements Solution {
     }
   }
 
-  static Stream<BigInteger> solutions(List<BigInteger> numbers) {
+  public String part1(Path input) throws IOException {
+    List<BinaryOperator<BigInteger>> ops = List.of(BigInteger::add, BigInteger::multiply);
+    return solve(input, list -> solutions(list, ops));
+  }
+
+  public String part2(Path input) throws IOException {
+    List<BinaryOperator<BigInteger>> ops = List.of(BigInteger::add, BigInteger::multiply, BridgeRepair::concat);
+    return solve(input, list -> solutions(list, ops));
+  }
+
+  private static Stream<BigInteger> solutions(List<BigInteger> numbers, List<BinaryOperator<BigInteger>> ops) {
     var first = numbers.getFirst();
     if (numbers.size() == 1) {
       return Stream.of(first);
     } else {
       var second = numbers.get(1);
       var rest = numbers.subList(2, numbers.size());
-      return Stream.concat(solutions(cons(first.add(second), rest)), solutions(cons(first.multiply(second), rest)));
+      return ops.stream().flatMap(op -> solutions(cons(op.apply(first, second), rest), ops));
     }
   }
 
-  static Stream<BigInteger> solutions2(List<BigInteger> numbers) {
-    BigInteger first = numbers.getFirst();
-    if (numbers.size() == 1) {
-      return Stream.of(first);
-    } else {
-      BigInteger second = numbers.get(1);
-      List<BigInteger> rest = numbers.subList(2, numbers.size());
-      return Stream.concat(
-        Stream.concat(solutions2(cons(first.add(second), rest)), solutions2(cons(first.multiply(second), rest))),
-        solutions2(cons(concat(first, second), rest))
-      );
-    }
-  }
-
-  static <T> List<T> cons(T first, List<T> rest) {
+  private static <T> List<T> cons(T first, List<T> rest) {
     List<T> foo = new ArrayList<>();
     foo.add(first);
     foo.addAll(rest);
     return foo;
   }
 
-  static BigInteger concat(BigInteger a, BigInteger b) {
+  private static BigInteger concat(BigInteger a, BigInteger b) {
     return new BigInteger(a.toString() + b.toString());
-  }
-
-  public String part1(Path input) throws IOException {
-    return solve(input, BridgeRepair::solutions);
-  }
-
-  public String part2(Path input) throws IOException {
-    return solve(input, BridgeRepair::solutions2);
   }
 
   private String solve(Path input, Function<List<BigInteger>, Stream<BigInteger>> solutions) throws IOException {
@@ -87,9 +75,5 @@ public class BridgeRepair implements Solution {
     } else {
       throw new RuntimeException("Bad line: '%s'".formatted(line));
     }
-  }
-
-  public static void main(String[] args) {
-    //solutions(List.of(30, 20, 10)).forEach(System.out::println);
   }
 }
