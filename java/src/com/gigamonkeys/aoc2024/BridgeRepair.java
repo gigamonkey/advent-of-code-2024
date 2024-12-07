@@ -20,8 +20,12 @@ public class BridgeRepair implements Solution {
   record Equation(BigInteger value, List<BigInteger> numbers) {
 
     boolean solveable() {
-      return solutions(numbers.reversed()).anyMatch(n -> n.equals(value));
+      return solutions(numbers).anyMatch(n -> n.equals(value));
     }
+    boolean solveable2() {
+      return solutions2(numbers).anyMatch(n -> n.equals(value));
+    }
+
   }
 
   static Stream<BigInteger> solutions(List<BigInteger> numbers) {
@@ -29,11 +33,32 @@ public class BridgeRepair implements Solution {
       if (numbers.size() == 1) {
         return Stream.of(first);
       } else {
-        var rest = numbers.subList(1, numbers.size());
+        var second = numbers.get(1);
+        var rest = numbers.subList(2, numbers.size());
         return Stream.concat(
-          solutions(rest).map(s -> first.add(s)),
-          solutions(rest).map(s -> first.multiply(s)));
+          solutions(Stream.concat(Stream.of(first.add(second)), rest.stream()).toList()),
+          solutions(Stream.concat(Stream.of(first.multiply(second)), rest.stream()).toList()));
       }
+  }
+
+  static Stream<BigInteger> solutions2(List<BigInteger> numbers) {
+      var first = numbers.getFirst();
+      if (numbers.size() == 1) {
+        return Stream.of(first);
+      } else {
+        var second = numbers.get(1);
+        var rest = numbers.subList(2, numbers.size());
+        return
+          Stream.concat(
+            Stream.concat(
+              solutions2(Stream.concat(Stream.of(first.add(second)), rest.stream()).toList()),
+              solutions2(Stream.concat(Stream.of(first.multiply(second)), rest.stream()).toList())),
+            solutions2(Stream.concat(Stream.of(concat(first, second)), rest.stream()).toList()));
+      }
+  }
+
+  static BigInteger concat(BigInteger a, BigInteger b) {
+    return new BigInteger(a.toString() + b.toString());
   }
 
   public String part1(Path input) throws IOException {
@@ -48,7 +73,14 @@ public class BridgeRepair implements Solution {
   }
 
   public String part2(Path input) throws IOException {
-    return String.valueOf("nyi");
+    List<Equation> equations = lines(input).map(this::parseLine).toList();
+    var sum = equations
+      .stream()
+      .filter(eq -> eq.solveable2())
+      .map(Equation::value)
+      .reduce(BigInteger.ZERO, BigInteger::add);
+
+    return String.valueOf(sum);
   }
 
 
