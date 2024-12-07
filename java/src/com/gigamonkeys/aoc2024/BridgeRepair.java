@@ -1,18 +1,14 @@
 package com.gigamonkeys.aoc2024;
 
-import static com.gigamonkeys.aoc2024.Util.*;
-import static java.lang.Integer.parseInt;
-import static java.nio.file.Files.exists;
-import static java.nio.file.Files.lines;
-import static java.nio.file.Files.readString;
+import static java.nio.file.Files.*;
 
-import java.io.*;
+import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.file.*;
+import java.nio.file.Path;
 import java.util.*;
-import java.util.function.*;
+import java.util.function.BinaryOperator;
 import java.util.regex.*;
-import java.util.stream.*;
+import java.util.stream.Stream;
 
 public class BridgeRepair implements Solution {
 
@@ -42,10 +38,10 @@ public class BridgeRepair implements Solution {
   }
 
   private static Stream<BigInteger> solutions(List<BigInteger> numbers, List<BinaryOperator<BigInteger>> ops) {
-    var first = numbers.getFirst();
     if (numbers.size() == 1) {
-      return Stream.of(first);
+      return numbers.stream();
     } else {
+      var first = numbers.get(0);
       var second = numbers.get(1);
       var rest = numbers.subList(2, numbers.size());
       return ops.stream().flatMap(op -> solutions(cons(op.apply(first, second), rest), ops));
