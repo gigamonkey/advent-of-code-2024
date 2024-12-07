@@ -46,6 +46,7 @@ public class GuardGallivant implements Solution {
 
     private Cell position;
     private Direction direction;
+    private Visit current;
     private Visit previous = null;
     private boolean hasLooped = false;
 
@@ -59,6 +60,8 @@ public class GuardGallivant implements Solution {
       this.direction = direction;
       this.extraObstacle = Optional.ofNullable(extraObstacle);
       this.path = path;
+      this.current = new Visit(position, direction);
+      path.add(current);
     }
 
     static Cell findStart(int[][] grid) {
@@ -73,16 +76,15 @@ public class GuardGallivant implements Solution {
     }
 
     void move() {
-      previous = new Visit(position, direction);
-      path.add(previous);
-
       var next = next();
       while (next.inBounds(grid) && isObstacle(next)) {
         direction = direction.rightTurn();
         next = next();
       }
       position = next;
-      hasLooped |= path.contains(new Visit(position, direction));
+      previous = current;
+      current = new Visit(position, direction);
+      hasLooped |= !path.add(current);
     }
 
     Walker copyWithObstacle() {
