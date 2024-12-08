@@ -16,7 +16,7 @@ public class BridgeRepair implements Solution {
   private static final List<BinaryOperator<Long>> ALL_OPS = List.of(
     (a, b) -> a + b,
     (a, b) -> a * b,
-    (a, b) -> Long.valueOf("" + a + b)
+    (a, b) -> Long.parseLong("" + a + b)
   );
 
   record Equation(long value, List<Long> numbers) {
@@ -53,7 +53,7 @@ public class BridgeRepair implements Solution {
   private Equation parseLine(String line) {
     var m = p.matcher(line);
     if (m.matches()) {
-      return new Equation(Long.valueOf(m.group(1)), stream(m.group(2).split("\\s+")).map(Long::valueOf).toList());
+      return new Equation(Long.parseLong(m.group(1)), stream(m.group(2).split("\\s+")).map(Long::valueOf).toList());
     } else {
       throw new RuntimeException("Bad line: '%s'".formatted(line));
     }
