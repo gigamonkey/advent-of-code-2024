@@ -28,12 +28,14 @@ public class ResonantCollinearity implements Solution {
 
   private String solve(Path input, int start, int max) throws IOException {
     int[][] grid = characterGrid(input);
-    var antenna = findAntenna(grid);
-    Set<Cell> antinodes = new HashSet<>();
-    for (List<Antenna> list : antenna.values()) {
-      antinodes.addAll(antinodes(grid, list, start, max));
-    }
-    return String.valueOf(antinodes.size());
+    return String.valueOf(
+      findAntenna(grid)
+        .values()
+        .stream()
+        .flatMap(list -> antinodes(grid, list, start, max).stream())
+        .collect(toSet())
+        .size()
+    );
   }
 
   private Map<Integer, List<Antenna>> findAntenna(int[][] grid) {
