@@ -14,28 +14,56 @@ import java.util.stream.*;
 
 public class ResonantCollinearity implements Solution {
 
-  record Cell(int row, int column) {}
+  record Cell(int row, int column) {
+    boolean inBounds(int[][] grid) {
+      return 0 <= row && row < grid.length && 0 <= column && column < grid[0].length;
+    }
+    Cell step(Direction d, int steps) {
+      return new Cell(row + (steps * d.dr()), column + (steps * d.dc()));
+    }
+    Direction to(Cell other) {
+      return new Direction(other.row - row, other.column - column);
+    }
+  }
+
+  record Direction(int dr, int dc) {
+    Direction normalize() {
+      var gcd = gcd(Math.abs(dr), Math.abs(dc));
+      return new Direction(dr / gcd, dc / gcd);
+    }
+  }
 
   record Antenna(Cell cell, int what) {}
 
+
+
   public String part1(Path input) throws IOException {
-    return solve(input, 2, 2);
+    return solve(input, 2, 2, false);
   }
 
   public String part2(Path input) throws IOException {
-    return solve(input, 1, Integer.MAX_VALUE);
+    return solve(input, 1, Integer.MAX_VALUE, true);
   }
 
-  private String solve(Path input, int start, int max) throws IOException {
+  private String solve(Path input, int start, int max, boolean normalize) throws IOException {
     int[][] grid = characterGrid(input);
     return String.valueOf(
       findAntenna(grid)
         .values()
         .stream()
-        .flatMap(list -> antinodes(grid, list, start, max).stream())
+      .flatMap(list -> antinodes(grid, list, start, max, normalize).stream())
         .collect(toSet())
         .size()
     );
+  }
+
+  private static int gcd(int a, int b) {
+    var r = Math.floorMod(a, b);
+    if (r != 0) {
+      return gcd(b, r);
+    } else {
+      return b;
+    }
   }
 
   private Map<Integer, List<Antenna>> findAntenna(int[][] grid) {
@@ -49,30 +77,23 @@ public class ResonantCollinearity implements Solution {
       .collect(groupingBy(Antenna::what));
   }
 
-  private List<Cell> antinodes(int[][] grid, List<Antenna> antenna, int start, int max) {
+  private List<Cell> antinodes(int[][] grid, List<Antenna> antenna, int start, int max, boolean normalize) {
     List<Cell> antinodes = new ArrayList<>();
     for (Antenna a1 : antenna) {
       for (Antenna a2 : antenna) {
         if (a1 != a2) {
-          var cell1 = a1.cell();
-          var cell2 = a2.cell();
-          int r = cell1.row();
-          int c = cell1.column();
-          int dr = cell2.row() - cell1.row();
-          int dc = cell2.column() - cell1.column();
+          Direction d = a1.cell().to(a2.cell());
+          if (normalize) d = d.normalize();
           int step = start;
-          while (inBounds(grid, r + (step * dr), c + (step * dc)) && step <= max) {
-            antinodes.add(new Cell(r + (step * dr), c + (step * dc)));
-            step++;
+          Cell next = a1.cell().step(d, step);
+          while (next.inBounds(grid) && step++ <= max) {
+            antinodes.add(next);
+            next = a1.cell().step(d, step);
           }
         }
       }
     }
     return antinodes;
-  }
-
-  private boolean inBounds(int[][] grid, int r, int c) {
-    return 0 <= r && r < grid.length && 0 <= c && c < grid[0].length;
   }
 
   private boolean isAntenna(int c) {
