@@ -19,28 +19,20 @@ public class ResonantCollinearity implements Solution {
   record Antenna(Cell cell, int what) {}
 
   public String part1(Path input) throws IOException {
-    int[][] grid = characterGrid(input);
-
-    var antenna = findAntenna(grid);
-
-    Set<Cell> antinodes = new HashSet<>();
-    for (List<Antenna> list : antenna.values()) {
-      antinodes.addAll(antinodes(grid, list, 2, 2));
-    }
-
-    return String.valueOf(antinodes.size());
+    return solve(input, 2, 2);
   }
 
   public String part2(Path input) throws IOException {
+    return solve(input, 1, Integer.MAX_VALUE);
+  }
+
+  private String solve(Path input, int start, int max) throws IOException {
     int[][] grid = characterGrid(input);
-
     var antenna = findAntenna(grid);
-
     Set<Cell> antinodes = new HashSet<>();
     for (List<Antenna> list : antenna.values()) {
-      antinodes.addAll(antinodes(grid, list, 1, Integer.MAX_VALUE));
+      antinodes.addAll(antinodes(grid, list, start, max));
     }
-
     return String.valueOf(antinodes.size());
   }
 
@@ -48,10 +40,10 @@ public class ResonantCollinearity implements Solution {
     return range(0, grid.length)
       .boxed()
       .flatMap(r -> {
-          return range(0, grid[0].length)
-            .filter(c -> isAntenna(grid[r][c]))
-            .mapToObj(c -> new Antenna(new Cell(r, c), grid[r][c]));
-        })
+        return range(0, grid[0].length)
+          .filter(c -> isAntenna(grid[r][c]))
+          .mapToObj(c -> new Antenna(new Cell(r, c), grid[r][c]));
+      })
       .collect(groupingBy(Antenna::what));
   }
 
