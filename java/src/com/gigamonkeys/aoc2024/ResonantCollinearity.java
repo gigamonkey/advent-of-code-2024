@@ -21,10 +21,7 @@ public class ResonantCollinearity implements Solution {
   public String part1(Path input) throws IOException {
     int[][] grid = characterGrid(input);
 
-    Map<Integer, List<Antenna>> antenna = range(0, grid.length).boxed()
-      .flatMap(r -> range(0, grid[0].length).mapToObj(c -> new Antenna(new Cell(r, c), grid[r][c])))
-      .filter(cell -> isAntenna(cell.what()))
-      .collect(groupingBy(Antenna::what));
+    var antenna = findAntenna(grid);
 
     Set<Cell> antinodes = new HashSet<>();
     for (List<Antenna> list: antenna.values()) {
@@ -37,10 +34,7 @@ public class ResonantCollinearity implements Solution {
   public String part2(Path input) throws IOException {
     int[][] grid = characterGrid(input);
 
-    Map<Integer, List<Antenna>> antenna = range(0, grid.length).boxed()
-      .flatMap(r -> range(0, grid[0].length).mapToObj(c -> new Antenna(new Cell(r, c), grid[r][c])))
-      .filter(cell -> isAntenna(cell.what()))
-      .collect(groupingBy(Antenna::what));
+    var antenna = findAntenna(grid);
 
     Set<Cell> antinodes = new HashSet<>();
     for (List<Antenna> list: antenna.values()) {
@@ -49,6 +43,14 @@ public class ResonantCollinearity implements Solution {
 
     return String.valueOf(antinodes.size());
   }
+
+  private Map<Integer, List<Antenna>> findAntenna(int[][] grid) {
+    return range(0, grid.length).boxed()
+      .flatMap(r -> range(0, grid[0].length).mapToObj(c -> new Antenna(new Cell(r, c), grid[r][c])))
+      .filter(cell -> isAntenna(cell.what()))
+      .collect(groupingBy(Antenna::what));
+  }
+
 
   private List<Cell> antinodes(int[][] grid, List<Antenna> antenna) {
     List<Cell> antinodes = new ArrayList<>();
@@ -88,45 +90,9 @@ public class ResonantCollinearity implements Solution {
     return antinodes;
   }
 
-
-
   private boolean inBounds(int[][] grid, int r, int c) {
     return 0 <= r && r < grid.length && 0 <= c && c < grid[0].length;
   }
-
-  // private List<Cell> antinodes(int[][] grid, int r, int c) {
-  //   List<Cell> antinodes = new ArrayList<>();
-  //   for (int dr = -1; dr < 2; dr ++) {
-  //     for (int dc = -1; dc < 2; dc++) {
-  //       if (!(dc == 0 && dr == 0)) {
-  //         System.out.println("checking %d,%d in direction %d,%d".formatted(r, c, dr, dc));
-  //         antinodes.addAll(antinodesInDirection(grid, r, c, dr, dc));
-  //       }
-  //     }
-  //   }
-  //   return antinodes;
-  // }
-
-  // private List<Cell> antinodesInDirection(int[][] grid, int r, int c, int dr, int dc) {
-  //   List<Cell> antinodes = new ArrayList<>();
-  //   int kind = grid[r][c];
-  //   r += dr;
-  //   c += dc;
-  //   int count = 1;
-  //   while (inBounds(grid, r, c)) {
-  //     if (grid[r][c] == kind) {
-  //       int nextR = r + (dr * count);
-  //       int nextC = c + (dc * count);
-  //       if (inBounds(grid, nextR, nextC)) {
-  //         antinodes.add(new Cell(nextR, nextC));
-  //       }
-  //     }
-  //     r += dr;
-  //     c += dc;
-  //     count++;
-  //   }
-  //   return antinodes;
-  // }
 
   private boolean isAntenna(int c) {
     return Character.isAlphabetic(c) || Character.isDigit(c);
