@@ -25,7 +25,7 @@ public class ResonantCollinearity implements Solution {
 
     Set<Cell> antinodes = new HashSet<>();
     for (List<Antenna> list : antenna.values()) {
-      antinodes.addAll(antinodes(grid, list));
+      antinodes.addAll(antinodes(grid, list, 2, 2));
     }
 
     return String.valueOf(antinodes.size());
@@ -38,7 +38,7 @@ public class ResonantCollinearity implements Solution {
 
     Set<Cell> antinodes = new HashSet<>();
     for (List<Antenna> list : antenna.values()) {
-      antinodes.addAll(antinodes2(grid, list));
+      antinodes.addAll(antinodes(grid, list, 1, Integer.MAX_VALUE));
     }
 
     return String.valueOf(antinodes.size());
@@ -52,35 +52,19 @@ public class ResonantCollinearity implements Solution {
       .collect(groupingBy(Antenna::what));
   }
 
-  private List<Cell> antinodes(int[][] grid, List<Antenna> antenna) {
+  private List<Cell> antinodes(int[][] grid, List<Antenna> antenna, int start, int max) {
     List<Cell> antinodes = new ArrayList<>();
     for (Antenna a1 : antenna) {
       for (Antenna a2 : antenna) {
         if (a1 != a2) {
-          int r = a2.cell().row();
-          int c = a2.cell().column();
-          int dr = a2.cell().row() - a1.cell().row();
-          int dc = a2.cell().column() - a1.cell().column();
-          if (inBounds(grid, r + dr, c + dc)) {
-            antinodes.add(new Cell(r + dr, c + dc));
-          }
-        }
-      }
-    }
-    return antinodes;
-  }
-
-  private List<Cell> antinodes2(int[][] grid, List<Antenna> antenna) {
-    List<Cell> antinodes = new ArrayList<>();
-    for (Antenna a1 : antenna) {
-      for (Antenna a2 : antenna) {
-        if (a1 != a2) {
-          int r = a2.cell().row();
-          int c = a2.cell().column();
-          int dr = a2.cell().row() - a1.cell().row();
-          int dc = a2.cell().column() - a1.cell().column();
-          int step = 0;
-          while (inBounds(grid, r + (step * dr), c + (step * dc))) {
+          var cell1 = a1.cell();
+          var cell2 = a2.cell();
+          int r = cell1.row();
+          int c = cell1.column();
+          int dr = cell2.row() - cell1.row();
+          int dc = cell2.column() - cell1.column();
+          int step = start;
+          while (inBounds(grid, r + (step * dr), c + (step * dc)) && step <= max) {
             antinodes.add(new Cell(r + (step * dr), c + (step * dc)));
             step++;
           }
