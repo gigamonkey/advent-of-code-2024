@@ -35,8 +35,6 @@ public class ResonantCollinearity implements Solution {
 
   record Antenna(Cell cell, int what) {}
 
-
-
   public String part1(Path input) throws IOException {
     return solve(input, 2, 2, false);
   }
@@ -51,7 +49,7 @@ public class ResonantCollinearity implements Solution {
       findAntenna(grid)
         .values()
         .stream()
-      .flatMap(list -> antinodes(grid, list, start, max, normalize).stream())
+        .flatMap(list -> antinodes(grid, list, start, max, normalize).stream())
         .collect(toSet())
         .size()
     );
