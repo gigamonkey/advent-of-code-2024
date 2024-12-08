@@ -47,8 +47,11 @@ public class ResonantCollinearity implements Solution {
   private Map<Integer, List<Antenna>> findAntenna(int[][] grid) {
     return range(0, grid.length)
       .boxed()
-      .flatMap(r -> range(0, grid[0].length).mapToObj(c -> new Antenna(new Cell(r, c), grid[r][c])))
-      .filter(cell -> isAntenna(cell.what()))
+      .flatMap(r -> {
+          return range(0, grid[0].length)
+            .filter(c -> isAntenna(grid[r][c]))
+            .mapToObj(c -> new Antenna(new Cell(r, c), grid[r][c]));
+        })
       .collect(groupingBy(Antenna::what));
   }
 
