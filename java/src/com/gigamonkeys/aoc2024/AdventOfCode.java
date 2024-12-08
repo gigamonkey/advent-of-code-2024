@@ -29,6 +29,7 @@ public class AdventOfCode {
     days.add(new PrintQueue());
     days.add(new GuardGallivant());
     days.add(new BridgeRepair());
+    days.add(new ResonantCollinearity());
   }
 
   private Optional<Solution> number(int day) {
