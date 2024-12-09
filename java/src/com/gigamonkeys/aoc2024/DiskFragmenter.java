@@ -102,22 +102,6 @@ public class DiskFragmenter implements Solution {
   }
 
   private long checksum(int[] disk) {
-    long checksum = 0;
-    for (int i = 0; i < disk.length; i++) {
-      if (disk[i] != -1) {
-        checksum += i * disk[i];
-      }
-    }
-    return checksum;
-  }
-
-  private long checksum(List<Integer> disk) {
-    long checksum = 0;
-    for (int i = 0; i < disk.size(); i++) {
-      if (disk.get(i) != -1) {
-        checksum += i * disk.get(i);
-      }
-    }
-    return checksum;
+    return IntStream.range(0, disk.length).filter(i -> disk[i] != -1).mapToLong(i -> i * disk[i]).sum();
   }
 }
