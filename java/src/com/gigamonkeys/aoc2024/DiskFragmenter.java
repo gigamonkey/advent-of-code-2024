@@ -12,12 +12,8 @@ import java.util.stream.*;
 
 public class DiskFragmenter implements Solution {
 
-  record File(int id, int size) {}
-
-
   public String part1(Path input) throws IOException {
     List<Integer> nums = Arrays.stream(text(input).split("")).map(Integer::parseInt).toList();
-    // nums is alternating file / free space sizes
 
     List<Integer> disk = new ArrayList<>();
     int id = 0;
@@ -38,7 +34,7 @@ public class DiskFragmenter implements Solution {
     compact(disk);
     //System.out.println(disk);
 
-    int checksum = 0;
+    long checksum = 0;
     for (int i = 0; i < disk.size(); i++) {
       if (disk.get(i) != -1)  {
         checksum += i * disk.get(i);
