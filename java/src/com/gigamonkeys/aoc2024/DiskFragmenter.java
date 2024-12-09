@@ -4,6 +4,7 @@ import static com.gigamonkeys.aoc2024.Util.*;
 import static java.util.stream.Collectors.*;
 import static java.util.stream.IntStream.range;
 
+import java.math.BigInteger;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -51,10 +52,14 @@ public class DiskFragmenter implements Solution {
         }
       }
     }
-    //System.out.println(disk);
-    //System.out.println("length: " + disk.size());
+    if (disk.size() < 100) {
+      System.out.println(disk);
+      System.out.println("length: " + disk.size());
+    }
     compact2(disk);
-    //System.out.println(disk);
+    if (disk.size() < 100) {
+      System.out.println(disk);
+    }
 
     return String.valueOf(checksum(disk));
   }
@@ -73,16 +78,18 @@ public class DiskFragmenter implements Solution {
   }
 
   private void compact2(List<Integer> disk) {
+
     int end = disk.size() - 1;
 
     while (end >= 0) {
+
+      // Move the end back to point at the the next file.
       while (end >= 0 && disk.get(end) == -1) end--;
 
+      // Could be done.
       if (end == -1) break;
 
       int fileLength = fileLength(disk, end);
-
-      if (fileLength == -1) break;
 
       int freeStart = findFreeSpace(disk, fileLength, end);
 
@@ -97,6 +104,8 @@ public class DiskFragmenter implements Solution {
           disk.set(end--, -1);
         }
       } else {
+
+        // Couldn't find room for this file so skip it.
         end -= fileLength;
         //System.out.println("Moved end to %d".formatted(end));
       }
@@ -104,9 +113,9 @@ public class DiskFragmenter implements Solution {
   }
 
   private int findFreeSpace(List<Integer> disk, int needed, int end) {
-    int limit = end - needed * 2;
+    int limit = end + 1 - needed * 2;
     search:
-    for (int i = 0; i < limit; i++) {
+    for (int i = 0; i <= limit; i++) {
       for (int j = 0; j < needed; j++) {
         if (disk.get(i + j) != -1) continue search;
       }
@@ -125,7 +134,7 @@ public class DiskFragmenter implements Solution {
     int id = disk.get(end);
     int start = end;
     while (end >= 0 && disk.get(end) == id) end--;
-    return end == -1 ? -1 : start - end;
+    return start - end;
   }
 
   private long checksum(List<Integer> disk) {
@@ -133,6 +142,16 @@ public class DiskFragmenter implements Solution {
     for (int i = 0; i < disk.size(); i++) {
       if (disk.get(i) != -1) {
         checksum += i * disk.get(i);
+      }
+    }
+    return checksum;
+  }
+
+  private BigInteger bigChecksum(List<Integer> disk) {
+    BigInteger checksum = BigInteger.ZERO;
+    for (int i = 0; i < disk.size(); i++) {
+      if (disk.get(i) != -1) {
+        checksum = checksum.add(BigInteger.valueOf(i * disk.get(i)));
       }
     }
     return checksum;
