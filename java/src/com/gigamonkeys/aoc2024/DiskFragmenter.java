@@ -1,6 +1,8 @@
 package com.gigamonkeys.aoc2024;
 
 import static com.gigamonkeys.aoc2024.Util.*;
+import static java.lang.System.arraycopy;
+import static java.util.Arrays.fill;
 import static java.util.stream.Collectors.*;
 import static java.util.stream.IntStream.range;
 
@@ -71,15 +73,11 @@ public class DiskFragmenter implements Solution {
       int freeStart = findFreeSpace(disk, fileLength, end);
 
       if (freeStart != -1) {
-        int free = freeStart;
-        for (int j = 0; j < fileLength; j++) {
-          disk[free++] = disk[end];
-          disk[end--] = -1;
-        }
-      } else {
-        // Couldn't find room for this file so skip it.
-        end -= fileLength;
+        int fileStart = end + 1 - fileLength;
+        arraycopy(disk, fileStart, disk, freeStart, fileLength);
+        fill(disk, fileStart, end + 1, -1);
       }
+      end -= fileLength;
     }
   }
 
