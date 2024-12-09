@@ -4,8 +4,8 @@ import static com.gigamonkeys.aoc2024.Util.*;
 import static java.util.stream.Collectors.*;
 import static java.util.stream.IntStream.range;
 
-import java.math.BigInteger;
 import java.io.*;
+import java.math.BigInteger;
 import java.nio.file.*;
 import java.util.*;
 import java.util.function.*;
@@ -14,30 +14,19 @@ import java.util.stream.*;
 public class DiskFragmenter implements Solution {
 
   public String part1(Path input) throws IOException {
-    List<Integer> nums = Arrays.stream(text(input).split("")).map(Integer::parseInt).toList();
-
-    List<Integer> disk = new ArrayList<>();
-    int id = 0;
-    for (int i = 0; i < nums.size(); i++) {
-      if (i % 2 == 0) {
-        for (int j = 0; j < nums.get(i); j++) {
-          disk.add(id);
-        }
-        id++;
-      } else {
-        for (int j = 0; j < nums.get(i); j++) {
-          disk.add(-1);
-        }
-      }
-    }
+    List<Integer> disk = mapDisk(input);
     compact(disk);
-
     return String.valueOf(checksum(disk));
   }
 
   public String part2(Path input) throws IOException {
-    List<Integer> nums = Arrays.stream(text(input).split("")).map(Integer::parseInt).toList();
+    List<Integer> disk = mapDisk(input);
+    compact2(disk);
+    return String.valueOf(checksum(disk));
+  }
 
+  private List<Integer> mapDisk(Path input) throws IOException {
+    List<Integer> nums = Arrays.stream(text(input).split("")).map(Integer::parseInt).toList();
     List<Integer> disk = new ArrayList<>();
     int id = 0;
     for (int i = 0; i < nums.size(); i++) {
@@ -52,16 +41,7 @@ public class DiskFragmenter implements Solution {
         }
       }
     }
-    if (disk.size() < 100) {
-      System.out.println(disk);
-      System.out.println("length: " + disk.size());
-    }
-    compact2(disk);
-    if (disk.size() < 100) {
-      System.out.println(disk);
-    }
-
-    return String.valueOf(checksum(disk));
+    return disk;
   }
 
   private void compact(List<Integer> disk) {
@@ -78,44 +58,34 @@ public class DiskFragmenter implements Solution {
   }
 
   private void compact2(List<Integer> disk) {
-
     int end = disk.size() - 1;
 
     while (end >= 0) {
-
-      // Move the end back to point at the the next file.
+      // Move the end back to point at the back end of the next file.
       while (end >= 0 && disk.get(end) == -1) end--;
 
       // Could be done.
       if (end == -1) break;
 
       int fileLength = fileLength(disk, end);
-
       int freeStart = findFreeSpace(disk, fileLength, end);
-
-      //System.out.println("Free space: %d; file length: %d".formatted(freeSpace, fileLength));
-      //System.out.println("Free space at: %d; file length: %d".formatted(freeStart, fileLength));
 
       if (freeStart != -1) {
         int free = freeStart;
         for (int j = 0; j < fileLength; j++) {
-          //System.out.println("Moving %d  to %d".formatted(disk.get(end), free));
           disk.set(free++, disk.get(end));
           disk.set(end--, -1);
         }
       } else {
-
         // Couldn't find room for this file so skip it.
         end -= fileLength;
-        //System.out.println("Moved end to %d".formatted(end));
       }
     }
   }
 
   private int findFreeSpace(List<Integer> disk, int needed, int end) {
     int limit = end + 1 - needed * 2;
-    search:
-    for (int i = 0; i <= limit; i++) {
+    search: for (int i = 0; i <= limit; i++) {
       for (int j = 0; j < needed; j++) {
         if (disk.get(i + j) != -1) continue search;
       }
@@ -156,5 +126,4 @@ public class DiskFragmenter implements Solution {
     }
     return checksum;
   }
-
 }
