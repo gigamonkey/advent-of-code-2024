@@ -30,6 +30,7 @@ public class AdventOfCode {
     days.add(new GuardGallivant());
     days.add(new BridgeRepair());
     days.add(new ResonantCollinearity());
+    days.add(new DiskFragmenter());
   }
 
   private Optional<Solution> number(int day) {
