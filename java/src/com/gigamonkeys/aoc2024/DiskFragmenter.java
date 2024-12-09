@@ -94,12 +94,6 @@ public class DiskFragmenter implements Solution {
     return -1;
   }
 
-  private int freeSpace(List<Integer> disk, int free) {
-    int start = free;
-    while (disk.get(free) == -1) free++;
-    return free - start;
-  }
-
   private int fileLength(List<Integer> disk, int end) {
     int id = disk.get(end);
     int start = end;
@@ -112,16 +106,6 @@ public class DiskFragmenter implements Solution {
     for (int i = 0; i < disk.size(); i++) {
       if (disk.get(i) != -1) {
         checksum += i * disk.get(i);
-      }
-    }
-    return checksum;
-  }
-
-  private BigInteger bigChecksum(List<Integer> disk) {
-    BigInteger checksum = BigInteger.ZERO;
-    for (int i = 0; i < disk.size(); i++) {
-      if (disk.get(i) != -1) {
-        checksum = checksum.add(BigInteger.valueOf(i * disk.get(i)));
       }
     }
     return checksum;
