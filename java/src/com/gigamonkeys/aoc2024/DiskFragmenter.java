@@ -29,39 +29,113 @@ public class DiskFragmenter implements Solution {
         }
       }
     }
-
-    //System.out.println(disk);
     compact(disk);
-    //System.out.println(disk);
 
-    long checksum = 0;
-    for (int i = 0; i < disk.size(); i++) {
-      if (disk.get(i) != -1)  {
-        checksum += i * disk.get(i);
+    return String.valueOf(checksum(disk));
+  }
+
+  public String part2(Path input) throws IOException {
+    List<Integer> nums = Arrays.stream(text(input).split("")).map(Integer::parseInt).toList();
+
+    List<Integer> disk = new ArrayList<>();
+    int id = 0;
+    for (int i = 0; i < nums.size(); i++) {
+      if (i % 2 == 0) {
+        for (int j = 0; j < nums.get(i); j++) {
+          disk.add(id);
+        }
+        id++;
+      } else {
+        for (int j = 0; j < nums.get(i); j++) {
+          disk.add(-1);
+        }
       }
     }
-    return String.valueOf(checksum);
+    //System.out.println(disk);
+    //System.out.println("length: " + disk.size());
+    compact2(disk);
+    //System.out.println(disk);
+
+    return String.valueOf(checksum(disk));
   }
 
   private void compact(List<Integer> disk) {
     int free = 0;
     int end = disk.size() - 1;
 
-    // move free pointer to actual free block
-
     while (free < disk.size() && end >= 0) {
       while (disk.get(free) != -1) free++;
       while (disk.get(end) == -1) end--;
       if (end <= free) break;
-      //if (free < disk.size() && end >= 0) break;
-      //System.out.println("Moving %d at %d to %d".formatted(disk.get(end), end, free));
       disk.set(free++, disk.get(end));
       disk.set(end--, -1);
     }
   }
 
-  public String part2(Path input) throws IOException {
-    return "nyi";
+  private void compact2(List<Integer> disk) {
+    int end = disk.size() - 1;
+
+    while (end >= 0) {
+      while (end >= 0 && disk.get(end) == -1) end--;
+
+      if (end == -1) break;
+
+      int fileLength = fileLength(disk, end);
+
+      if (fileLength == -1) break;
+
+      int freeStart = findFreeSpace(disk, fileLength, end);
+
+      //System.out.println("Free space: %d; file length: %d".formatted(freeSpace, fileLength));
+      //System.out.println("Free space at: %d; file length: %d".formatted(freeStart, fileLength));
+
+      if (freeStart != -1) {
+        int free = freeStart;
+        for (int j = 0; j < fileLength; j++) {
+          //System.out.println("Moving %d  to %d".formatted(disk.get(end), free));
+          disk.set(free++, disk.get(end));
+          disk.set(end--, -1);
+        }
+      } else {
+        end -= fileLength;
+        //System.out.println("Moved end to %d".formatted(end));
+      }
+    }
+  }
+
+  private int findFreeSpace(List<Integer> disk, int needed, int end) {
+    int limit = end - needed * 2;
+    search:
+    for (int i = 0; i < limit; i++) {
+      for (int j = 0; j < needed; j++) {
+        if (disk.get(i + j) != -1) continue search;
+      }
+      return i;
+    }
+    return -1;
+  }
+
+  private int freeSpace(List<Integer> disk, int free) {
+    int start = free;
+    while (disk.get(free) == -1) free++;
+    return free - start;
+  }
+
+  private int fileLength(List<Integer> disk, int end) {
+    int id = disk.get(end);
+    int start = end;
+    while (end >= 0 && disk.get(end) == id) end--;
+    return end == -1 ? -1 : start - end;
+  }
+
+  private long checksum(List<Integer> disk) {
+    long checksum = 0;
+    for (int i = 0; i < disk.size(); i++) {
+      if (disk.get(i) != -1) {
+        checksum += i * disk.get(i);
+      }
+    }
+    return checksum;
   }
 
 }
