@@ -18,37 +18,37 @@ import java.util.stream.*;
 
 public class Day10_HoofIt implements Solution {
 
-  private record Walker(int[][] grid) {
+  private record Hiker(int[][] grid) {
     int sumScores() {
-      return sum((r, c) -> hike(r, c, uniquePeaks()));
+      return sumTrails(uniquePeaks());
     }
 
     int sumRatings() {
-      return sum((r, c) -> hike(r, c, (pr, pc) -> 1));
+      return sumTrails(this::pathCounter);
     }
 
-    int sum(IntBinaryOperator op) {
+    int sumTrails(Supplier<IntBinaryOperator> scorerSupplier) {
       int total = 0;
       for (int r = 0; r < grid.length; r++) {
         for (int c = 0; c < grid[0].length; c++) {
           if (grid[r][c] == 0) {
-            total += op.applyAsInt(r, c);
+            total += hike(r, c, scorerSupplier.get());
           }
         }
       }
       return total;
     }
 
-    int hike(int r, int c, IntBinaryOperator scorer) {
+    int hike(int r, int c, IntBinaryOperator trailScorer) {
       if (grid[r][c] == 9) {
-        return scorer.applyAsInt(r, c);
+        return trailScorer.applyAsInt(r, c);
       } else {
         int total = 0;
         for (int dr = -1; dr <= 1; dr++) {
           for (int dc = -1; dc <= 1; dc++) {
             if (!(dr == 0 && dc == 0) && (dr == 0 || dc == 0)) {
               if (uphill(r, c, dr, dc)) {
-                total += hike(r + dr, c + dc, scorer);
+                total += hike(r + dr, c + dc, trailScorer);
               }
             }
           }
@@ -57,16 +57,19 @@ public class Day10_HoofIt implements Solution {
       }
     }
 
-    IntBinaryOperator uniquePeaks() {
-      var seen = new boolean[grid.length][grid[0].length];
-      return (r, c) -> {
-        if (!seen[r][c]) {
+    Supplier<IntBinaryOperator> uniquePeaks() {
+      return () -> {
+        var seen = new boolean[grid.length][grid[0].length];
+        return (r, c) -> {
+          var s = seen[r][c] ? 0 : 1;
           seen[r][c] = true;
-          return 1;
-        } else {
-          return 0;
-        }
+          return s;
+        };
       };
+    }
+
+    IntBinaryOperator pathCounter() {
+      return (r, c) -> 1;
     }
 
     boolean inBounds(int r, int c) {
@@ -74,15 +77,15 @@ public class Day10_HoofIt implements Solution {
     }
 
     boolean uphill(int r, int c, int dr, int dc) {
-      return inBounds(r + dr, c + dc) && (grid[r][c] + 1) == grid[r + dr][c + dc];
+      return inBounds(r + dr, c + dc) && grid[r + dr][c + dc] - grid[r][c] == 1;
     }
   }
 
   public String part1(Path input) throws IOException {
-    return String.valueOf(new Walker(digitGrid(input)).sumScores());
+    return String.valueOf(new Hiker(digitGrid(input)).sumScores());
   }
 
   public String part2(Path input) throws IOException {
-    return String.valueOf(new Walker(digitGrid(input)).sumRatings());
+    return String.valueOf(new Hiker(digitGrid(input)).sumRatings());
   }
 }
