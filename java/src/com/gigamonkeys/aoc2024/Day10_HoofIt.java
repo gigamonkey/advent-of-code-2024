@@ -19,13 +19,12 @@ import java.util.stream.*;
 public class Day10_HoofIt implements Solution {
 
   private record Walker(int[][] grid) {
-
     int sumScores() {
-      return sum((r, c) -> hike1(r, c, seen()));
+      return sum((r, c) -> hike(r, c, uniquePeaks()));
     }
 
     int sumRatings() {
-      return sum((r, c) -> hike2(r, c));
+      return sum((r, c) -> hike(r, c, (pr, pc) -> 1));
     }
 
     int sum(IntBinaryOperator op) {
@@ -40,49 +39,34 @@ public class Day10_HoofIt implements Solution {
       return total;
     }
 
-    boolean[][] seen() {
-      return new boolean[grid.length][grid[0].length];
+    int hike(int r, int c, IntBinaryOperator scorer) {
+      if (grid[r][c] == 9) {
+        return scorer.applyAsInt(r, c);
+      } else {
+        int total = 0;
+        for (int dr = -1; dr <= 1; dr++) {
+          for (int dc = -1; dc <= 1; dc++) {
+            if (!(dr == 0 && dc == 0) && (dr == 0 || dc == 0)) {
+              if (uphill(r, c, dr, dc)) {
+                total += hike(r + dr, c + dc, scorer);
+              }
+            }
+          }
+        }
+        return total;
+      }
     }
 
-    int hike1(int r, int c, boolean[][] seen) {
-      if (grid[r][c] == 9) {
+    IntBinaryOperator uniquePeaks() {
+      var seen = new boolean[grid.length][grid[0].length];
+      return (r, c) -> {
         if (!seen[r][c]) {
           seen[r][c] = true;
           return 1;
         } else {
           return 0;
         }
-      } else {
-        int total = 0;
-        for (int dr = -1; dr <= 1; dr++) {
-          for (int dc = -1; dc <= 1; dc++) {
-            if (!(dr == 0 && dc == 0) && (dr == 0 || dc == 0)) {
-              if (uphill(r, c, dr, dc)) {
-                total += hike1(r + dr, c + dc, seen);
-              }
-            }
-          }
-        }
-        return total;
-      }
-    }
-
-    int hike2(int r, int c) {
-      if (grid[r][c] == 9) {
-        return 1;
-      } else {
-        int total = 0;
-        for (int dr = -1; dr <= 1; dr++) {
-          for (int dc = -1; dc <= 1; dc++) {
-            if (!(dr == 0 && dc == 0) && (dr == 0 || dc == 0)) {
-              if (uphill(r, c, dr, dc)) {
-                total += hike2(r + dr, c + dc);
-              }
-            }
-          }
-        }
-        return total;
-      }
+      };
     }
 
     boolean inBounds(int r, int c) {
