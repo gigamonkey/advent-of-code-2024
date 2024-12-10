@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class Day07_BridgeRepair implements Solution {
 
@@ -23,7 +24,16 @@ public class Day07_BridgeRepair implements Solution {
     boolean check(List<BinaryOperator<Long>> ops) {
       var first = numbers.get(0);
       var rest = numbers.subList(1, numbers.size());
-      return Day07_BridgeRepair.check(value, first, rest, ops);
+      return search(first, rest, ops);
+    }
+
+    boolean search(long soFar, List<Long> nums, List<BinaryOperator<Long>> ops) {
+      if (nums.size() == 0) {
+        return soFar == value;
+      } else {
+        var rest = nums.subList(1, nums.size());
+        return ops.stream().anyMatch(op -> search(op.apply(soFar, nums.get(0)), rest, ops));
+      }
     }
   }
 
@@ -36,18 +46,11 @@ public class Day07_BridgeRepair implements Solution {
   }
 
   private String solve(Path input, List<BinaryOperator<Long>> ops) throws IOException {
-    return String.valueOf(
-      lines(input).parallel().map(this::parseLine).filter(eq -> eq.check(ops)).mapToLong(Equation::value).sum()
-    );
+    return String.valueOf(equations(input).filter(eq -> eq.check(ops)).mapToLong(Equation::value).sum());
   }
 
-  private static boolean check(long value, long soFar, List<Long> nums, List<BinaryOperator<Long>> ops) {
-    if (nums.size() == 0) {
-      return soFar == value;
-    } else {
-      var rest = nums.subList(1, nums.size());
-      return ops.stream().anyMatch(op -> check(value, op.apply(soFar, nums.get(0)), rest, ops));
-    }
+  private Stream<Equation> equations(Path input) throws IOException {
+    return lines(input).parallel().map(this::parseLine);
   }
 
   private Equation parseLine(String line) {

@@ -25,5 +25,4 @@ public class Day10 implements Solution {
   public String part2(Path input) throws IOException {
     return "nyi";
   }
-
 }

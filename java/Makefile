@@ -16,9 +16,9 @@ run:
 inputs/day-%:
 	mkdir -p $@
 	touch $@/part-1-test.expected
-	touch $@/part-1.expected
+	#touch $@/part-1.expected
 	touch $@/part-2-test.expected
-	touch $@/part-2.expected
+	#touch $@/part-2.expected
 	touch $@/real.txt
 	touch $@/test.txt
 
