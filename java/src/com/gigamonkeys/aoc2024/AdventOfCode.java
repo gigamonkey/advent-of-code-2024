@@ -19,30 +19,28 @@ public class AdventOfCode {
 
   private static final int MAX_DAY = (int) DAYS.between(START, NOW) + 1;
 
-  public static final List<Solution> days = new ArrayList<>();
+  private static final List<Solution> SOLUTIONS = List.of(
+    new Day01_HistorianHysteria(),
+    new Day02_RedNosedReports(),
+    new Day03_MullItOver(),
+    new Day04_CeresSearch(),
+    new Day05_PrintQueue(),
+    new Day06_GuardGallivant(),
+    new Day07_BridgeRepair(),
+    new Day08_ResonantCollinearity(),
+    new Day09_DiskFragmenter(),
+    new Day10_HoofIt()
+  );
 
-  static {
-    days.add(new Day01_HistorianHysteria());
-    days.add(new Day02_RedNosedReports());
-    days.add(new Day03_MullItOver());
-    days.add(new Day04_CeresSearch());
-    days.add(new Day05_PrintQueue());
-    days.add(new Day06_GuardGallivant());
-    days.add(new Day07_BridgeRepair());
-    days.add(new Day08_ResonantCollinearity());
-    days.add(new Day09_DiskFragmenter());
-    days.add(new Day10_HoofIt());
-  }
-
-  private Optional<Solution> number(int day) {
-    if ((day - 1) < days.size()) {
-      return Optional.of(days.get(day - 1));
+  private Optional<Solution> solutionFor(int day) {
+    if ((day - 1) < SOLUTIONS.size()) {
+      return Optional.of(SOLUTIONS.get(day - 1));
     } else {
       return Optional.empty();
     }
   }
 
-  public boolean runPart(Solution s, int day, int part, boolean test) throws IOException {
+  private boolean runPart(Solution s, int day, int part, boolean test) throws IOException {
     String label = test ? "test" : "real";
     Optional<String> expected = expected(day, part, test);
 
@@ -92,12 +90,12 @@ public class AdventOfCode {
     return exists(p) ? Optional.of(readString(p).trim()) : Optional.empty();
   }
 
-  public void run(int firstDay) throws IOException {
+  private void run(int firstDay, int lastDay) throws IOException {
     var okay = true;
 
     long start = System.nanoTime();
-    for (var day = firstDay; day <= MAX_DAY; day++) {
-      var s = number(day);
+    for (var day = firstDay; day <= lastDay; day++) {
+      var s = solutionFor(day);
       if (s.isPresent()) {
         for (var part = 1; part <= 2; part++) {
           okay &= runPart(s.get(), day, part, true);
@@ -108,17 +106,22 @@ public class AdventOfCode {
       }
     }
 
+    double elapsed = (System.nanoTime() - start) / 1e9;
     if (okay) {
-      double elapsed = (System.nanoTime() - start) / 1e9;
       System.out.println("\nAll okay! (%f seconds)".formatted(elapsed));
     } else {
-      System.out.println("\nUh oh!");
+      System.out.println("\nUh oh! (%f seconds)".formatted(elapsed));
     }
   }
 
   public static void main(String[] args) throws IOException {
     System.out.println("Welcome to Advent of Code!");
-    int firstDay = args.length > 0 && args[0].equals("--all") ? 1 : MAX_DAY;
-    new AdventOfCode().run(firstDay);
+    var aoc = new AdventOfCode();
+    if (args.length > 0 && args[0].equals("--all")) {
+      aoc.run(1, MAX_DAY);
+    } else {
+      var day = args.length > 0 ? Integer.parseInt(args[0]) : MAX_DAY;
+      aoc.run(day, day);
+    }
   }
 }
