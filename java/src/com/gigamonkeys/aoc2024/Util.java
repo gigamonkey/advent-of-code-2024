@@ -28,4 +28,9 @@ public class Util {
   public static int[][] characterGrid(Path p) throws IOException {
     return lines(p).map(line -> line.codePoints().toArray()).toArray(int[][]::new);
   }
+
+  public static int[][] digitGrid(Path p) throws IOException {
+    return lines(p).map(line -> line.codePoints().map(cp -> Character.digit(cp, 10)).toArray()).toArray(int[][]::new);
+  }
+
 }
