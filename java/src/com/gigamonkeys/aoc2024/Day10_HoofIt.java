@@ -36,7 +36,7 @@ public class Day10_HoofIt implements Solution {
       } else {
         int total = 0;
 
-        // A trick for efficiently enumerating NSEW
+        // A trick for efficiently enumerating NESW points.
         for (int i = 0; i < 4; i++) {
           var nextRow = r + 1 - Math.abs(i - 2);
           var nextCol = c + 1 - Math.abs(1 - i);
