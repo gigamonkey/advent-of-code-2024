@@ -3,13 +3,16 @@ package com.gigamonkeys.aoc2024;
 import static com.gigamonkeys.aoc2024.Util.*;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.fill;
+import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.*;
 import static java.util.stream.IntStream.range;
+import static java.util.stream.Stream.generate;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.nio.file.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.*;
 import java.util.stream.*;
 
@@ -28,22 +31,18 @@ public class DiskFragmenter implements Solution {
   }
 
   private int[] mapDisk(Path input) throws IOException {
-    var nums = Arrays.stream(text(input).split("")).map(Integer::parseInt).toList();
-    var disk = new ArrayList<Integer>();
-    var id = 0;
-    for (int i = 0; i < nums.size(); i++) {
-      if (i % 2 == 0) {
-        for (int j = 0; j < nums.get(i); j++) {
-          disk.add(id);
-        }
-        id++;
-      } else {
-        for (int j = 0; j < nums.get(i); j++) {
-          disk.add(-1);
-        }
-      }
-    }
-    return disk.stream().mapToInt(n -> n).toArray();
+    var id = new AtomicInteger();
+    return text(input)
+      .codePoints()
+      .map(Character::getNumericValue)
+      .boxed()
+      .flatMap(n -> {
+        var x = id.getAndIncrement();
+        var num = x % 2 == 0 ? x / 2 : -1;
+        return generate(() -> num).limit(n);
+      })
+      .mapToInt(n -> n)
+      .toArray();
   }
 
   private void compact(int[] disk) {
