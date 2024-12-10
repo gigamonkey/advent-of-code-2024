@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
-public class MullItOver implements Solution {
+public class Day03_MullItOver implements Solution {
 
   private static final Pattern MUL = compile("mul\\((\\d{1,3}),(\\d{1,3})\\)");
   private static final Pattern MUL_2 = compile("(?:mul\\((\\d{1,3}),(\\d{1,3})\\))|(do(?:n't)?\\(\\))");

@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public class GuardGallivant implements Solution {
+public class Day06_GuardGallivant implements Solution {
 
   public enum Direction {
     NORTH,

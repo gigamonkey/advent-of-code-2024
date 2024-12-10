@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.stream.*;
 
-public class ResonantCollinearity implements Solution {
+public class Day08_ResonantCollinearity implements Solution {
 
   record Cell(int row, int column) {
     boolean inBounds(int[][] grid) {

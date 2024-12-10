@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.*;
 import java.util.stream.*;
 
-public class DiskFragmenter implements Solution {
+public class Day09_DiskFragmenter implements Solution {
 
   public String part1(Path input) throws IOException {
     int[] disk = mapDisk(input);

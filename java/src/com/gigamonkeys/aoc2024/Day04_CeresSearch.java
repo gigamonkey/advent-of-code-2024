@@ -5,7 +5,7 @@ import static com.gigamonkeys.aoc2024.Util.*;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class CeresSearch implements Solution {
+public class Day04_CeresSearch implements Solution {
 
   private static final int[] XMAS = "XMAS".codePoints().toArray();
   private static final int[] MAS = "MAS".codePoints().toArray();

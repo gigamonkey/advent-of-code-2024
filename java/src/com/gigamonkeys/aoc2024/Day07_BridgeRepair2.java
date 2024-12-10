@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 // Alternate solution to Day 7. Works well for part 1 because of efficient bit
 // twiddling. Not as good for part 2, presumably because dividing by 3 is more
 // expensive.
-public class BridgeRepair2 implements Solution {
+public class Day07_BridgeRepair2 implements Solution {
 
   private static final Pattern p = Pattern.compile("^(\\d+):\\s+(\\d+(\\s+\\d+)*)$");
 

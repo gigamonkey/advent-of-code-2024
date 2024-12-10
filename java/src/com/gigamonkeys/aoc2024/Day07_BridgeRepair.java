@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.regex.Pattern;
 
-public class BridgeRepair implements Solution {
+public class Day07_BridgeRepair implements Solution {
 
   private static final Pattern p = Pattern.compile("^(\\d+):\\s+(\\d+(\\s+\\d+)*)$");
 
@@ -23,7 +23,7 @@ public class BridgeRepair implements Solution {
     boolean check(List<BinaryOperator<Long>> ops) {
       var first = numbers.get(0);
       var rest = numbers.subList(1, numbers.size());
-      return BridgeRepair.check(value, first, rest, ops);
+      return Day07_BridgeRepair.check(value, first, rest, ops);
     }
   }
 

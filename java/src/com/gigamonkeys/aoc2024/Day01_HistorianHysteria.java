@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class HistorianHysteria implements Solution {
+public class Day01_HistorianHysteria implements Solution {
 
   private record Columns(List<Integer> left, List<Integer> right) {
     public void add(String[] parts) {

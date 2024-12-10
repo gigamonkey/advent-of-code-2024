@@ -22,15 +22,16 @@ public class AdventOfCode {
   public static final List<Solution> days = new ArrayList<>();
 
   static {
-    days.add(new HistorianHysteria());
-    days.add(new RedNosedReports());
-    days.add(new MullItOver());
-    days.add(new CeresSearch());
-    days.add(new PrintQueue());
-    days.add(new GuardGallivant());
-    days.add(new BridgeRepair());
-    days.add(new ResonantCollinearity());
-    days.add(new DiskFragmenter());
+    days.add(new Day01_HistorianHysteria());
+    days.add(new Day02_RedNosedReports());
+    days.add(new Day03_MullItOver());
+    days.add(new Day04_CeresSearch());
+    days.add(new Day05_PrintQueue());
+    days.add(new Day06_GuardGallivant());
+    days.add(new Day07_BridgeRepair());
+    days.add(new Day08_ResonantCollinearity());
+    days.add(new Day09_DiskFragmenter());
+    days.add(new Day10());
   }
 
   private Optional<Solution> number(int day) {

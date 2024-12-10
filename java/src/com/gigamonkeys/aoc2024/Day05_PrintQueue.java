@@ -12,7 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-public class PrintQueue implements Solution {
+public class Day05_PrintQueue implements Solution {
 
   private record Rule(Integer before, Integer after) {}
 
