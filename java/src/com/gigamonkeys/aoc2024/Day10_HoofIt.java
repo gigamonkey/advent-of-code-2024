@@ -1,6 +1,7 @@
 package com.gigamonkeys.aoc2024;
 
 import static com.gigamonkeys.aoc2024.Util.*;
+import static java.lang.Math.abs;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -38,8 +39,8 @@ public class Day10_HoofIt implements Solution {
 
         // A trick for efficiently enumerating NESW points.
         for (int i = 0; i < 4; i++) {
-          var nextRow = r + 1 - Math.abs(i - 2);
-          var nextCol = c + 1 - Math.abs(1 - i);
+          var nextRow = r + 1 - abs(i - 2);
+          var nextCol = c + 1 - abs(1 - i);
           if (uphill(nextRow, nextCol, grid[r][c])) {
             total += hike(nextRow, nextCol, trailScorer);
           }
