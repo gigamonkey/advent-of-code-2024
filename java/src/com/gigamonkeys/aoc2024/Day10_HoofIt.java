@@ -43,6 +43,19 @@ public class Day10_HoofIt implements Solution {
       return total;
     }
 
+    int count2() {
+      int total = 0;
+      for (int r = 0; r < grid.length; r++) {
+        for (int c = 0; c < grid[0].length; c++) {
+          if (grid[r][c] == 0) {
+            //System.out.println("TRAILHEAD grid[%d][%d] = %d".formatted(r, c, grid[r][c]));
+            total += hike2(r, c);
+          }
+        }
+      }
+      return total;
+    }
+
     boolean[][] seen() {
       return new boolean[grid.length][grid[0].length];
     }
@@ -72,6 +85,25 @@ public class Day10_HoofIt implements Solution {
       }
     }
 
+    int hike2(int r, int c) {
+      if (grid[r][c] == 9) {
+        return 1;
+      } else {
+        int total = 0;
+        for (int dr = -1; dr <= 1; dr++) {
+          for (int dc = -1; dc <= 1; dc++) {
+            if (!(dr == 0 && dc == 0) && (dr == 0 || dc == 0)) {
+              if (uphill(r, c, dr, dc)) {
+                //System.out.println("uphill from hiking from %d,%d = %d to %d,%d = %d".formatted(r, c, grid[r][c], r + dr, c + dc, grid[r + dr][c + dc]));
+                total += hike2(r + dr, c + dc);
+              }
+            }
+          }
+        }
+        return total;
+      }
+    }
+
     boolean inBounds(int r, int c) {
       return 0 <= r && r < grid.length && 0 <= c && c < grid[0].length;
     }
@@ -86,14 +118,6 @@ public class Day10_HoofIt implements Solution {
 
   public String part1(Path input) throws IOException {
     int[][] grid = digitGrid(input);
-
-    // Find 0s.
-
-    // Walk from 0s recursively, keeping track of 9s found.
-    // Backtracking only happens when we hit a spot where we can go in multiple directions.
-
-
-
     var w = new Walker(grid);
     return String.valueOf(w.count());
 
@@ -102,6 +126,8 @@ public class Day10_HoofIt implements Solution {
 
 
   public String part2(Path input) throws IOException {
-    return "nyi";
+    int[][] grid = digitGrid(input);
+    var w = new Walker(grid);
+    return String.valueOf(w.count2());
   }
 }
