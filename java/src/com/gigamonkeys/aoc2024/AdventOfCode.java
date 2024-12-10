@@ -42,21 +42,18 @@ public class AdventOfCode {
 
   private boolean runPart(Solution s, int day, int part, boolean test) throws IOException {
     String label = test ? "test" : "real";
-    Optional<String> expected = expected(day, part, test);
+    String expected = expected(day, part, test);
 
-    if (expected.isPresent()) {
-      long start = System.nanoTime();
-      String result = result(s, day, part, test);
-      long elapsed = Math.round((System.nanoTime() - start) / 1e6);
-      var e = expected.get();
-      if (e.equals(result)) {
-        System.out.printf("✅ Day %d, part %d (%s): %s (%d ms)%n", day, part, label, result, elapsed);
-        return true;
-      } else {
-        System.out.printf("❌ Day %d, part %d (%s): %s. Expected: %s (%d ms)%n", day, part, label, result, e, elapsed);
-      }
+    long start = System.nanoTime();
+    String result = result(s, day, part, test);
+    long elapsed = Math.round((System.nanoTime() - start) / 1e6);
+    if (expected.equals(result)) {
+      System.out.printf("✅ Day %d, part %d (%s): %s (%d ms)%n", day, part, label, result, elapsed);
+      return true;
+    } else if (expected.equals("")) {
+      System.out.printf("🟡 Day %d, part %d (%s): %s (%d ms). No expected value yet.%n", day, part, label, result, elapsed);
     } else {
-      System.out.printf("🟡 Day %d, part %d (%s): no expected value yet.%n", day, part, label);
+      System.out.printf("❌ Day %d, part %d (%s): %s. Expected: %s (%d ms)%n", day, part, label, result, expected, elapsed);
     }
     return false;
   }
@@ -85,9 +82,9 @@ public class AdventOfCode {
     return Path.of("inputs/day-%02d/%s.txt".formatted(day, test ? "test" : "real"));
   }
 
-  private Optional<String> expected(int day, int part, boolean test) throws IOException {
+  private String expected(int day, int part, boolean test) throws IOException {
     var p = Path.of("inputs/day-%02d/part-%d%s.expected".formatted(day, part, test ? "-test" : ""));
-    return exists(p) ? Optional.of(readString(p).trim()) : Optional.empty();
+    return exists(p) ? readString(p).trim() : "";
   }
 
   private void run(int firstDay, int lastDay) throws IOException {
@@ -99,7 +96,12 @@ public class AdventOfCode {
       if (s.isPresent()) {
         for (var part = 1; part <= 2; part++) {
           okay &= runPart(s.get(), day, part, true);
-          okay &= runPart(s.get(), day, part, false);
+          if (okay) {
+            // Only run the real problem if we're passing the test case. Mostly
+            // so we can emit debugging output and not get spammed because the
+            // real test case is so much bigger.
+            okay &= runPart(s.get(), day, part, false);
+          }
         }
       } else {
         System.out.println("⚠️ Day %d not implemented yet".formatted(day));
