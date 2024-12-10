@@ -92,10 +92,11 @@ public class AdventOfCode {
     return exists(p) ? Optional.of(readString(p).trim()) : Optional.empty();
   }
 
-  public void run(int start) throws IOException {
+  public void run(int firstDay) throws IOException {
     var okay = true;
 
-    for (var day = start; day <= MAX_DAY; day++) {
+    long start = System.nanoTime();
+    for (var day = firstDay; day <= MAX_DAY; day++) {
       var s = number(day);
       if (s.isPresent()) {
         for (var part = 1; part <= 2; part++) {
@@ -108,7 +109,8 @@ public class AdventOfCode {
     }
 
     if (okay) {
-      System.out.println("\nAll okay!");
+      double elapsed = (System.nanoTime() - start) / 1e9;
+      System.out.println("\nAll okay! (%f seconds)".formatted(elapsed));
     } else {
       System.out.println("\nUh oh!");
     }
@@ -116,7 +118,7 @@ public class AdventOfCode {
 
   public static void main(String[] args) throws IOException {
     System.out.println("Welcome to Advent of Code!");
-    int start = args.length > 0 && args[0].equals("--all") ? 1 : MAX_DAY;
-    new AdventOfCode().run(start);
+    int firstDay = args.length > 0 && args[0].equals("--all") ? 1 : MAX_DAY;
+    new AdventOfCode().run(firstDay);
   }
 }
