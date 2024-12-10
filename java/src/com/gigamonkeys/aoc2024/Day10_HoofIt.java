@@ -18,38 +18,22 @@ import java.util.stream.*;
 
 public class Day10_HoofIt implements Solution {
 
-  record Cell(int row, int column) {}
+  private record Walker(int[][] grid) {
 
-  record Direction(int dr, int dc) {}
-
-  private static class Walker {
-
-    private final int[][] grid;
-
-    Walker(int[][] grid) {
-      this.grid = grid;
+    int sumScores() {
+      return sum((r, c) -> hike1(r, c, seen()));
     }
 
-    int count() {
+    int sumRatings() {
+      return sum((r, c) -> hike2(r, c));
+    }
+
+    int sum(IntBinaryOperator op) {
       int total = 0;
       for (int r = 0; r < grid.length; r++) {
         for (int c = 0; c < grid[0].length; c++) {
           if (grid[r][c] == 0) {
-            //System.out.println("TRAILHEAD grid[%d][%d] = %d".formatted(r, c, grid[r][c]));
-            total += hike(r, c, seen());
-          }
-        }
-      }
-      return total;
-    }
-
-    int count2() {
-      int total = 0;
-      for (int r = 0; r < grid.length; r++) {
-        for (int c = 0; c < grid[0].length; c++) {
-          if (grid[r][c] == 0) {
-            //System.out.println("TRAILHEAD grid[%d][%d] = %d".formatted(r, c, grid[r][c]));
-            total += hike2(r, c);
+            total += op.applyAsInt(r, c);
           }
         }
       }
@@ -60,10 +44,9 @@ public class Day10_HoofIt implements Solution {
       return new boolean[grid.length][grid[0].length];
     }
 
-    int hike(int r, int c, boolean[][] seen) {
+    int hike1(int r, int c, boolean[][] seen) {
       if (grid[r][c] == 9) {
         if (!seen[r][c]) {
-          //System.out.println("Found peak at %d,%d".formatted(r, c));
           seen[r][c] = true;
           return 1;
         } else {
@@ -75,8 +58,7 @@ public class Day10_HoofIt implements Solution {
           for (int dc = -1; dc <= 1; dc++) {
             if (!(dr == 0 && dc == 0) && (dr == 0 || dc == 0)) {
               if (uphill(r, c, dr, dc)) {
-                //System.out.println("uphill from hiking from %d,%d = %d to %d,%d = %d".formatted(r, c, grid[r][c], r + dr, c + dc, grid[r + dr][c + dc]));
-                total += hike(r + dr, c + dc, seen);
+                total += hike1(r + dr, c + dc, seen);
               }
             }
           }
@@ -94,7 +76,6 @@ public class Day10_HoofIt implements Solution {
           for (int dc = -1; dc <= 1; dc++) {
             if (!(dr == 0 && dc == 0) && (dr == 0 || dc == 0)) {
               if (uphill(r, c, dr, dc)) {
-                //System.out.println("uphill from hiking from %d,%d = %d to %d,%d = %d".formatted(r, c, grid[r][c], r + dr, c + dc, grid[r + dr][c + dc]));
                 total += hike2(r + dr, c + dc);
               }
             }
@@ -111,23 +92,13 @@ public class Day10_HoofIt implements Solution {
     boolean uphill(int r, int c, int dr, int dc) {
       return inBounds(r + dr, c + dc) && (grid[r][c] + 1) == grid[r + dr][c + dc];
     }
-
   }
-
-
 
   public String part1(Path input) throws IOException {
-    int[][] grid = digitGrid(input);
-    var w = new Walker(grid);
-    return String.valueOf(w.count());
-
-
+    return String.valueOf(new Walker(digitGrid(input)).sumScores());
   }
 
-
   public String part2(Path input) throws IOException {
-    int[][] grid = digitGrid(input);
-    var w = new Walker(grid);
-    return String.valueOf(w.count2());
+    return String.valueOf(new Walker(digitGrid(input)).sumRatings());
   }
 }
