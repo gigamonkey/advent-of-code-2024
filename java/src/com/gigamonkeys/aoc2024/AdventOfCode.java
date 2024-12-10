@@ -1,5 +1,6 @@
 package com.gigamonkeys.aoc2024;
 
+import static java.lang.System.nanoTime;
 import static java.nio.file.Files.*;
 import static java.time.temporal.ChronoUnit.*;
 
@@ -41,9 +42,9 @@ public class AdventOfCode {
   }
 
   private boolean runPart(Solution s, int day, int part, boolean test) throws IOException {
-    var start = System.nanoTime();
+    var start = nanoTime();
     var result = result(s, day, part, test);
-    var elapsed = Math.round((System.nanoTime() - start) / 1e6);
+    var elapsed = Math.round((nanoTime() - start) / 1e6);
 
     var expected = expected(day, part, test);
     var okay = result.equals(expected);
@@ -94,7 +95,7 @@ public class AdventOfCode {
   private void run(int firstDay, int lastDay) throws IOException {
     var okay = true;
 
-    long start = System.nanoTime();
+    long start = nanoTime();
     for (var day = firstDay; day <= lastDay; day++) {
       var s = solutionFor(day);
       if (s.isPresent()) {
@@ -111,13 +112,10 @@ public class AdventOfCode {
         System.out.println("⚠️ Day %d not implemented yet".formatted(day));
       }
     }
+    var elapsed = (nanoTime() - start) / 1e9;
 
-    double elapsed = (System.nanoTime() - start) / 1e9;
-    if (okay) {
-      System.out.println("\nAll okay! (%f seconds)".formatted(elapsed));
-    } else {
-      System.out.println("\nUh oh! (%f seconds)".formatted(elapsed));
-    }
+    var label = okay ? "All okay" : "Uh oh";
+    System.out.println("\n%s! (%f seconds)".formatted(label, elapsed));
   }
 
   public static void main(String[] args) throws IOException {
