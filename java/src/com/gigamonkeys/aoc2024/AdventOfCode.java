@@ -41,21 +41,25 @@ public class AdventOfCode {
   }
 
   private boolean runPart(Solution s, int day, int part, boolean test) throws IOException {
-    String label = test ? "test" : "real";
-    String expected = expected(day, part, test);
+    var start = System.nanoTime();
+    var result = result(s, day, part, test);
+    var elapsed = Math.round((System.nanoTime() - start) / 1e6);
 
-    long start = System.nanoTime();
-    String result = result(s, day, part, test);
-    long elapsed = Math.round((System.nanoTime() - start) / 1e6);
-    if (expected.equals(result)) {
-      System.out.printf("✅ Day %d, part %d (%s): %s (%d ms)%n", day, part, label, result, elapsed);
-      return true;
+    var expected = expected(day, part, test);
+    var okay = result.equals(expected);
+
+    var label = test ? "test" : "real";
+    var synopsis = "Day %d, part %d (%s): %s".formatted(day, part, label, result);
+    var time = "(%d ms)".formatted(elapsed);
+
+    if (okay) {
+      System.out.printf("✅ %s %s%n".formatted(synopsis, time));
     } else if (expected.equals("")) {
-      System.out.printf("🟡 Day %d, part %d (%s): %s (%d ms). No expected value yet.%n", day, part, label, result, elapsed);
+      System.out.printf("🟡 %s %s. No expected value yet.%n", synopsis, time);
     } else {
-      System.out.printf("❌ Day %d, part %d (%s): %s. Expected: %s (%d ms)%n", day, part, label, result, expected, elapsed);
+      System.out.printf("❌ %s. Expected: %s %s%n", synopsis, expected, time);
     }
-    return false;
+    return okay;
   }
 
   private String result(Solution s, int day, int part, boolean test) throws IOException {
