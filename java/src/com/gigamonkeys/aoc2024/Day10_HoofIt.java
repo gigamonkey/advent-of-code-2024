@@ -44,13 +44,13 @@ public class Day10_HoofIt implements Solution {
         return trailScorer.applyAsInt(r, c);
       } else {
         int total = 0;
-        for (int dr = -1; dr <= 1; dr++) {
-          for (int dc = -1; dc <= 1; dc++) {
-            if (!(dr == 0 && dc == 0) && (dr == 0 || dc == 0)) {
-              if (uphill(r, c, dr, dc)) {
-                total += hike(r + dr, c + dc, trailScorer);
-              }
-            }
+
+        // A trick for effiiently enumerating NSEW
+        for (int i = 0; i < 4; i++) {
+          var nextRow = r + 1 - Math.abs(i - 2);
+          var nextCol = c + 1 - Math.abs(1 - i);
+          if (uphill(nextRow, nextCol, grid[r][c])) {
+            total += hike(nextRow, nextCol, trailScorer);
           }
         }
         return total;
@@ -76,8 +76,8 @@ public class Day10_HoofIt implements Solution {
       return 0 <= r && r < grid.length && 0 <= c && c < grid[0].length;
     }
 
-    boolean uphill(int r, int c, int dr, int dc) {
-      return inBounds(r + dr, c + dc) && grid[r + dr][c + dc] - grid[r][c] == 1;
+    boolean uphill(int r, int c, int current) {
+      return inBounds(r, c) && grid[r][c] - current == 1;
     }
   }
 
