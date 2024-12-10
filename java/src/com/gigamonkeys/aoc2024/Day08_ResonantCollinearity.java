@@ -2,15 +2,13 @@ package com.gigamonkeys.aoc2024;
 
 import static com.gigamonkeys.aoc2024.Util.characterGrid;
 import static java.util.stream.Collectors.*;
-import static java.util.stream.IntStream.range;
+import static java.util.stream.IntStream.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.stream.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class Day08_ResonantCollinearity implements Solution {
 

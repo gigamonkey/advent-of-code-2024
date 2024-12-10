@@ -1,20 +1,14 @@
 package com.gigamonkeys.aoc2024;
 
 import static com.gigamonkeys.aoc2024.Util.*;
-import static java.lang.System.arraycopy;
-import static java.util.Arrays.fill;
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.*;
-import static java.util.stream.IntStream.range;
+import static java.lang.System.*;
+import static java.util.Arrays.*;
 import static java.util.stream.Stream.generate;
 
-import java.io.*;
-import java.math.BigInteger;
-import java.nio.file.*;
-import java.util.*;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.*;
-import java.util.stream.*;
+import java.util.stream.IntStream;
 
 public class Day09_DiskFragmenter implements Solution {
 

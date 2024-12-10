@@ -1,12 +1,12 @@
 package com.gigamonkeys.aoc2024;
 
-import static java.nio.file.Files.lines;
-import static java.util.Arrays.stream;
+import static java.nio.file.Files.*;
+import static java.util.Arrays.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.function.*;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 // Alternate solution to Day 7. Works well for part 1 because of efficient bit
