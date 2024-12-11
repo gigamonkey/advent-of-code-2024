@@ -27,7 +27,7 @@ public class Day11_PlutonianPebbles implements Solution {
 
   */
 
-  record Key(long n, int iterations) {}
+  private record Key(long n, int iterations) {}
 
   private final Map<Key, Long> cache = new HashMap<>();
 
@@ -40,21 +40,18 @@ public class Day11_PlutonianPebbles implements Solution {
   }
 
   private long solve(List<Long> nums, int iters) {
-    return nums.stream().map(n -> new Key(n, iters)).mapToLong(this::number).sum();
+    return nums.stream().mapToLong(n -> number(n, iters)).sum();
   }
 
-  private long number(Key key) {
-    switch (key) {
-      case Key(var num, var iters) -> {
-        if (iters == 0) {
-          return 1;
-        } else {
-          if (!cache.containsKey(key)) {
-            cache.put(key, replacements(num).map(n -> new Key(n, iters - 1)).mapToLong(this::number).sum());
-          }
-          return cache.get(key);
-        }
+  private long number(long num, int iters) {
+    if (iters == 0) {
+      return 1;
+    } else {
+      Key key = new Key(num, iters);
+      if (!cache.containsKey(key)) {
+        cache.put(key, replacements(num).mapToLong(n -> number(n, iters - 1)).sum());
       }
+      return cache.get(key);
     }
   }
 
