@@ -47,7 +47,7 @@ public class Day11_PlutonianPebbles implements Solution {
     if (iters == 0) {
       return 1;
     } else {
-      Key key = new Key(num, iters);
+      var key = new Key(num, iters);
       if (!cache.containsKey(key)) {
         cache.put(key, replacements(num).mapToLong(n -> number(n, iters - 1)).sum());
       }
