@@ -5,8 +5,8 @@ import static java.lang.Math.*;
 
 import java.io.*;
 import java.nio.file.*;
-import java.util.function.*;
 import java.util.*;
+import java.util.function.*;
 import java.util.stream.*;
 
 public class Day11_PlutonianPebbles implements Solution {
@@ -27,43 +27,39 @@ public class Day11_PlutonianPebbles implements Solution {
 
   */
 
-  public String part1(Path input) throws IOException {
-    List<Long> list = Arrays.stream(text(input).split("\\s+")).map(Long::parseLong).toList();
-    for (int i = 0; i < 25; i++) {
-      list = list.stream().flatMap(this::replacements).toList();
-      // if (i < 6) {
-      //   System.out.println(list);
-      // }
-    }
-    return String.valueOf(list.size());
-  }
-
   record Key(long n, int iterations) {}
 
   private final Map<Key, Long> cache = new HashMap<>();
 
-  public String part2(Path input) throws IOException {
-    List<Long> list = Arrays.stream(text(input).split("\\s+")).map(Long::parseLong).toList();
-
-    return String.valueOf(list.stream().map(n -> new Key(n, 75)).mapToLong(this::number).sum());
+  public String part1(Path input) throws IOException {
+    return String.valueOf(solve(longs(input), 25));
   }
 
+  public String part2(Path input) throws IOException {
+    return String.valueOf(solve(longs(input), 75));
+  }
+
+  private long solve(List<Long> nums, int iters) {
+    return nums.stream().map(n -> new Key(n, iters)).mapToLong(this::number).sum();
+  }
 
   private long number(Key key) {
-    int iters = key.iterations();
-    if (iters == 0) {
-      return 1;
-    } else {
-      if (!cache.containsKey(key)) {
-        long count = replacements(key.n()).map(n -> new Key(n, iters - 1)).mapToLong(this::number).sum();
-        cache.put(key, count);
+    switch (key) {
+      case Key(var num, var iters) -> {
+        if (iters == 0) {
+          return 1;
+        } else {
+          if (!cache.containsKey(key)) {
+            long count = replacements(num).map(n -> new Key(n, iters - 1)).mapToLong(this::number).sum();
+            cache.put(key, count);
+          }
+          return cache.get(key);
+        }
       }
-      return cache.get(key);
     }
   }
 
   private Stream<Long> replacements(long n) {
-    if (n < 0) throw new Error("n is negative: " + n);
     if (n == 0) {
       return Stream.of(1L);
     } else {
@@ -79,9 +75,7 @@ public class Day11_PlutonianPebbles implements Solution {
     }
   }
 
-  private long digits(long n) {
-    //return n == 0 ? 1 : (int) ceil(log10(n));
-    return String.valueOf(n).length();
+  private int digits(long n) {
+    return (int) floor(log10(n)) + 1;
   }
-
 }

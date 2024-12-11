@@ -32,4 +32,8 @@ public class Util {
   public static int[][] digitGrid(Path p) throws IOException {
     return lines(p).map(line -> line.codePoints().map(cp -> Character.digit(cp, 10)).toArray()).toArray(int[][]::new);
   }
+
+  public static List<Long> longs(Path input) throws IOException {
+    return Arrays.stream(text(input).split("\\s+")).map(Long::parseLong).toList();
+  }
 }
