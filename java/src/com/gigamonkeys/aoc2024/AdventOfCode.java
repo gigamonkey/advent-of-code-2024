@@ -31,7 +31,7 @@ public class AdventOfCode {
     new Day08_ResonantCollinearity(),
     new Day09_DiskFragmenter(),
     new Day10_HoofIt(),
-    new Day11()
+    new Day11_PlutonianPebbles()
   );
 
   private Optional<Solution> solutionFor(int day) {

@@ -9,7 +9,7 @@ import java.util.function.*;
 import java.util.*;
 import java.util.stream.*;
 
-public class Day11 implements Solution {
+public class Day11_PlutonianPebbles implements Solution {
 
   public String part1(Path input) throws IOException {
     return "nyi";
