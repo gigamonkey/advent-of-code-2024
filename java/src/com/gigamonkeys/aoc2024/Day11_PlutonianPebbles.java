@@ -72,6 +72,6 @@ public class Day11_PlutonianPebbles implements Solution {
   }
 
   private int digits(long n) {
-    return (int) floor(log10(n)) + 1;
+    return n == 0 ? 1 : (int) floor(log10(n)) + 1;
   }
 }
