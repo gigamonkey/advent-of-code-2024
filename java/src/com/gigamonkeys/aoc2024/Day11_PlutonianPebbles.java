@@ -50,8 +50,7 @@ public class Day11_PlutonianPebbles implements Solution {
           return 1;
         } else {
           if (!cache.containsKey(key)) {
-            long count = replacements(num).map(n -> new Key(n, iters - 1)).mapToLong(this::number).sum();
-            cache.put(key, count);
+            cache.put(key, replacements(num).map(n -> new Key(n, iters - 1)).mapToLong(this::number).sum());
           }
           return cache.get(key);
         }
@@ -65,7 +64,7 @@ public class Day11_PlutonianPebbles implements Solution {
     } else {
       var d = digits(n);
       if (d % 2 == 0) {
-        var places = (long) Math.pow(10, d / 2);
+        var places = (long) pow(10, d / 2);
         var left = n / places;
         var right = n % places;
         return Stream.of(left, right);
