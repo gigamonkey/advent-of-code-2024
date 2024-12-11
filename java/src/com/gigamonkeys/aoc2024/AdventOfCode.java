@@ -30,7 +30,8 @@ public class AdventOfCode {
     new Day07_BridgeRepair(),
     new Day08_ResonantCollinearity(),
     new Day09_DiskFragmenter(),
-    new Day10_HoofIt()
+    new Day10_HoofIt(),
+    new Day11()
   );
 
   private Optional<Solution> solutionFor(int day) {
