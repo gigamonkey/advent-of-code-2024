@@ -12,9 +12,9 @@ public class Day06_GuardGallivant implements Solution {
 
   private record Visit(Cell cell, Direction direction) {}
 
-  private static class Walker {
+  private static class Guard {
 
-    private final int[][] grid;
+    private final Grid grid;
     private final Optional<Cell> extraObstacle;
     private final Set<Visit> path;
 
@@ -24,11 +24,11 @@ public class Day06_GuardGallivant implements Solution {
     private Visit previous = null;
     private boolean hasLooped = false;
 
-    Walker(int[][] grid) {
+    Guard(Grid grid) {
       this(grid, findStart(grid), Direction.NORTH, new HashSet<>(), null);
     }
 
-    Walker(int[][] grid, Cell position, Direction direction, Set<Visit> path, Cell extraObstacle) {
+    Guard(Grid grid, Cell position, Direction direction, Set<Visit> path, Cell extraObstacle) {
       this.grid = grid;
       this.position = position;
       this.direction = direction;
@@ -38,22 +38,15 @@ public class Day06_GuardGallivant implements Solution {
       path.add(current);
     }
 
-    static Cell findStart(int[][] grid) {
-      for (int r = 0; r < grid.length; r++) {
-        for (int c = 0; c < grid[r].length; c++) {
-          if (grid[r][c] == '^') {
-            return new Cell(r, c);
-          }
-        }
-      }
-      throw new RuntimeException("wat! no guard!!!");
+    static Cell findStart(Grid grid) {
+      return grid.cells().filter(cell -> grid.at(cell) == '^').findFirst().orElseThrow();
     }
 
     void move() {
-      var next = next();
-      while (next.inBounds(grid) && isObstacle(next)) {
+      var next = position.neighbor(direction);
+      while (grid.inBounds(next) && isObstacle(next)) {
         direction = direction.rightTurn();
-        next = next();
+        next = position.neighbor(direction);
       }
       position = next;
       previous = current;
@@ -61,66 +54,59 @@ public class Day06_GuardGallivant implements Solution {
       hasLooped |= !path.add(current);
     }
 
-    Walker copyWithObstacle() {
-      return new Walker(grid, previous.cell(), previous.direction(), new HashSet<>(path), position);
+    Guard copyWithObstacle() {
+      return new Guard(grid, previous.cell(), previous.direction(), new HashSet<>(path), position);
     }
 
     Cell position() {
       return position;
     }
 
-    int at(Cell c) {
-      return grid[c.row()][c.column()];
-    }
-
     boolean isObstacle(Cell next) {
-      return at(next) == '#' || extraObstacle.map(next::equals).orElse(false);
-    }
-
-    Cell next() {
-      return new Cell(position.row() + direction.rowChange(), position.column() + direction.columnChange());
+      return grid.at(next) == '#' || extraObstacle.map(next::equals).orElse(false);
     }
 
     boolean causesLoop() {
-      while (!hasLooped && position.inBounds(grid)) {
+      while (!hasLooped && grid.inBounds(position)) {
         move();
       }
       return hasLooped;
     }
   }
 
-  public String part1(Path input) throws IOException {
-    int[][] grid = characterGrid(input);
 
-    Walker w = new Walker(grid);
+  public String part1(Path input) throws IOException {
+    Grid grid = new Grid(characterGrid(input));
+
+    Guard guard = new Guard(grid);
     Set<Cell> visited = new HashSet<>();
 
     do {
-      visited.add(w.position());
-      w.move();
-    } while (w.position().inBounds(grid));
+      visited.add(guard.position());
+      guard.move();
+    } while (grid.inBounds(guard.position()));
 
     return String.valueOf(visited.size());
   }
 
   public String part2(Path input) throws IOException {
-    int[][] grid = characterGrid(input);
+    Grid grid = new Grid(characterGrid(input));
 
-    Walker main = new Walker(grid);
+    Guard guard = new Guard(grid);
     Set<Cell> considered = new HashSet<>();
     int obstacles = 0;
 
-    Cell cell = main.position();
-    while (cell.inBounds(grid)) {
-      if (main.at(cell) == '.' && !considered.contains(cell)) {
+    Cell cell = guard.position();
+    while (grid.inBounds(cell)) {
+      if (grid.at(cell) == '.' && !considered.contains(cell)) {
         considered.add(cell);
-        if (main.copyWithObstacle().causesLoop()) {
+        if (guard.copyWithObstacle().causesLoop()) {
           obstacles++;
         }
       }
 
-      main.move();
-      cell = main.position();
+      guard.move();
+      cell = guard.position();
     }
     return String.valueOf(obstacles);
   }
