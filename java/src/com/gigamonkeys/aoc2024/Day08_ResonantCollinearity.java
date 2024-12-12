@@ -23,7 +23,7 @@ public class Day08_ResonantCollinearity implements Solution {
   }
 
   private String solve(Path input, int start, int max, boolean normalize) throws IOException {
-    int[][] grid = characterGrid(input);
+    var grid = new Grid(characterGrid(input));
     return String.valueOf(
       findAntenna(grid)
         .values()
@@ -34,18 +34,15 @@ public class Day08_ResonantCollinearity implements Solution {
     );
   }
 
-  private Map<Integer, List<Antenna>> findAntenna(int[][] grid) {
-    return range(0, grid.length)
-      .boxed()
-      .flatMap(r ->
-        range(0, grid[0].length)
-          .filter(c -> isAntenna(grid[r][c]))
-          .mapToObj(c -> new Antenna(new Cell(r, c), grid[r][c]))
-      )
+  private Map<Integer, List<Antenna>> findAntenna(Grid grid) {
+    return grid
+      .cells()
+      .filter(c -> isAntenna(grid.at(c)))
+      .map(c -> new Antenna(c, grid.at(c)))
       .collect(groupingBy(Antenna::what));
   }
 
-  private List<Cell> antinodes(int[][] grid, List<Antenna> antenna, int start, int max, boolean normalize) {
+  private List<Cell> antinodes(Grid grid, List<Antenna> antenna, int start, int max, boolean normalize) {
     List<Cell> antinodes = new ArrayList<>();
     for (Antenna a1 : antenna) {
       for (Antenna a2 : antenna) {
@@ -54,7 +51,7 @@ public class Day08_ResonantCollinearity implements Solution {
           if (normalize) d = d.normalize();
           int step = start;
           Cell next = a1.cell().step(d, step);
-          while (next.inBounds(grid) && step++ <= max) {
+          while (grid.inBounds(next) && step++ <= max) {
             antinodes.add(next);
             next = a1.cell().step(d, step);
           }
