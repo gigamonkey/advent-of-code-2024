@@ -4,6 +4,8 @@ import static com.gigamonkeys.aoc2024.Util.*;
 import static java.lang.Math.*;
 import static java.util.function.Function.*;
 import static java.util.stream.Collectors.*;
+import static java.util.Map.entry;
+import static java.util.Map.Entry;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -30,14 +32,11 @@ public class Day11_PlutonianPebbles2 implements Solution {
   }
 
   private Map<Long, Long> step(Map<Long, Long> state) {
-
-    record Count(long n, long count) {}
-
     return state
       .entrySet()
       .stream()
-      .flatMap(e -> replacements(e.getKey()).map(n -> new Count(n, e.getValue())))
-      .collect(groupingBy(Count::n, summingLong(Count::count)));
+      .flatMap(e -> replacements(e.getKey()).map(n -> entry(n, e.getValue())))
+      .collect(groupingBy(Entry::getKey, summingLong(Entry::getValue)));
   }
 
   private Stream<Long> replacements(long n) {
