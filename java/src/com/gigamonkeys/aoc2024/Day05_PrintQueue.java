@@ -14,17 +14,15 @@ import java.util.Set;
 
 public class Day05_PrintQueue implements Solution {
 
-  private record Rule(Integer before, Integer after) {}
+  private record Rule(int before, int after) {}
 
   public String part1(Path input) throws IOException {
-    var rules = rules(input);
-    var cmp = byOrderingRules(rules);
+    var cmp = byOrderingRules(rules(input));
     return String.valueOf(updates(input).stream().filter(u -> inOrder(u, cmp)).mapToInt(this::middle).sum());
   }
 
   public String part2(Path input) throws IOException {
-    var rules = rules(input);
-    var cmp = byOrderingRules(rules);
+    var cmp = byOrderingRules(rules(input));
     return String.valueOf(
       updates(input)
         .stream()
