@@ -25,9 +25,7 @@ public class Day12_GardenGroups implements Solution {
     private void walk(Cell cell, Grid grid) {
       members.add(cell);
       for (Cell n : grid.neighbors(cell)) {
-        if (!grid.inBounds(n)) {
-          boundary.add(n);
-        } else if (grid.at(n) != grid.at(cell)) {
+        if (!grid.inBounds(n) || grid.at(n) != grid.at(cell)) {
           boundary.add(n);
         } else if (!members.contains(n)) {
           walk(n, grid);
@@ -47,27 +45,22 @@ public class Day12_GardenGroups implements Solution {
       var unique = new HashSet<Cell>(boundary);
       return (
         Stream.of(NORTH, SOUTH)
-          .map(d -> bordering(unique, members, d, Cell::row))
+          .map(d -> bordering(unique, d, Cell::row))
           .mapToInt(facing -> countSides(facing, Cell::column))
           .sum() +
         Stream.of(EAST, WEST)
-          .map(d -> bordering(unique, members, d, Cell::column))
+          .map(d -> bordering(unique, d, Cell::column))
           .mapToInt(facing -> countSides(facing, Cell::row))
           .sum()
       );
     }
 
-    private int countSides(Map<Integer, List<Cell>> facing, Function<Cell, Integer> extract) {
-      return facing.values().stream().mapToInt(cells -> segments(cells.stream().map(extract).sorted().toList())).sum();
+    private Map<Integer, List<Cell>> bordering(Set<Cell> unique, Direction dir, Function<Cell, Integer> groupBy) {
+      return unique.stream().filter(c -> members.contains(c.neighbor(dir))).collect(groupingBy(groupBy));
     }
 
-    private Map<Integer, List<Cell>> bordering(
-      Set<Cell> unique,
-      Set<Cell> members,
-      Direction dir,
-      Function<Cell, Integer> groupBy
-    ) {
-      return unique.stream().filter(c -> members.contains(c.neighbor(dir))).collect(groupingBy(groupBy));
+    private int countSides(Map<Integer, List<Cell>> facing, Function<Cell, Integer> extract) {
+      return facing.values().stream().mapToInt(cells -> segments(cells.stream().map(extract).sorted().toList())).sum();
     }
 
     private int segments(List<Integer> numbers) {
