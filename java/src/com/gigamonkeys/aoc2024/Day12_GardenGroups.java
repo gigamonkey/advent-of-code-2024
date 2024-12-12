@@ -36,12 +36,6 @@ public class Day12_GardenGroups implements Solution {
     }
   }
 
-  record Region(int area, int perimiter) {
-    public int price() {
-      return area * perimiter;
-    }
-  }
-
   record Walker(int[][] grid) {
     void walk(Cell cell, Set<Cell> members, List<Cell> boundary) {
       members.add(cell);
@@ -76,12 +70,9 @@ public class Day12_GardenGroups implements Solution {
       for (int c = 0; c < grid[0].length; c++) {
         Cell cell = new Cell(r, c);
         if (!seen.contains(cell)) {
-          //System.out.println("walking %s marker %s".formatted(cell, (char)cell.marker(grid)));
           Set<Cell> members = new HashSet<>();
           List<Cell> boundary = new ArrayList<>();
           w.walk(cell, members, boundary);
-          //System.out.println("members: %s; boundary: %s".formatted(members, boundary));
-          //
           total += members.size() * boundary.size();
           seen.addAll(members);
         }
@@ -107,10 +98,6 @@ public class Day12_GardenGroups implements Solution {
           List<Cell> boundary = new ArrayList<>();
           w.walk(cell, members, boundary);
           total += members.size() * sides(members, boundary);
-          // System.out.println("walking %s marker %s".formatted(cell, (char)cell.marker(grid)));
-          // System.out.println("members: %s".formatted(members));
-          // System.out.println("boundary: %s".formatted(boundary));
-          // System.out.println("members: %d; boundary: %d".formatted(members.size(), sides(members, boundary)));
           seen.addAll(members);
         }
       }
@@ -120,51 +107,28 @@ public class Day12_GardenGroups implements Solution {
 
   private int sides(Set<Cell> members, List<Cell> boundary) {
     Set<Cell> unique = new HashSet<>(boundary);
-    //System.out.println("unique: %s".formatted(unique));
-
-    // Map<Integer, List<Cell>> byRow = unique.stream().filter(c -> isHorizontal(c, members)).collect(groupingBy(Cell::row));
-    // Map<Integer, List<Cell>> byColumn = unique.stream().filter(c -> isVertical(c, members)).collect(groupingBy(Cell::column));
-
-    Map<Integer, List<Cell>> north = unique
-      .stream()
-      .filter(c -> members.contains(c.south()))
-      .collect(groupingBy(Cell::row));
-    Map<Integer, List<Cell>> east = unique
-      .stream()
-      .filter(c -> members.contains(c.west()))
-      .collect(groupingBy(Cell::column));
-    Map<Integer, List<Cell>> south = unique
-      .stream()
-      .filter(c -> members.contains(c.north()))
-      .collect(groupingBy(Cell::row));
-    Map<Integer, List<Cell>> west = unique
-      .stream()
-      .filter(c -> members.contains(c.east()))
-      .collect(groupingBy(Cell::column));
 
     int sides = 0;
-    sides += inRow(north);
-    sides += inRow(south);
-    sides += inColumn(east);
-    sides += inColumn(west);
-
+    sides += countSides(bordering(unique, members, Cell::north, Cell::row), Cell::column);
+    sides += countSides(bordering(unique, members, Cell::south, Cell::row), Cell::column);
+    sides += countSides(bordering(unique, members, Cell::east, Cell::column), Cell::row);
+    sides += countSides(bordering(unique, members, Cell::west, Cell::column), Cell::row);
     return sides;
   }
 
-  private int inRow(Map<Integer, List<Cell>> byRow) {
-    int sides = 0;
-    for (List<Cell> inRow : byRow.values()) {
-      //System.out.println("Row %d %s".formatted(inRow.get(0).row(), inRow));
-      sides += segments(inRow.stream().map(Cell::column).sorted().toList());
-    }
-    return sides;
+  private Map<Integer, List<Cell>> bordering(
+    Set<Cell> unique,
+    Set<Cell> members,
+    UnaryOperator<Cell> dir,
+    Function<Cell, Integer> group
+  ) {
+    return unique.stream().filter(c -> members.contains(dir.apply(c))).collect(groupingBy(group));
   }
 
-  private int inColumn(Map<Integer, List<Cell>> byColumn) {
+  private int countSides(Map<Integer, List<Cell>> facing, Function<Cell, Integer> extract) {
     int sides = 0;
-    for (List<Cell> inColumn : byColumn.values()) {
-      //System.out.println("Column %d %s".formatted(inColumn.get(0).column(), inColumn));
-      sides += segments(inColumn.stream().map(Cell::row).sorted().toList());
+    for (List<Cell> cells : facing.values()) {
+      sides += segments(cells.stream().map(extract).sorted().toList());
     }
     return sides;
   }
@@ -176,15 +140,6 @@ public class Day12_GardenGroups implements Solution {
         segments++;
       }
     }
-    //System.out.println("%d segments in %s".formatted(segments, numbers));
     return segments;
-  }
-
-  private boolean isVertical(Cell cell, Set<Cell> members) {
-    return members.contains(cell.east()) || members.contains(cell.west());
-  }
-
-  private boolean isHorizontal(Cell cell, Set<Cell> members) {
-    return members.contains(cell.north()) || members.contains(cell.south());
   }
 }
