@@ -10,31 +10,6 @@ import java.util.Set;
 
 public class Day06_GuardGallivant implements Solution {
 
-  public enum Direction {
-    NORTH,
-    EAST,
-    SOUTH,
-    WEST;
-
-    public int rowChange() {
-      return 1 - Math.abs(ordinal() - 2);
-    }
-
-    public int columnChange() {
-      return 1 - Math.abs(1 - ordinal());
-    }
-
-    public Direction rightTurn() {
-      return Direction.class.getEnumConstants()[(ordinal() + 1) % 4];
-    }
-  }
-
-  private record Cell(int row, int col) {
-    public boolean inBounds(int[][] grid) {
-      return (0 <= row && row < grid.length && 0 <= col && col < grid[row].length);
-    }
-  }
-
   private record Visit(Cell cell, Direction direction) {}
 
   private static class Walker {
@@ -95,7 +70,7 @@ public class Day06_GuardGallivant implements Solution {
     }
 
     int at(Cell c) {
-      return grid[c.row()][c.col()];
+      return grid[c.row()][c.column()];
     }
 
     boolean isObstacle(Cell next) {
@@ -103,7 +78,7 @@ public class Day06_GuardGallivant implements Solution {
     }
 
     Cell next() {
-      return new Cell(position.row() + direction.rowChange(), position.col() + direction.columnChange());
+      return new Cell(position.row() + direction.rowChange(), position.column() + direction.columnChange());
     }
 
     boolean causesLoop() {

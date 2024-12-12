@@ -12,18 +12,6 @@ import java.util.Map;
 
 public class Day08_ResonantCollinearity implements Solution {
 
-  record Cell(int row, int column) {
-    boolean inBounds(int[][] grid) {
-      return 0 <= row && row < grid.length && 0 <= column && column < grid[0].length;
-    }
-    Cell step(GridOffset d, int steps) {
-      return new Cell(row + (steps * d.dr()), column + (steps * d.dc()));
-    }
-    GridOffset to(Cell other) {
-      return new GridOffset(other.row - row, other.column - column);
-    }
-  }
-
   record Antenna(Cell cell, int what) {}
 
   public String part1(Path input) throws IOException {

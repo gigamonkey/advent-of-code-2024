@@ -16,8 +16,12 @@ public record Cell(int row, int column) {
     return new Cell(row + d.rowChange(), column + d.columnChange());
   }
 
-  public Cell step(Direction d, int steps) {
-    return new Cell(row + (steps * d.rowChange()), column + (steps * d.rowChange()));
+  public Cell step(GridOffset offset, int steps) {
+    return new Cell(row + (steps * offset.dr()), column + (steps * offset.dc()));
+  }
+
+  public GridOffset to(Cell other) {
+    return new GridOffset(other.row - row, other.column - column);
   }
 
   public boolean inBounds(int[][] grid) {
