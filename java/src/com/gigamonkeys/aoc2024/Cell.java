@@ -11,9 +11,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 
-
 public record Cell(int row, int column) {
-
   public Cell north() {
     return new Cell(row - 1, column);
   }

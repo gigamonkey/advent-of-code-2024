@@ -12,27 +12,16 @@ import java.util.stream.*;
 
 public class Day12_GardenGroups implements Solution {
 
-  record Surveyor(Grid grid) {
+  static class Region {
 
-    long survey(BiFunction<Set<Cell>, List<Cell>, Integer> measurer) {
+    private Set<Cell> members = new HashSet<>();
+    private List<Cell> boundary = new ArrayList<>();
 
-      Set<Cell> seen = new HashSet<>();
-
-      long total = 0;
-
-      for (Cell cell: grid) {
-        if (!seen.contains(cell)) {
-          Set<Cell> members = new HashSet<>();
-          List<Cell> boundary = new ArrayList<>();
-          walk(cell, members, boundary);
-          total += members.size() * measurer.apply(members, boundary);
-          seen.addAll(members);
-        }
-      }
-      return total;
+    Region(Cell cell, Grid grid) {
+      walk(cell, grid);
     }
 
-    void walk(Cell cell, Set<Cell> members, List<Cell> boundary) {
+    private void walk(Cell cell, Grid grid) {
       members.add(cell);
       for (Cell n : grid.neighbors(cell)) {
         if (!grid.inBounds(n)) {
@@ -40,54 +29,73 @@ public class Day12_GardenGroups implements Solution {
         } else if (grid.at(n) != grid.at(cell)) {
           boundary.add(n);
         } else if (!members.contains(n)) {
-          walk(n, members, boundary);
+          walk(n, grid);
         }
       }
+    }
+
+    public int area() {
+      return members.size();
+    }
+
+    public int fenceSegments() {
+      return boundary.size();
+    }
+
+    public int sides() {
+      var unique = new HashSet<Cell>(boundary);
+      var sides = 0;
+      sides += countSides(bordering(unique, members, Cell::north, Cell::row), Cell::column);
+      sides += countSides(bordering(unique, members, Cell::south, Cell::row), Cell::column);
+      sides += countSides(bordering(unique, members, Cell::east, Cell::column), Cell::row);
+      sides += countSides(bordering(unique, members, Cell::west, Cell::column), Cell::row);
+      return sides;
+    }
+
+    private int countSides(Map<Integer, List<Cell>> facing, Function<Cell, Integer> extract) {
+      return facing.values().stream().mapToInt(cells -> segments(cells.stream().map(extract).sorted().toList())).sum();
+    }
+
+    private Map<Integer, List<Cell>> bordering(
+      Set<Cell> unique,
+      Set<Cell> members,
+      UnaryOperator<Cell> dir,
+      Function<Cell, Integer> groupBy
+    ) {
+      return unique.stream().filter(c -> members.contains(dir.apply(c))).collect(groupingBy(groupBy));
+    }
+
+    private int segments(List<Integer> numbers) {
+      int segments = 1;
+      for (int i = 0; i < numbers.size() - 1; i++) {
+        if (numbers.get(i) + 1 != numbers.get(i + 1)) {
+          segments++;
+        }
+      }
+      return segments;
     }
   }
 
   public String part1(Path input) throws IOException {
-    return solve(input, (ignore, boundary) -> boundary.size());
+    return survey(input, Region::fenceSegments);
   }
 
   public String part2(Path input) throws IOException {
-    return solve(input, this::sides);
+    return survey(input, Region::sides);
   }
 
-  public String solve(Path input, BiFunction<Set<Cell>, List<Cell>, Integer> measurer) throws IOException {
-    return String.valueOf(new Surveyor(new Grid(characterGrid(input))).survey(measurer));
-  }
+  private String survey(Path input, Function<Region, Integer> measurer) throws IOException {
+    var grid = new Grid(characterGrid(input));
+    var seen = new HashSet<Cell>();
+    var total = 0;
 
-  private int sides(Set<Cell> members, List<Cell> boundary) {
-    Set<Cell> unique = new HashSet<>(boundary);
-    int sides = 0;
-    sides += countSides(bordering(unique, members, Cell::north, Cell::row), Cell::column);
-    sides += countSides(bordering(unique, members, Cell::south, Cell::row), Cell::column);
-    sides += countSides(bordering(unique, members, Cell::east, Cell::column), Cell::row);
-    sides += countSides(bordering(unique, members, Cell::west, Cell::column), Cell::row);
-    return sides;
-  }
-
-  private int countSides(Map<Integer, List<Cell>> facing, Function<Cell, Integer> extract) {
-    return facing.values().stream().mapToInt(cells -> segments(cells.stream().map(extract).sorted().toList())).sum();
-  }
-
-  private Map<Integer, List<Cell>> bordering(
-    Set<Cell> unique,
-    Set<Cell> members,
-    UnaryOperator<Cell> dir,
-    Function<Cell, Integer> groupBy
-  ) {
-    return unique.stream().filter(c -> members.contains(dir.apply(c))).collect(groupingBy(groupBy));
-  }
-
-  private int segments(List<Integer> numbers) {
-    int segments = 1;
-    for (int i = 0; i < numbers.size() - 1; i++) {
-      if (numbers.get(i) + 1 != numbers.get(i + 1)) {
-        segments++;
+    for (Cell cell : grid) {
+      if (!seen.contains(cell)) {
+        var region = new Region(cell, grid);
+        total += region.area() * measurer.apply(region);
+        seen.addAll(region.members);
       }
     }
-    return segments;
+    return String.valueOf(total);
   }
 }

@@ -37,7 +37,8 @@ public class Grid implements Iterable<Cell> {
     return () -> range(0, 4).mapToObj(i -> new Cell(row + 1 - abs(i - 2), column + 1 - abs(1 - i))).iterator();
   }
 
-  @Override public Iterator<Cell> iterator() {
+  @Override
+  public Iterator<Cell> iterator() {
     return cells().iterator();
   }
 }
