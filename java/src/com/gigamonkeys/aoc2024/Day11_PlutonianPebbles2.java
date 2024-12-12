@@ -2,10 +2,10 @@ package com.gigamonkeys.aoc2024;
 
 import static com.gigamonkeys.aoc2024.Util.*;
 import static java.lang.Math.*;
+import static java.util.Map.Entry;
+import static java.util.Map.entry;
 import static java.util.function.Function.*;
 import static java.util.stream.Collectors.*;
-import static java.util.Map.entry;
-import static java.util.Map.Entry;
 
 import java.io.IOException;
 import java.nio.file.Path;

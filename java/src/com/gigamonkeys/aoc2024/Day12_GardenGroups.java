@@ -34,15 +34,15 @@ public class Day12_GardenGroups implements Solution {
     Cell west() {
       return new Cell(row, column - 1);
     }
-
   }
 
   record Region(int area, int perimiter) {
-    public int price() { return area * perimiter; }
-  };
+    public int price() {
+      return area * perimiter;
+    }
+  }
 
   record Walker(int[][] grid) {
-
     void walk(Cell cell, Set<Cell> members, List<Cell> boundary) {
       members.add(cell);
 
@@ -125,10 +125,22 @@ public class Day12_GardenGroups implements Solution {
     // Map<Integer, List<Cell>> byRow = unique.stream().filter(c -> isHorizontal(c, members)).collect(groupingBy(Cell::row));
     // Map<Integer, List<Cell>> byColumn = unique.stream().filter(c -> isVertical(c, members)).collect(groupingBy(Cell::column));
 
-    Map<Integer, List<Cell>> north = unique.stream().filter(c -> members.contains(c.south())).collect(groupingBy(Cell::row));
-    Map<Integer, List<Cell>> east = unique.stream().filter(c -> members.contains(c.west())).collect(groupingBy(Cell::column));
-    Map<Integer, List<Cell>> south = unique.stream().filter(c -> members.contains(c.north())).collect(groupingBy(Cell::row));
-    Map<Integer, List<Cell>> west = unique.stream().filter(c -> members.contains(c.east())).collect(groupingBy(Cell::column));
+    Map<Integer, List<Cell>> north = unique
+      .stream()
+      .filter(c -> members.contains(c.south()))
+      .collect(groupingBy(Cell::row));
+    Map<Integer, List<Cell>> east = unique
+      .stream()
+      .filter(c -> members.contains(c.west()))
+      .collect(groupingBy(Cell::column));
+    Map<Integer, List<Cell>> south = unique
+      .stream()
+      .filter(c -> members.contains(c.north()))
+      .collect(groupingBy(Cell::row));
+    Map<Integer, List<Cell>> west = unique
+      .stream()
+      .filter(c -> members.contains(c.east()))
+      .collect(groupingBy(Cell::column));
 
     int sides = 0;
     sides += inRow(north);
@@ -175,6 +187,4 @@ public class Day12_GardenGroups implements Solution {
   private boolean isHorizontal(Cell cell, Set<Cell> members) {
     return members.contains(cell.north()) || members.contains(cell.south());
   }
-
-
 }
