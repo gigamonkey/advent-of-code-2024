@@ -69,11 +69,11 @@ public class Day06_GuardGallivant implements Solution {
       return grid.at(next) == '#' || extraObstacle.map(next::equals).orElse(false);
     }
 
-    boolean causesLoop() {
-      while (!hasLooped && grid.inBounds(position)) {
-        move();
+    boolean loops() {
+      while (grid.inBounds(move())) {
+        if (hasLooped) return true;
       }
-      return hasLooped;
+      return false;
     }
   }
 
@@ -93,7 +93,7 @@ public class Day06_GuardGallivant implements Solution {
     while (grid.inBounds(cell)) {
       if (grid.at(cell) == '.' && !considered.contains(cell)) {
         considered.add(cell);
-        if (guard.copyWithObstacle().causesLoop()) {
+        if (guard.copyWithObstacle().loops()) {
           obstacles++;
         }
       }
