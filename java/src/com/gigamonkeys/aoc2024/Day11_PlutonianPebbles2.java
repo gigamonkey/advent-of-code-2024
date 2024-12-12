@@ -13,8 +13,6 @@ import java.util.stream.Stream;
 
 public class Day11_PlutonianPebbles2 implements Solution {
 
-  private record Count(long n, long count) {}
-
   public String part1(Path input) throws IOException {
     return String.valueOf(solve(longs(input), 25));
   }
@@ -32,6 +30,9 @@ public class Day11_PlutonianPebbles2 implements Solution {
   }
 
   private Map<Long, Long> step(Map<Long, Long> state) {
+
+    record Count(long n, long count) {}
+
     return state
       .entrySet()
       .stream()
