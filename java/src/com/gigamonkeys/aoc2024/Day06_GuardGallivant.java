@@ -1,6 +1,8 @@
 package com.gigamonkeys.aoc2024;
 
 import static com.gigamonkeys.aoc2024.Util.characterGrid;
+import static java.util.stream.Collectors.*;
+import static java.util.stream.Stream.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -32,8 +34,8 @@ public class Day06_GuardGallivant implements Solution {
       this.grid = grid;
       this.position = position;
       this.direction = direction;
-      this.extraObstacle = Optional.ofNullable(extraObstacle);
       this.path = path;
+      this.extraObstacle = Optional.ofNullable(extraObstacle);
       this.current = new Visit(position, direction);
       path.add(current);
     }
@@ -42,7 +44,7 @@ public class Day06_GuardGallivant implements Solution {
       return grid.cells().filter(cell -> grid.at(cell) == '^').findFirst().orElseThrow();
     }
 
-    void move() {
+    Cell move() {
       var next = position.neighbor(direction);
       while (grid.inBounds(next) && isObstacle(next)) {
         direction = direction.rightTurn();
@@ -52,6 +54,7 @@ public class Day06_GuardGallivant implements Solution {
       previous = current;
       current = new Visit(position, direction);
       hasLooped |= !path.add(current);
+      return position;
     }
 
     Guard copyWithObstacle() {
@@ -74,24 +77,14 @@ public class Day06_GuardGallivant implements Solution {
     }
   }
 
-
   public String part1(Path input) throws IOException {
     Grid grid = new Grid(characterGrid(input));
-
     Guard guard = new Guard(grid);
-    Set<Cell> visited = new HashSet<>();
-
-    do {
-      visited.add(guard.position());
-      guard.move();
-    } while (grid.inBounds(guard.position()));
-
-    return String.valueOf(visited.size());
+    return String.valueOf(iterate(guard.position(), grid::inBounds, c -> guard.move()).collect(toSet()).size());
   }
 
   public String part2(Path input) throws IOException {
     Grid grid = new Grid(characterGrid(input));
-
     Guard guard = new Guard(grid);
     Set<Cell> considered = new HashSet<>();
     int obstacles = 0;
@@ -104,9 +97,7 @@ public class Day06_GuardGallivant implements Solution {
           obstacles++;
         }
       }
-
-      guard.move();
-      cell = guard.position();
+      cell = guard.move();
     }
     return String.valueOf(obstacles);
   }
