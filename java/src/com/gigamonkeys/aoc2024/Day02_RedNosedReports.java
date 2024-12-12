@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.IntPredicate;
+import java.util.stream.Stream;
 
 public class Day02_RedNosedReports implements Solution {
 
@@ -36,9 +37,11 @@ public class Day02_RedNosedReports implements Solution {
   }
 
   private boolean isSafe(int[] levels) {
-    return (
-      isStrictlySafe(levels) || range(0, levels.length).mapToObj(i -> without(levels, i)).anyMatch(this::isStrictlySafe)
-    );
+    return (isStrictlySafe(levels) || withDropped(levels).anyMatch(this::isStrictlySafe));
+  }
+
+  private Stream<int[]> withDropped(int[] levels) {
+    return range(0, levels.length).mapToObj(i -> without(levels, i));
   }
 
   private int[] without(int[] levels, int idx) {
