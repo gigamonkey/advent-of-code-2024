@@ -11,68 +11,57 @@ public class Day04_CeresSearch implements Solution {
   private static final int[] MAS = "MAS".codePoints().toArray();
 
   public String part1(Path input) throws IOException {
-    var grid = characterGrid(input);
-    int count = 0;
-    for (int r = 0; r < grid.length; r++) {
-      for (int c = 0; c < grid[0].length; c++) {
-        count += at(grid, r, c);
-      }
-    }
-    return String.valueOf(count);
+    int[][] grid = characterGrid(input);
+    Grid g = new Grid(grid);
+    return String.valueOf(g.cells().mapToInt(c -> at(g, c)).sum());
   }
 
   public String part2(Path input) throws IOException {
-    var grid = characterGrid(input);
-    int count = 0;
-    for (int r = 0; r < grid.length; r++) {
-      for (int c = 0; c < grid[0].length; c++) {
-        if (xmas(grid, r, c)) count++;
-      }
-    }
-    return String.valueOf(count);
+    var grid = new Grid(characterGrid(input));
+    return String.valueOf(grid.cells().filter(c -> xmas(grid, c)).count());
   }
 
-  private int at(int[][] grid, int r, int c) {
+  private int at(Grid grid, Cell cell) {
     int count = 0;
     for (int dr = -1; dr <= 1; dr++) {
       for (int dc = -1; dc <= 1; dc++) {
-        if (atAndInDirection(grid, XMAS, r, c, dr, dc)) count++;
+        var offset = new GridOffset(dr, dc);
+        if (atAndInDirection(grid, XMAS, cell, offset)) count++;
       }
     }
     return count;
   }
 
-  private boolean atAndInDirection(int[][] grid, int[] what, int sr, int sc, int dr, int dc) {
+  private boolean atAndInDirection(Grid grid, int[] what, Cell cell, GridOffset offset) {
     for (int i = 0; i < what.length; i++) {
-      int r = sr + dr * i;
-      int c = sc + dc * i;
-      if (!inBounds(grid, r, c) || what[i] != grid[r][c]) {
+      var next = cell.step(offset, i);
+      if (!grid.inBounds(next) || what[i] != grid.at(next)) {
         return false;
       }
     }
     return true;
   }
 
-  private boolean inBounds(int[][] grid, int r, int c) {
-    return 0 <= r && r < grid.length && 0 <= c && c < grid[0].length;
+  private boolean xmas(Grid grid, Cell cell) {
+    return grid.at(cell) == 'A' && diag1(grid, cell) && diag2(grid, cell);
   }
 
-  private boolean xmas(int[][] grid, int r, int c) {
-    return grid[r][c] == 'A' && diag1(grid, r, c) && diag2(grid, r, c);
-  }
-
-  private boolean diag1(int[][] grid, int r, int c) {
+  private boolean diag1(Grid grid, Cell cell) {
     for (int d = -1; d <= 1; d += 2) {
-      if (atAndInDirection(grid, MAS, r - d, c - d, d, d)) {
+      var offset = new GridOffset(d, d);
+      var start = new Cell(cell.row() - d, cell.column() - d);
+      if (atAndInDirection(grid, MAS, start, offset)) {
         return true;
       }
     }
     return false;
   }
 
-  private boolean diag2(int[][] grid, int r, int c) {
+  private boolean diag2(Grid grid, Cell cell) {
     for (int d = -1; d <= 1; d += 2) {
-      if (atAndInDirection(grid, MAS, r + d, c - d, -d, d)) {
+      var offset = new GridOffset(-d, d);
+      var start = new Cell(cell.row() + d, cell.column() - d);
+      if (atAndInDirection(grid, MAS, start, offset)) {
         return true;
       }
     }
