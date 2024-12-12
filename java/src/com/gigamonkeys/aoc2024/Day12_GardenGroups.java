@@ -58,32 +58,15 @@ public class Day12_GardenGroups implements Solution {
   }
 
   public String part1(Path input) throws IOException {
-    int[][] grid = characterGrid(input);
-
-    Walker w = new Walker(grid);
-
-    Set<Cell> seen = new HashSet<>();
-
-    long total = 0;
-
-    for (int r = 0; r < grid.length; r++) {
-      for (int c = 0; c < grid[0].length; c++) {
-        Cell cell = new Cell(r, c);
-        if (!seen.contains(cell)) {
-          Set<Cell> members = new HashSet<>();
-          List<Cell> boundary = new ArrayList<>();
-          w.walk(cell, members, boundary);
-          total += members.size() * boundary.size();
-          seen.addAll(members);
-        }
-      }
-    }
-    return String.valueOf(total);
+    return solve(input, (ignore, boundary) -> boundary.size());
   }
 
   public String part2(Path input) throws IOException {
-    int[][] grid = characterGrid(input);
+    return solve(input, this::sides);
+  }
 
+  public String solve(Path input, BiFunction<Set<Cell>, List<Cell>, Integer> measurer) throws IOException {
+    int[][] grid = characterGrid(input);
     Walker w = new Walker(grid);
 
     Set<Cell> seen = new HashSet<>();
@@ -97,7 +80,7 @@ public class Day12_GardenGroups implements Solution {
           Set<Cell> members = new HashSet<>();
           List<Cell> boundary = new ArrayList<>();
           w.walk(cell, members, boundary);
-          total += members.size() * sides(members, boundary);
+          total += members.size() * measurer.apply(members, boundary);
           seen.addAll(members);
         }
       }
@@ -126,11 +109,7 @@ public class Day12_GardenGroups implements Solution {
   }
 
   private int countSides(Map<Integer, List<Cell>> facing, Function<Cell, Integer> extract) {
-    int sides = 0;
-    for (List<Cell> cells : facing.values()) {
-      sides += segments(cells.stream().map(extract).sorted().toList());
-    }
-    return sides;
+    return facing.values().stream().mapToInt(cells -> segments(cells.stream().map(extract).sorted().toList())).sum();
   }
 
   private int segments(List<Integer> numbers) {
