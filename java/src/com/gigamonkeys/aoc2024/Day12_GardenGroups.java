@@ -13,22 +13,16 @@ import java.util.stream.*;
 public class Day12_GardenGroups implements Solution {
 
   record Cell(int row, int column) {
-    boolean inBounds(int[][] grid) {
-      return 0 <= row && row < grid.length && 0 <= column && column < grid[0].length;
-    }
-    int marker(int[][] grid) {
-      return grid[row][column];
-    }
     Cell north() {
       return new Cell(row - 1, column);
     }
 
-    Cell east() {
-      return new Cell(row, column + 1);
-    }
-
     Cell south() {
       return new Cell(row + 1, column);
+    }
+
+    Cell east() {
+      return new Cell(row, column + 1);
     }
 
     Cell west() {
@@ -36,24 +30,50 @@ public class Day12_GardenGroups implements Solution {
     }
   }
 
-  record Walker(int[][] grid) {
+  record Surveyor(int[][] grid) {
+    long survey(BiFunction<Set<Cell>, List<Cell>, Integer> measurer) {
+      Set<Cell> seen = new HashSet<>();
+
+      long total = 0;
+
+      for (int r = 0; r < grid.length; r++) {
+        for (int c = 0; c < grid[0].length; c++) {
+          Cell cell = new Cell(r, c);
+          if (!seen.contains(cell)) {
+            Set<Cell> members = new HashSet<>();
+            List<Cell> boundary = new ArrayList<>();
+            walk(cell, members, boundary);
+            total += members.size() * measurer.apply(members, boundary);
+            seen.addAll(members);
+          }
+        }
+      }
+      return total;
+    }
+
     void walk(Cell cell, Set<Cell> members, List<Cell> boundary) {
       members.add(cell);
-
-      int marker = cell.marker(grid);
 
       for (int i = 0; i < 4; i++) {
         var nextRow = cell.row() + 1 - abs(i - 2);
         var nextCol = cell.column() + 1 - abs(1 - i);
         Cell newCell = new Cell(nextRow, nextCol);
-        if (!newCell.inBounds(grid)) {
+        if (!inBounds(newCell)) {
           boundary.add(newCell);
-        } else if (newCell.marker(grid) != marker) {
+        } else if (marker(newCell) != marker(cell)) {
           boundary.add(newCell);
         } else if (!members.contains(newCell)) {
           walk(newCell, members, boundary);
         }
       }
+    }
+
+    boolean inBounds(Cell cell) {
+      return 0 <= cell.row() && cell.row() < grid.length && 0 <= cell.column() && cell.column() < grid[0].length;
+    }
+
+    int marker(Cell cell) {
+      return grid[cell.row()][cell.column];
     }
   }
 
@@ -66,31 +86,11 @@ public class Day12_GardenGroups implements Solution {
   }
 
   public String solve(Path input, BiFunction<Set<Cell>, List<Cell>, Integer> measurer) throws IOException {
-    int[][] grid = characterGrid(input);
-    Walker w = new Walker(grid);
-
-    Set<Cell> seen = new HashSet<>();
-
-    long total = 0;
-
-    for (int r = 0; r < grid.length; r++) {
-      for (int c = 0; c < grid[0].length; c++) {
-        Cell cell = new Cell(r, c);
-        if (!seen.contains(cell)) {
-          Set<Cell> members = new HashSet<>();
-          List<Cell> boundary = new ArrayList<>();
-          w.walk(cell, members, boundary);
-          total += members.size() * measurer.apply(members, boundary);
-          seen.addAll(members);
-        }
-      }
-    }
-    return String.valueOf(total);
+    return String.valueOf(new Surveyor(characterGrid(input)).survey(measurer));
   }
 
   private int sides(Set<Cell> members, List<Cell> boundary) {
     Set<Cell> unique = new HashSet<>(boundary);
-
     int sides = 0;
     sides += countSides(bordering(unique, members, Cell::north, Cell::row), Cell::column);
     sides += countSides(bordering(unique, members, Cell::south, Cell::row), Cell::column);
@@ -103,9 +103,9 @@ public class Day12_GardenGroups implements Solution {
     Set<Cell> unique,
     Set<Cell> members,
     UnaryOperator<Cell> dir,
-    Function<Cell, Integer> group
+    Function<Cell, Integer> groupBy
   ) {
-    return unique.stream().filter(c -> members.contains(dir.apply(c))).collect(groupingBy(group));
+    return unique.stream().filter(c -> members.contains(dir.apply(c))).collect(groupingBy(groupBy));
   }
 
   private int countSides(Map<Integer, List<Cell>> facing, Function<Cell, Integer> extract) {
