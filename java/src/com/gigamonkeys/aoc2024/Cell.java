@@ -16,6 +16,10 @@ public record Cell(int row, int column) {
     return new Cell(row + d.rowChange(), column + d.columnChange());
   }
 
+  public Cell step(Direction d, int steps) {
+    return new Cell(row + (steps * d.rowChange()), column + (steps * d.rowChange()));
+  }
+
   public boolean inBounds(int[][] grid) {
     return (0 <= row && row < grid.length && 0 <= column && column < grid[row].length);
   }

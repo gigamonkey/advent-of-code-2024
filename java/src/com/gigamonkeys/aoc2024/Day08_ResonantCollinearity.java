@@ -16,18 +16,11 @@ public class Day08_ResonantCollinearity implements Solution {
     boolean inBounds(int[][] grid) {
       return 0 <= row && row < grid.length && 0 <= column && column < grid[0].length;
     }
-    Cell step(Direction d, int steps) {
+    Cell step(GridOffset d, int steps) {
       return new Cell(row + (steps * d.dr()), column + (steps * d.dc()));
     }
-    Direction to(Cell other) {
-      return new Direction(other.row - row, other.column - column);
-    }
-  }
-
-  record Direction(int dr, int dc) {
-    Direction normalize() {
-      var gcd = gcd(Math.abs(dr), Math.abs(dc));
-      return new Direction(dr / gcd, dc / gcd);
+    GridOffset to(Cell other) {
+      return new GridOffset(other.row - row, other.column - column);
     }
   }
 
@@ -53,15 +46,6 @@ public class Day08_ResonantCollinearity implements Solution {
     );
   }
 
-  private static int gcd(int a, int b) {
-    var r = Math.floorMod(a, b);
-    if (r != 0) {
-      return gcd(b, r);
-    } else {
-      return b;
-    }
-  }
-
   private Map<Integer, List<Antenna>> findAntenna(int[][] grid) {
     return range(0, grid.length)
       .boxed()
@@ -78,7 +62,7 @@ public class Day08_ResonantCollinearity implements Solution {
     for (Antenna a1 : antenna) {
       for (Antenna a2 : antenna) {
         if (a1 != a2) {
-          Direction d = a1.cell().to(a2.cell());
+          GridOffset d = a1.cell().to(a2.cell());
           if (normalize) d = d.normalize();
           int step = start;
           Cell next = a1.cell().step(d, step);
