@@ -47,9 +47,13 @@ public class Day12_GardenGroups implements Solution {
       var unique = new HashSet<Cell>(boundary);
       return (
         Stream.of(NORTH, SOUTH)
-          .mapToInt(d -> countSides(bordering(unique, members, d, Cell::row), Cell::column))
+          .map(d -> bordering(unique, members, d, Cell::row))
+          .mapToInt(cells -> countSides(cells, Cell::column))
           .sum() +
-        Stream.of(EAST, WEST).mapToInt(d -> countSides(bordering(unique, members, d, Cell::column), Cell::row)).sum()
+        Stream.of(EAST, WEST)
+          .map(d -> bordering(unique, members, d, Cell::column))
+          .mapToInt(cells -> countSides(cells, Cell::row))
+          .sum()
       );
     }
 
