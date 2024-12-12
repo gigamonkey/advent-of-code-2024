@@ -48,11 +48,11 @@ public class Day12_GardenGroups implements Solution {
       return (
         Stream.of(NORTH, SOUTH)
           .map(d -> bordering(unique, members, d, Cell::row))
-          .mapToInt(cells -> countSides(cells, Cell::column))
+          .mapToInt(facing -> countSides(facing, Cell::column))
           .sum() +
         Stream.of(EAST, WEST)
           .map(d -> bordering(unique, members, d, Cell::column))
-          .mapToInt(cells -> countSides(cells, Cell::row))
+          .mapToInt(facing -> countSides(facing, Cell::row))
           .sum()
       );
     }
