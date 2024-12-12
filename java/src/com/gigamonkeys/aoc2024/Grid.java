@@ -19,6 +19,14 @@ public class Grid implements Iterable<Cell> {
     this.grid = grid;
   }
 
+  public int rows() {
+    return grid.length;
+  }
+
+  public int columns() {
+    return grid[0].length;
+  }
+
   public int at(Cell cell) {
     return grid[cell.row()][cell.column()];
   }
