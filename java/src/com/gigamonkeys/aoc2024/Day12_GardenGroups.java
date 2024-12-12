@@ -12,40 +12,21 @@ import java.util.stream.*;
 
 public class Day12_GardenGroups implements Solution {
 
-  record Cell(int row, int column) {
-    Cell north() {
-      return new Cell(row - 1, column);
-    }
+  record Surveyor(Grid grid) {
 
-    Cell south() {
-      return new Cell(row + 1, column);
-    }
-
-    Cell east() {
-      return new Cell(row, column + 1);
-    }
-
-    Cell west() {
-      return new Cell(row, column - 1);
-    }
-  }
-
-  record Surveyor(int[][] grid) {
     long survey(BiFunction<Set<Cell>, List<Cell>, Integer> measurer) {
+
       Set<Cell> seen = new HashSet<>();
 
       long total = 0;
 
-      for (int r = 0; r < grid.length; r++) {
-        for (int c = 0; c < grid[0].length; c++) {
-          Cell cell = new Cell(r, c);
-          if (!seen.contains(cell)) {
-            Set<Cell> members = new HashSet<>();
-            List<Cell> boundary = new ArrayList<>();
-            walk(cell, members, boundary);
-            total += members.size() * measurer.apply(members, boundary);
-            seen.addAll(members);
-          }
+      for (Cell cell: grid) {
+        if (!seen.contains(cell)) {
+          Set<Cell> members = new HashSet<>();
+          List<Cell> boundary = new ArrayList<>();
+          walk(cell, members, boundary);
+          total += members.size() * measurer.apply(members, boundary);
+          seen.addAll(members);
         }
       }
       return total;
@@ -53,27 +34,15 @@ public class Day12_GardenGroups implements Solution {
 
     void walk(Cell cell, Set<Cell> members, List<Cell> boundary) {
       members.add(cell);
-
-      for (int i = 0; i < 4; i++) {
-        var nextRow = cell.row() + 1 - abs(i - 2);
-        var nextCol = cell.column() + 1 - abs(1 - i);
-        Cell newCell = new Cell(nextRow, nextCol);
-        if (!inBounds(newCell)) {
-          boundary.add(newCell);
-        } else if (marker(newCell) != marker(cell)) {
-          boundary.add(newCell);
-        } else if (!members.contains(newCell)) {
-          walk(newCell, members, boundary);
+      for (Cell n : grid.neighbors(cell)) {
+        if (!grid.inBounds(n)) {
+          boundary.add(n);
+        } else if (grid.at(n) != grid.at(cell)) {
+          boundary.add(n);
+        } else if (!members.contains(n)) {
+          walk(n, members, boundary);
         }
       }
-    }
-
-    boolean inBounds(Cell cell) {
-      return 0 <= cell.row() && cell.row() < grid.length && 0 <= cell.column() && cell.column() < grid[0].length;
-    }
-
-    int marker(Cell cell) {
-      return grid[cell.row()][cell.column];
     }
   }
 
@@ -86,7 +55,7 @@ public class Day12_GardenGroups implements Solution {
   }
 
   public String solve(Path input, BiFunction<Set<Cell>, List<Cell>, Integer> measurer) throws IOException {
-    return String.valueOf(new Surveyor(characterGrid(input)).survey(measurer));
+    return String.valueOf(new Surveyor(new Grid(characterGrid(input))).survey(measurer));
   }
 
   private int sides(Set<Cell> members, List<Cell> boundary) {
@@ -99,6 +68,10 @@ public class Day12_GardenGroups implements Solution {
     return sides;
   }
 
+  private int countSides(Map<Integer, List<Cell>> facing, Function<Cell, Integer> extract) {
+    return facing.values().stream().mapToInt(cells -> segments(cells.stream().map(extract).sorted().toList())).sum();
+  }
+
   private Map<Integer, List<Cell>> bordering(
     Set<Cell> unique,
     Set<Cell> members,
@@ -106,10 +79,6 @@ public class Day12_GardenGroups implements Solution {
     Function<Cell, Integer> groupBy
   ) {
     return unique.stream().filter(c -> members.contains(dir.apply(c))).collect(groupingBy(groupBy));
-  }
-
-  private int countSides(Map<Integer, List<Cell>> facing, Function<Cell, Integer> extract) {
-    return facing.values().stream().mapToInt(cells -> segments(cells.stream().map(extract).sorted().toList())).sum();
   }
 
   private int segments(List<Integer> numbers) {
