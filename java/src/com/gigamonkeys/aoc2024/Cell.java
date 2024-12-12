@@ -12,20 +12,8 @@ import java.util.function.*;
 import java.util.stream.*;
 
 public record Cell(int row, int column) {
-  public Cell north() {
-    return new Cell(row - 1, column);
-  }
-
-  public Cell south() {
-    return new Cell(row + 1, column);
-  }
-
-  public Cell east() {
-    return new Cell(row, column + 1);
-  }
-
-  public Cell west() {
-    return new Cell(row, column - 1);
+  public Cell neighbor(Direction d) {
+    return new Cell(row + d.rowChange(), column + d.columnChange());
   }
 
   public boolean inBounds(int[][] grid) {

@@ -1,5 +1,6 @@
 package com.gigamonkeys.aoc2024;
 
+import static com.gigamonkeys.aoc2024.Direction.*;
 import static com.gigamonkeys.aoc2024.Util.*;
 import static java.lang.Math.*;
 import static java.util.stream.Collectors.*;
@@ -44,12 +45,12 @@ public class Day12_GardenGroups implements Solution {
 
     public int sides() {
       var unique = new HashSet<Cell>(boundary);
-      var sides = 0;
-      sides += countSides(bordering(unique, members, Cell::north, Cell::row), Cell::column);
-      sides += countSides(bordering(unique, members, Cell::south, Cell::row), Cell::column);
-      sides += countSides(bordering(unique, members, Cell::east, Cell::column), Cell::row);
-      sides += countSides(bordering(unique, members, Cell::west, Cell::column), Cell::row);
-      return sides;
+      return (
+        Stream.of(NORTH, SOUTH)
+          .mapToInt(d -> countSides(bordering(unique, members, d, Cell::row), Cell::column))
+          .sum() +
+        Stream.of(EAST, WEST).mapToInt(d -> countSides(bordering(unique, members, d, Cell::column), Cell::row)).sum()
+      );
     }
 
     private int countSides(Map<Integer, List<Cell>> facing, Function<Cell, Integer> extract) {
@@ -59,10 +60,10 @@ public class Day12_GardenGroups implements Solution {
     private Map<Integer, List<Cell>> bordering(
       Set<Cell> unique,
       Set<Cell> members,
-      UnaryOperator<Cell> dir,
+      Direction dir,
       Function<Cell, Integer> groupBy
     ) {
-      return unique.stream().filter(c -> members.contains(dir.apply(c))).collect(groupingBy(groupBy));
+      return unique.stream().filter(c -> members.contains(c.neighbor(dir))).collect(groupingBy(groupBy));
     }
 
     private int segments(List<Integer> numbers) {
