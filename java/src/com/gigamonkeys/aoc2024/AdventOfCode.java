@@ -33,7 +33,7 @@ public class AdventOfCode {
     new Day10_HoofIt(),
     new Day11_PlutonianPebbles2(),
     new Day12_GardenGroups(),
-    new Day13()
+    new Day13_ClawContraption()
   );
 
   private Optional<Solution> solutionFor(int day) {
