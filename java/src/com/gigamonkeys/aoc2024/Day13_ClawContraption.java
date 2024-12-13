@@ -22,8 +22,9 @@ import static java.util.Map.entry;
 import static java.util.function.Function.*;
 import static java.util.regex.Pattern.*;
 import static java.util.stream.Collectors.*;
-import static java.util.stream.IntStream.*;
-import static java.util.stream.IntStream.range;
+//import static java.util.stream.IntStream.*;
+import java.util.stream.LongStream;
+import static java.util.stream.LongStream.range;
 import static java.util.stream.Stream.*;
 import static java.util.stream.Stream.generate;
 
@@ -58,20 +59,20 @@ import java.util.stream.Stream;
 
 public class Day13_ClawContraption implements Solution {
 
-  private record Point(int x, int y) {}
+  private record Point(long x, long y) {}
 
-  private record Presses(int a, int b) {
-    int cost() {
+  private record Presses(long a, long b) {
+    long cost() {
       return a * 3 + b;
     }
   }
 
-  private record Machine(int ax, int ay, int bx, int by, int x, int y) {
-    Point position(int a, int b) {
+  private record Machine(long ax, long ay, long bx, long by, long x, long y) {
+    Point position(long a, long b) {
       return new Point(ax * a + bx * b, ay * a + by * b);
     }
 
-    boolean winner(int a, int b) {
+    boolean winner(long a, long b) {
       return x == (ax * a + bx * b) && y == (ay * a + by * b);
     }
   }
@@ -81,18 +82,55 @@ public class Day13_ClawContraption implements Solution {
 
   public String part1(Path input) throws IOException {
     var machines = machines(input);
-    return String.valueOf(machines.stream().map(m -> winner(m)).mapToInt(op -> op.map(Presses::cost).orElse(0)).sum());
+    return String.valueOf(machines.stream().map(m -> winner2(m)).mapToLong(op -> op.map(Presses::cost).orElse(0L)).sum());
   }
 
   public String part2(Path input) throws IOException {
-    return "nyi";
+    var machines = embiggen(machines(input));
+    return String.valueOf(machines.stream().map(m -> winner2(m)).mapToLong(op -> op.map(Presses::cost).orElse(0L)).sum());
+
   }
 
   private Optional<Presses> winner(Machine m) {
-    return range(0, 100)
+    long maxX = (long) max(ceil(m.x / m.ax), ceil(m.x / m.bx));
+    long maxY = (long) max(ceil(m.y / m.ay), ceil(m.y / m.by));
+    //System.out.println("maxX: %d; maxY: %d".formatted(maxX, maxY));
+    return range(0, maxX)
       .boxed()
-      .flatMap(a -> range(0, 100).filter(b -> m.winner(a, b)).mapToObj(b -> new Presses(a, b)))
-      .collect(minBy(Comparator.comparingInt(Presses::cost)));
+      .flatMap(a -> range(0, maxY).filter(b -> m.winner(a, b)).mapToObj(b -> new Presses(a, b)))
+      .collect(minBy(Comparator.comparingLong(Presses::cost)));
+  }
+
+  private Optional<Presses> winner2(Machine m) {
+    long maxX = (long) max(ceil(m.x / m.ax), ceil(m.x / m.bx));
+    long maxY = (long) max(ceil(m.y / m.ay), ceil(m.y / m.by));
+    //System.out.println("maxX: %d; maxY: %d".formatted(maxX, maxY));
+    return range(0, maxX)
+      .boxed()
+      .map(a -> {
+          if (a % 100_000_000L == 0) System.out.print(".");
+          var xLeft = m.x - (m.ax * a);
+          var yLeft = m.y - (m.ay * a);
+          if (xLeft % m.bx == 0 && yLeft % m.by == 0) {
+            var bForX = xLeft / m.bx;
+            var bForY = yLeft / m.by;
+            if (bForX == bForY) {
+              return new Presses(a, bForX);
+            }
+          }
+          return null;
+        }
+      )
+      .filter(p -> p != null)
+      .collect(minBy(Comparator.comparingLong(Presses::cost)));
+  }
+
+
+
+  private List<Machine> embiggen(List<Machine> machines) {
+    long amt = 10000000000000L;
+
+    return machines.stream().map(m -> new Machine(m.ax, m.ay, m.by, m.by, m.x + amt, m.y + amt)).toList();
   }
 
   private List<Machine> machines(Path input) throws IOException {
@@ -103,15 +141,15 @@ public class Day13_ClawContraption implements Solution {
       .map(chunk -> {
         var m = button.matcher(chunk);
         m.find();
-        int ax = Integer.parseInt(m.group(1));
-        int ay = Integer.parseInt(m.group(2));
+        long ax = Long.parseLong(m.group(1));
+        long ay = Long.parseLong(m.group(2));
         m.find();
-        int bx = Integer.parseInt(m.group(1));
-        int by = Integer.parseInt(m.group(2));
+        long bx = Long.parseLong(m.group(1));
+        long by = Long.parseLong(m.group(2));
         var m2 = prize.matcher(chunk);
         m2.find();
-        int x = Integer.parseInt(m2.group(1));
-        int y = Integer.parseInt(m2.group(2));
+        long x = Long.parseLong(m2.group(1));
+        long y = Long.parseLong(m2.group(2));
         return new Machine(ax, ay, bx, by, x, y);
       })
       .toList();
