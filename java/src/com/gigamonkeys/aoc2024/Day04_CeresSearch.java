@@ -11,9 +11,8 @@ public class Day04_CeresSearch implements Solution {
   private static final int[] MAS = "MAS".codePoints().toArray();
 
   public String part1(Path input) throws IOException {
-    int[][] grid = characterGrid(input);
-    Grid g = new Grid(grid);
-    return String.valueOf(g.cells().mapToInt(c -> at(g, c)).sum());
+    Grid grid = new Grid(characterGrid(input));
+    return String.valueOf(grid.cells().mapToInt(c -> at(grid, c)).sum());
   }
 
   public String part2(Path input) throws IOException {
