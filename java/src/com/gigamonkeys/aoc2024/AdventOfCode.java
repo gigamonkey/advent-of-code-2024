@@ -32,7 +32,8 @@ public class AdventOfCode {
     new Day09_DiskFragmenter(),
     new Day10_HoofIt(),
     new Day11_PlutonianPebbles2(),
-    new Day12_GardenGroups()
+    new Day12_GardenGroups(),
+    new Day13()
   );
 
   private Optional<Solution> solutionFor(int day) {
