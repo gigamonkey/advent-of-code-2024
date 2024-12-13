@@ -28,7 +28,7 @@ public class Day10_HoofIt implements Solution {
       if (grid.at(cell) == 9) {
         return trailScorer.applyAsInt(cell);
       } else {
-        return stream(Direction.values())
+        return Direction.cardinal()
           .map(cell::neighbor)
           .filter(n -> uphill(n, grid.at(cell)))
           .mapToInt(n -> hike(n, trailScorer))

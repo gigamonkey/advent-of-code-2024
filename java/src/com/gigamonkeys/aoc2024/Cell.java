@@ -20,6 +20,10 @@ public record Cell(int row, int column) {
     return new Cell(row + (steps * offset.dr()), column + (steps * offset.dc()));
   }
 
+  public Cell step(Direction d, int steps) {
+    return new Cell(row + (steps * d.rowChange()), column + (steps * d.columnChange()));
+  }
+
   public GridOffset to(Cell other) {
     return new GridOffset(other.row - row, other.column - column);
   }
