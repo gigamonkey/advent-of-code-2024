@@ -25,6 +25,7 @@ import static java.util.stream.Collectors.*;
 //import static java.util.stream.IntStream.*;
 import java.util.stream.LongStream;
 import static java.util.stream.LongStream.range;
+import static java.util.stream.LongStream.rangeClosed;
 import static java.util.stream.Stream.*;
 import static java.util.stream.Stream.generate;
 
@@ -82,13 +83,52 @@ public class Day13_ClawContraption implements Solution {
 
   public String part1(Path input) throws IOException {
     var machines = machines(input);
-    return String.valueOf(machines.stream().map(m -> winner2(m)).mapToLong(op -> op.map(Presses::cost).orElse(0L)).sum());
+
+    //System.out.println(winner3(machines.get(2)));
+
+    //return String.valueOf(machines.stream().map(m -> winner2(m)).mapToLong(op -> op.map(Presses::cost).orElse(0L)).sum());
+
+    //System.out.println("working");
+    //machines.stream().map(m -> winner2(m)).forEach(System.out::println);
+    //System.out.println("not working");
+    //machines.stream().map(m -> winner3(m)).forEach(System.out::println);
+
+    //return String.valueOf(machines.stream().flatMap(m -> winner3(m).stream()).mapToLong(Presses::cost).sum());
+
+    //return String.valueOf(machines.stream().map(m -> winner3(m)).mapToLong(op -> op.map(Presses::cost).orElse(0L)).sum());
+    return String.valueOf(
+      machines.stream().map(m ->  {
+          return winner3(m);
+        })
+      .mapToLong(op -> op.map(Presses::cost).orElse(0L))
+      .sum());
+
+
   }
 
   public String part2(Path input) throws IOException {
     var machines = embiggen(machines(input));
-    return String.valueOf(machines.stream().map(m -> winner2(m)).mapToLong(op -> op.map(Presses::cost).orElse(0L)).sum());
+    //return String.valueOf(machines.stream().map(m -> winner2(m)).mapToLong(op -> op.map(Presses::cost).orElse(0L)).sum());
+    return String.valueOf(
+      machines.stream().map(m ->  {
+          System.out.println(m);
+          return winner3(m);
+        })
+      .mapToLong(op -> op.map(Presses::cost).orElse(0L))
+      .sum());
+  }
 
+  private Optional<Presses> winner3(Machine m) {
+    Set<Presses> xs = allPresses(m.ax, m.bx, m.x).collect(toSet());
+    Set<Presses> ys = allPresses(m.ay, m.by, m.y).collect(toSet());
+    Set<Presses> intersection = new HashSet<>(xs);
+    intersection.retainAll(ys);
+
+    // System.out.println("xs: %s".formatted(xs));
+    // System.out.println("ys: %s".formatted(ys));
+    // System.out.println("both: %s".formatted(intersection));
+
+    return intersection.stream().collect(minBy(Comparator.comparingLong(Presses::cost)));
   }
 
   private Optional<Presses> winner(Machine m) {
@@ -108,7 +148,7 @@ public class Day13_ClawContraption implements Solution {
     return range(0, maxX)
       .boxed()
       .map(a -> {
-          if (a % 100_000_000L == 0) System.out.print(".");
+          //if (a % 100_000_000L == 0) System.out.print(".");
           var xLeft = m.x - (m.ax * a);
           var yLeft = m.y - (m.ay * a);
           if (xLeft % m.bx == 0 && yLeft % m.by == 0) {
@@ -154,4 +194,59 @@ public class Day13_ClawContraption implements Solution {
       })
       .toList();
   }
+
+  record Extended(long gcd, long x, long y) {}
+
+  private long gcd(long a, long b) {
+    var r = Math.floorMod(a, b);
+    if (r != 0) {
+      return gcd(b, r);
+    } else {
+      return b;
+    }
+  }
+
+  private Extended extendedEuclidean(long a, long b) {
+    if (a == 0) {
+      return new Extended(b, 0, 1);
+    } else {
+      var ext = extendedEuclidean(b % a, a);
+      var x = ext.y - ((long) floor(b / a) * ext.x);
+      var y = ext.x;
+      return new Extended(ext.gcd, x, y);
+    }
+  }
+
+  record Pair(long x, long y) {};
+
+  private Optional<Pair> zeros(long a, long b, long goal) {
+    var ext = extendedEuclidean(a, b);
+    if (goal % ext.gcd != 0) {
+      return Optional.empty();
+    } else {
+      var scale = goal / ext.gcd;
+      return Optional.of(new Pair(scale * ext.x, scale * ext.y));
+    }
+  }
+
+  private Pair kRange(long a, long b, Pair zeros) {
+    var gcd = gcd(a, b);
+    var one = (long) ceil(-(zeros.x() / (b / gcd)));
+    var two = (long) floor(zeros.y() / (a / gcd));
+    return new Pair(min(one, two), max(one, two));
+  }
+
+  private Presses presses(long a, long b, Pair zeros, long k) {
+    var gcd = gcd(a, b);
+    return new Presses(zeros.x + k * (b / gcd), zeros.y - k * (a / gcd));
+  }
+
+  private Stream<Presses> allPresses(long a, long b, long goal) {
+    return zeros(a, b, goal).stream().flatMap(zeros -> {
+        var kRange = kRange(a, b, zeros);
+        return rangeClosed(kRange.x, kRange.y).mapToObj(k -> presses(a, b, zeros, k));
+      });
+  }
+
+
 }
