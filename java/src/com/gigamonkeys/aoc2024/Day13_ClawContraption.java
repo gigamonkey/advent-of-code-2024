@@ -86,6 +86,10 @@ public class Day13_ClawContraption implements Solution {
 
     //System.out.println(winner3(machines.get(2)));
 
+    var machine = new Machine(24, 97, 48, 13, 6624, 10120);
+
+    System.out.println(winner4(machine));
+
     //return String.valueOf(machines.stream().map(m -> winner2(m)).mapToLong(op -> op.map(Presses::cost).orElse(0L)).sum());
 
     //System.out.println("working");
@@ -129,6 +133,57 @@ public class Day13_ClawContraption implements Solution {
     // System.out.println("both: %s".formatted(intersection));
 
     return intersection.stream().collect(minBy(Comparator.comparingLong(Presses::cost)));
+  }
+
+  private Optional<Presses> winner4(Machine m) {
+    var xZeros = zeros(m.ax(), m.bx(), m.x());
+    var yZeros = zeros(m.ay(), m.by(), m.y());
+
+    if (xZeros.isEmpty() || yZeros.isEmpty()) {
+      return Optional.empty();
+    } else {
+      MinAndGap x = oneAxis(m.ax(), m.bx(), xZeros.get());
+      MinAndGap y = oneAxis(m.ay(), m.by(), yZeros.get());
+
+      System.out.println(x);
+      System.out.println(y);
+
+      var step = whichStep(x, y);
+      System.out.println("step: %d".formatted(step));
+      Range xRange = kRange(m.ax(), m.bx(), xZeros.get());
+      return Optional.of(presses(m.ax(), m.bx(), xZeros.get(), xRange.low() + step));
+    }
+  }
+
+  record MinAndGap(long min, long gap) {}
+
+  private MinAndGap oneAxis(long a, long b, Pair zeros) {
+    var r = kRange(a, b, zeros);
+    var lowPresses = presses(a, b, zeros, r.low());
+    var highPresses = presses(a, b, zeros, r.high());
+    System.out.println("r: %s; lowPresses: %s; highPresses: %s".formatted(r, lowPresses, highPresses));
+
+    var gap = abs(presses(a, b, zeros, r.low() + 1).cost() - lowPresses.cost());
+    var minCost = min(lowPresses.cost(), highPresses.cost());
+    return new MinAndGap(minCost, gap);
+  }
+
+  private long whichStep(MinAndGap x, MinAndGap y) {
+    //   (mod (* (mod (nth-value 1 (extended-gcd gap-x gap-y)) gap-y) (- gap-y (rem (- min-x min-y) gap-y))) gap-y))
+
+
+    //   (mod (* (mod a gap-y) (- gap-y (rem (- min-x min-y) gap-y))) gap-y))
+
+    var ext = extendedEuclidean(x.gap(), y.gap());
+    System.out.println(ext);
+
+    var a = ext.x();
+    var b = a % y.gap();
+    var c = y.gap() - ((x.min() - y.min()) % y.gap());
+
+    System.out.println("a: %s; b: %s; c: %s".formatted(a, b, c));
+
+    return floorMod((b * c), y.gap());
   }
 
   private Optional<Presses> winner(Machine m) {
@@ -217,7 +272,6 @@ public class Day13_ClawContraption implements Solution {
     }
   }
 
-  record Pair(long x, long y) {};
 
   private Optional<Pair> zeros(long a, long b, long goal) {
     var ext = extendedEuclidean(a, b);
@@ -229,11 +283,15 @@ public class Day13_ClawContraption implements Solution {
     }
   }
 
-  private Pair kRange(long a, long b, Pair zeros) {
+  record Pair(long x, long y) {};
+
+  record Range(long low, long high) {}
+
+  private Range kRange(long a, long b, Pair zeros) {
     var gcd = gcd(a, b);
     var one = (long) ceil(-(zeros.x() / (b / gcd)));
     var two = (long) floor(zeros.y() / (a / gcd));
-    return new Pair(min(one, two), max(one, two));
+    return new Range(min(one, two), max(one, two));
   }
 
   private Presses presses(long a, long b, Pair zeros, long k) {
@@ -244,7 +302,7 @@ public class Day13_ClawContraption implements Solution {
   private Stream<Presses> allPresses(long a, long b, long goal) {
     return zeros(a, b, goal).stream().flatMap(zeros -> {
         var kRange = kRange(a, b, zeros);
-        return rangeClosed(kRange.x, kRange.y).mapToObj(k -> presses(a, b, zeros, k));
+        return rangeClosed(kRange.low, kRange.high).mapToObj(k -> presses(a, b, zeros, k));
       });
   }
 
