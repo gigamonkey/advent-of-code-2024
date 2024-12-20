@@ -9,10 +9,12 @@ run = java -cp classes $(MAIN_CLASS) $(DAY)
 today: build
 	$(run)
 
+all: DAY := --all
+
 all: build run
 
 run:
-	$(run) --all
+	$(run)
 
 
 inputs/day-%:
