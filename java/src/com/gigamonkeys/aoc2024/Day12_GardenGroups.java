@@ -2,14 +2,17 @@ package com.gigamonkeys.aoc2024;
 
 import static com.gigamonkeys.aoc2024.Direction.*;
 import static com.gigamonkeys.aoc2024.Util.*;
-import static java.lang.Math.*;
 import static java.util.stream.Collectors.*;
 
-import java.io.*;
-import java.nio.file.*;
-import java.util.*;
-import java.util.function.*;
-import java.util.stream.*;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class Day12_GardenGroups implements Solution {
 
