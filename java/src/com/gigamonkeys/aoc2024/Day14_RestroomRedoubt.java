@@ -1,17 +1,15 @@
 package com.gigamonkeys.aoc2024;
 
-import static java.nio.file.Files.lines;
-import static com.gigamonkeys.aoc2024.Direction.*;
 import static com.gigamonkeys.aoc2024.Util.*;
 import static java.lang.Math.*;
-import static java.util.stream.Collectors.*;
+import static java.nio.file.Files.*;
 
-import java.io.*;
-import java.nio.file.*;
-import java.util.*;
-import java.util.regex.*;
-import java.util.function.*;
-import java.util.stream.*;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Day14_RestroomRedoubt implements Solution {
 
@@ -30,16 +28,15 @@ public class Day14_RestroomRedoubt implements Solution {
     long period(GridOffset offset) {
       long p1 = rows / gcd(rows, abs(offset.dr()));
       long p2 = columns / gcd(columns, abs(offset.dc()));
-      long gcd = gcd(p1, p2);
-      return p1 * p2 / gcd;
+      return lcm(p1, p2);
     }
   }
 
-  record Robot(Cell start, GridOffset offset) {
+  record Robot(Cell start, GridOffset velocity) {
     Cell newPosition(int seconds, Size size) {
       return new Cell(
-        Math.floorMod(start.row() + seconds * offset.dr(), size.rows()),
-        Math.floorMod(start.column() + seconds * offset.dc(), size.columns())
+        Math.floorMod(start.row() + seconds * velocity.dr(), size.rows()),
+        Math.floorMod(start.column() + seconds * velocity.dc(), size.columns())
       );
     }
   }
@@ -58,7 +55,13 @@ public class Day14_RestroomRedoubt implements Solution {
   }
 
   public String part2(Path input) throws IOException {
-    return "nyi";
+    Problem prob = problem(input);
+    Size size = prob.size();
+    return "" + prob.robots()
+      .stream()
+      .peek(r -> System.out.println(r + " period: " + size.period(r.velocity())))
+      .mapToLong(r -> size.period(r.velocity()))
+      .reduce(1, Day14_RestroomRedoubt::lcm);
   }
 
   private Problem problem(Path input) throws IOException {
@@ -79,6 +82,10 @@ public class Day14_RestroomRedoubt implements Solution {
     } else {
       throw new RuntimeException("bad robot: " + text);
     }
+  }
+
+  private static long lcm(long a, long b) {
+    return a * b / gcd(a, b);
   }
 
 }

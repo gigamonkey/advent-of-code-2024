@@ -36,4 +36,14 @@ public class Util {
   public static List<Long> longs(Path input) throws IOException {
     return Arrays.stream(text(input).split("\\s+")).map(Long::parseLong).toList();
   }
+
+  public static long gcd(long a, long b) {
+    var r = Math.floorMod(a, b);
+    if (r != 0) {
+      return gcd(b, r);
+    } else {
+      return b;
+    }
+  }
+
 }
