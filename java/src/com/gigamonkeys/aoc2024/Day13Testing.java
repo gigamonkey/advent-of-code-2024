@@ -1,20 +1,21 @@
 package com.gigamonkeys.aoc2024;
 
-import static com.gigamonkeys.aoc2024.Util.*;
 import java.io.IOException;
-import static java.lang.Math.*;
 import java.nio.file.Path;
-import static java.util.Arrays.*;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.LongPredicate;
 import java.util.regex.Pattern;
-import static java.util.stream.Collectors.*;
 import java.util.stream.LongStream;
-import static java.util.stream.LongStream.*;
 import java.util.stream.Stream;
+
+import static com.gigamonkeys.aoc2024.Util.*;
+import static java.lang.Math.*;
+import static java.util.Arrays.*;
+import static java.util.stream.Collectors.*;
+import static java.util.stream.LongStream.*;
 
 public class Day13Testing {
 
@@ -119,10 +120,10 @@ public class Day13Testing {
   }
 
   private Optional<Presses> maybeSmart(Machine m) {
-    // These are ordered by cost. Since everything is linear, whatever direction the
-    // a value is going in each one it will keep going and by the same amount, I
-    // think. Which means we should be able to figure out when, if every, the two a
-    // values are going to be the same. At that point either the
+    // These are ordered by cost. Since everything is linear, whatever direction
+    // the a value is going in each one it will keep going and by the same
+    // amount, I think. Which means we should be able to figure out when, if
+    // ever, the two a values are going to be the same. At that point either the
     Iterator<Presses> xs = orderedPresses(m.ax, m.bx, m.x).iterator();
     Iterator<Presses> ys = orderedPresses(m.ay, m.by, m.y).iterator();
 

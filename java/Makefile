@@ -2,7 +2,6 @@ SHELL		:= bash -O globstar
 MAIN_CLASS	:= com.gigamonkeys.aoc2024.AdventOfCode
 DAY := 14
 
-
 sources = $(shell ls src/**/*.java)
 run = java -cp classes $(MAIN_CLASS) $(DAY)
 
