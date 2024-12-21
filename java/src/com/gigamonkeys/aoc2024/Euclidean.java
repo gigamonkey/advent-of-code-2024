@@ -89,27 +89,51 @@ public class Euclidean {
     //System.out.println("findfirst: %d".formatted(e.findFirst(g1, g2, s1, s2)));
 
     // We're looking for m and n such that s1 + g2 * m == s2 + g2 * n
-    // Additonally we want the m such that (s1 + g2) * m is the  smallest.
+    // Additonally we want the m such that (s1 + g2) * m is the smallest value
+    // greater than or equal to s1.
 
     // Solve the Diophantine equation g1 * x + (-g2 * y) = (s2 - s1)
 
-    // First solve the equation g1 * x + -g2 * y = gcd(g1, g2)
+    // First solve the equation g1 * x + -g2 * y = gcd(g1, g2) using the
+    // extended Euclidean algorithm.
     var eq = e.solve(g1, -g2);
-    System.out.println(eq);
 
     // Scale both sides to get coefficients
     var scale = (s2 - s1) / eq.gcd();
     var start = eq.scaledPair(0, scale);
 
-    System.out.println(start);
+    // XXX getting better. Not sure why t2 works better for the cases I've
+    // tested so far. Feels like they should by symetrical.
 
-    // XXX: this is still not quite right.
-    var td = (double) ( -start.x()) / eq.b();
-
+    // s1 + g1 * ans.x >= s1
+    // g1 * ans.x >= 0
+    // g1 * (start.x() + eq.b() * t) >= 0
+    // g1 * start.x() + g1 * eq.b() * t >= 0
+    // g1 * start.x() + g1 * eq.b() * t >= 0
+    // g1 * eq.b() * t >= -(g1 * start.x())
+    // eq.b() * t >= -start.x()
+    // t >= -start.x() / eq.b()
+    var td = (double) -start.x() / eq.b();
     var t = (long) floor(td);
 
-    var ans = new Coefficients(start.x() + eq.b() * t, start.y() - eq.a() * t);
-    System.out.println("t: %d (%f)".formatted(t, td));;
+    // s2 + g2 * ans.y >= s2
+    // g2 * ans.y >= 0
+    // g2 * (start.y() - eq.a() * t) >= 0
+    // g2 * start.y() + g2 * -eq.a() * t >= 0
+    // g2 * -eq.a() * t >= -(g2 * start.y())
+    // -eq.a() * t >= -start.y()
+    // t >= -start.y() / -eq.a()
+    var td2 = (double) start.y() / eq.a();
+    var t2 = (long) floor(td2);
+
+    if (t != t2) {
+      System.out.println("td: %f; td2: %f; t: %d; t2: %d".formatted(td, td2, t, t2));
+    }
+
+    //System.out.println(eq);
+    var ans = new Coefficients(start.x() + eq.b() * t2, start.y() - eq.a() * t2);
+    //System.out.println("ans: %d; other: %d + %d * %d = %d; s1: %d".formatted(ans.x(), start.x(), eq.b(), t, start.x() + eq.b() * t, s1));
+    //System.out.println("start: %s; -start.x(): %d; eq.b(): %d, td: %f; t: %d".formatted(start, -start.x(), eq.b(), td, t));;
     System.out.println("%s -> with %d and %d".formatted(ans, s1 + g1 * ans.x(), s2 + g2 * ans.y()));
 
 
