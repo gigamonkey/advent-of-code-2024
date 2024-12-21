@@ -49,17 +49,6 @@ public class Euclidean {
     }
   }
 
-  private Extended extendedEuclideanR(long a, long b) {
-    if (a == 0) {
-      return new Extended(b, 0, 1);
-    } else {
-      var ext = extendedEuclidean(b % a, a);
-      var x = ext.y - ((long) floor(b / a) * ext.x);
-      var y = ext.x;
-      return new Extended(ext.gcd, x, y);
-    }
-  }
-
   private Extended extendedEuclidean(long a, long b) {
     var oldR = a;
     var r = b;
@@ -81,12 +70,7 @@ public class Euclidean {
       t = newT;
     }
 
-    var res = new Extended(oldR, oldS, oldT);
-    var res2= extendedEuclideanR(a, b);
-    if (!res.equals(res2)) {
-      throw new Error(res + " does not match " + res2);
-    }
-    return res;
+    return new Extended(oldR, oldS, oldT);
   }
 
   private Eq solve(long a, long b) {
@@ -94,7 +78,7 @@ public class Euclidean {
   }
 
   private long findFirst(long g1, long g2, long s1, long s2) {
-    return range(0, g1 * g2).map(i -> s2 + g2 * i).filter(n -> floorMod(n, g1) == s1).findFirst().orElseThrow();
+    return range(0, g1 * g2).map(i -> s2 + g2 * i).filter(n -> floorMod(n - s1, g1) == 0).findFirst().orElseThrow();
   }
 
 
@@ -107,7 +91,8 @@ public class Euclidean {
     long s1 = nums.length > 2 ? nums[2] : 0;
     long s2 = nums.length > 3 ? nums[3] : 0;
     Euclidean e = new Euclidean();
-    //System.out.println("findfirst: %d".formatted(e.findFirst(g1, g2, s1, s2)));
+    System.out.println("findfirst: %d".formatted(e.findFirst(g1, g2, s1, s2)));
+    System.out.println("findfirst: %d".formatted(e.findFirst(g2, g1, s2, s1)));
 
     // We're looking for m and n such that s1 + g2 * m == s2 + g2 * n
     // Additonally we want the m such that (s1 + g2) * m is the smallest value
