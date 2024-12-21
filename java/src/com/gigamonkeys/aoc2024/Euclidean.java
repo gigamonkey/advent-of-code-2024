@@ -7,35 +7,18 @@ import java.util.stream.*;
 
 public class Euclidean {
 
-  record Extended(long gcd, long x, long y) {
-    public Eq solution(long a, long b) {
-      return new Eq(a, b, gcd, x, y);
-    }
-  }
-
   record Coefficients(long x, long y) {
     Coefficients scale(long scale) {
       return new Coefficients(x * scale, y * scale);
     }
   }
 
-  record Eq(long a, long b, long gcd, long x, long y) {
-    Stream<Coefficients> coeffecients(long from, long to) {
-      long incr = (to - from) / abs(to - from);
-      return iterate(from, k -> k != to, k -> k + incr).mapToObj(this::pair);
-    }
-
-    Stream<Coefficients> scaledCoeffecients(long from, long to, long scale) {
-      long incr = (to - from) / abs(to - from);
-      return iterate(from, k -> k != to, k -> k + incr).mapToObj(k -> scaledPair(k, scale));
-    }
-
-    Coefficients pair(long k) {
-      return new Coefficients(x + k * (b / gcd), y - k * (a / gcd));
-    }
-
-    Coefficients scaledPair(long k, long scale) {
+  record Solution(long a, long b, long gcd, long x, long y) {
+    Coefficients coefficients(long k, long scale) {
       return new Coefficients(scale * (x + k * (b / gcd)), scale * (y - k * (a / gcd)));
+    }
+    Coefficients zero(long scale) {
+      return coefficients(0, scale);
     }
   }
 
@@ -49,7 +32,8 @@ public class Euclidean {
     }
   }
 
-  private Extended extendedEuclidean(long a, long b) {
+  private Solution solve(long a, long b) {
+    // Extended Euclidean algorithm
     var oldR = a;
     var r = b;
     var oldS = 1L;
@@ -70,13 +54,10 @@ public class Euclidean {
       t = newT;
     }
 
-    return new Extended(oldR, oldS, oldT);
+    return new Solution(a, b, oldR, oldS, oldT);
   }
 
-  private Eq solve(long a, long b) {
-    return extendedEuclidean(a, b).solution(a, b);
-  }
-
+  // Brute force solution for checking
   private long findFirst(long g1, long g2, long s1, long s2) {
     return range(0, g1 * g2)
       .map(i -> s2 + g2 * i)
@@ -98,7 +79,7 @@ public class Euclidean {
 
     // We're looking for m and n such that s1 + g2 * m == s2 + g2 * n
     // Additonally we want the m such that (s1 + g2) * m is the smallest value
-    // greater than or equal to s1.
+    // greater than or equal to max(s1, s2)
 
     // Solve the Diophantine equation g1 * x + (-g2 * y) = (s2 - s1)
 
@@ -108,26 +89,30 @@ public class Euclidean {
 
     // Scale both sides to get coefficients
     var scale = (s2 - s1) / eq.gcd();
-    var start = eq.scaledPair(0, scale);
+    var zero = eq.zero(scale);
 
     // Need to pick t so that the result we get is bigger than both s1 and s2.
+    // We can use either equation (s1 + g1 * ans.x() or s2 + g2 * ans.y() as the
+    // whole point is they produce the same result.)
 
     // s1 + g1 * ans.x() >= max(s1, s2)
     // g1 * ans.x() >= max(s1, s2) - s1
-    // g1 * (start.x() + eq.b() * t) >= max(s1, s2) - s1
-    // g1 * start.x() + g1 * eq.b() * t >= max(s1, s2) - s1
-    // g1 * start.x() + g1 * eq.b() * t >= max(s1, s2) - s1
-    // g1 * eq.b() * t >= (max(s1, s2) - s1) - (g1 * start.x())
-    // eq.b() * t >= (max(s1, s2) - s1) / g1 - start.x()
-    // t >= ((max(s1, s2) - s1) / g1 - start.x()) / eq.b()
-    var td = (double) ((max(s1, s2) - s1) / g1 - start.x()) / eq.b();
+    // g1 * (zero.x() + eq.b() * t) >= max(s1, s2) - s1
+    // g1 * zero.x() + g1 * eq.b() * t >= max(s1, s2) - s1
+    // g1 * zero.x() + g1 * eq.b() * t >= max(s1, s2) - s1
+    // g1 * eq.b() * t >= (max(s1, s2) - s1) - (g1 * zero.x())
+    // eq.b() * t >= (max(s1, s2) - s1) / g1 - zero.x()
+    // t >= ((max(s1, s2) - s1) / g1 - zero.x()) / eq.b()
+
+    var td = ((double) (max(s1, s2) - s1) / g1 - zero.x()) / eq.b();
     var t = (long) floor(td);
 
-    var ans = new Coefficients(start.x() + eq.b() * t, start.y() - eq.a() * t);
+    var ans = new Coefficients(zero.x() + eq.b() * t, zero.y() - eq.a() * t);
 
     if (s1 + g1 * ans.x() != s2 + g2 * ans.y()) {
       System.out.println("Uh oh! %s is wrong ans.".formatted(ans));
     }
+
     var answer = s1 + g1 * ans.x();
     var ff = e.findFirst(g1, g2, s1, s2);
 
