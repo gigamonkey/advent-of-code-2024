@@ -66,30 +66,20 @@ public class Euclidean {
       .findFirst().orElseThrow();
   }
 
-
-  public static void main(String[] args) {
-    long[] nums = Arrays.stream(args).mapToLong(Long::parseLong).toArray();
-
-    // These are the actual inputs in terms of the gap and starting points of two sequences.
-    long g1 = nums[0];
-    long g2 = nums[1];
-    long s1 = nums.length > 2 ? nums[2] : 0;
-    long s2 = nums.length > 3 ? nums[3] : 0;
-    Euclidean e = new Euclidean();
+  private long findFirstMath(long g1, long g2, long s1, long s2) {
 
     // We're looking for m and n such that s1 + g2 * m == s2 + g2 * n
     // Additonally we want the m such that (s1 + g2) * m is the smallest value
     // greater than or equal to max(s1, s2)
 
-    // Solve the Diophantine equation g1 * x + (-g2 * y) = (s2 - s1)
+    // Step 1: Solve the Diophantine equation g1 * x + (-g2 * y) = (s2 - s1)
 
-    // First solve the equation g1 * x + -g2 * y = gcd(g1, g2) using the
+    // Step 1a: Solve the equation g1 * x + -g2 * y = gcd(g1, g2) using the
     // extended Euclidean algorithm.
-    var eq = e.solve(g1, -g2);
+    var eq = solve(g1, -g2);
 
     // Scale both sides to get coefficients
-    var scale = (s2 - s1) / eq.gcd();
-    var zero = eq.zero(scale);
+    var zero = eq.zero((s2 - s1) / eq.gcd());
 
     // Need to pick t so that the result we get is bigger than both s1 and s2.
     // We can use either equation (s1 + g1 * ans.x() or s2 + g2 * ans.y() as the
@@ -107,19 +97,51 @@ public class Euclidean {
     var td = ((double) (max(s1, s2) - s1) / g1 - zero.x()) / eq.b();
     var t = (long) floor(td);
 
-    var ans = new Coefficients(zero.x() + eq.b() * t, zero.y() - eq.a() * t);
+    var coef = new Coefficients(zero.x() + eq.b() * t, zero.y() - eq.a() * t);
 
-    if (s1 + g1 * ans.x() != s2 + g2 * ans.y()) {
-      System.out.println("Uh oh! %s is wrong ans.".formatted(ans));
+    if (s1 + g1 * coef.x() != s2 + g2 * coef.y()) {
+      throw new Error("Uh oh! %s is wrong.".formatted(coef));
     }
 
-    var answer = s1 + g1 * ans.x();
+    return s1 + g1 * coef.x();
+  }
+
+  // Redo calculations and emit output about what went wrong.
+  private void showWork(long g1, long g2, long s1, long s2, long ff) {
+
+    var eq    = solve(g1, -g2);
+    var zero  = eq.zero((s2 - s1) / eq.gcd());
+    var td    = ((double) (max(s1, s2) - s1) / g1 - zero.x()) / eq.b();
+    var t     = (long) floor(td);
+    var coef   = new Coefficients(zero.x() + eq.b() * t, zero.y() - eq.a() * t);
+
+    if (s1 + g1 * coef.x() != s2 + g2 * coef.y()) {
+      throw new Error("Uh oh! %s is wrong.".formatted(coef));
+    }
+
+    var answer = s1 + g1 * coef.x();
+    System.out.println("BAD: %d (%f) %s -> with %d %s %d".formatted(t, td, coef, answer, answer == ff ? "==" : "!=", ff));
+  }
+
+
+
+  public static void main(String[] args) {
+    long[] nums = Arrays.stream(args).mapToLong(Long::parseLong).toArray();
+
+    // These are the actual inputs in terms of the gap and starting points of two sequences.
+    long g1 = nums[0];
+    long g2 = nums[1];
+    long s1 = nums.length > 2 ? nums[2] : 0;
+    long s2 = nums.length > 3 ? nums[3] : 0;
+    Euclidean e = new Euclidean();
+
     var ff = e.findFirst(g1, g2, s1, s2);
+    var answer = e.findFirstMath(g1, g2, s1, s2);
 
     if (answer == ff) {
       System.out.println("GOOD: %d".formatted(answer));
     } else {
-      System.out.println("BAD: %d (%f) %s -> with %d %s %d".formatted(t, td, ans, answer, answer == ff ? "==" : "!=", ff));
+      e.showWork(g1, g2, s1, s1, ff);
     }
   }
 
