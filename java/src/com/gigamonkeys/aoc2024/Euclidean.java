@@ -49,7 +49,7 @@ public class Euclidean {
     }
   }
 
-  private Extended extendedEuclidean(long a, long b) {
+  private Extended extendedEuclideanR(long a, long b) {
     if (a == 0) {
       return new Extended(b, 0, 1);
     } else {
@@ -60,6 +60,35 @@ public class Euclidean {
     }
   }
 
+  private Extended extendedEuclidean(long a, long b) {
+    var oldR = a;
+    var r = b;
+    var oldS = 1L;
+    var s = 0L;
+    var oldT = 0L;
+    var t = 1L;
+
+    while (r != 0) {
+      var q = oldR / r;
+      var newR = oldR - q * r;
+      var newS = oldS - q * s;
+      var newT = oldT - q * t;
+      oldR = r;
+      oldS = s;
+      oldT = t;
+      r = newR;
+      s = newS;
+      t = newT;
+    }
+
+    var res = new Extended(oldR, oldS, oldT);
+    var res2= extendedEuclideanR(a, b);
+    if (!res.equals(res2)) {
+      throw new Error(res + " does not match " + res2);
+    }
+    return res;
+  }
+
   private Eq solve(long a, long b) {
     return extendedEuclidean(a, b).solution(a, b);
   }
@@ -68,14 +97,6 @@ public class Euclidean {
     return range(0, g1 * g2).map(i -> s2 + g2 * i).filter(n -> floorMod(n, g1) == s1).findFirst().orElseThrow();
   }
 
-  private Stream<Coefficients> bezout(long a, long b) {
-    Extended ext = extendedEuclidean(a, b);
-    return iterate(0, k -> k + 1).mapToObj(k -> bezout(a, b, ext, k));
-  }
-
-  private Coefficients bezout(long a, long b, Extended ext, long k) {
-    return new Coefficients(ext.x + k * (b / ext.gcd), ext.y - k * (a / ext.gcd));
-  }
 
   public static void main(String[] args) {
     long[] nums = Arrays.stream(args).mapToLong(Long::parseLong).toArray();
@@ -126,28 +147,22 @@ public class Euclidean {
     var td2 = (double) start.y() / eq.a();
     var t2 = (long) floor(td2);
 
-    if (t != t2) {
-      System.out.println("td: %f; td2: %f; t: %d; t2: %d".formatted(td, td2, t, t2));
+    var ans = new Coefficients(start.x() + eq.b() * t, start.y() - eq.a() * t);
+    var ans2 = new Coefficients(start.x() + eq.b() * t2, start.y() - eq.a() * t2);
+
+    if (s1 + g1 * ans.x() != s2 + g2 * ans.y()) {
+      System.out.println("Uh oh! %s is wrong.".formatted(ans));
     }
-
-    //System.out.println(eq);
-    var ans = new Coefficients(start.x() + eq.b() * t2, start.y() - eq.a() * t2);
-    //System.out.println("ans: %d; other: %d + %d * %d = %d; s1: %d".formatted(ans.x(), start.x(), eq.b(), t, start.x() + eq.b() * t, s1));
-    //System.out.println("start: %s; -start.x(): %d; eq.b(): %d, td: %f; t: %d".formatted(start, -start.x(), eq.b(), td, t));;
-    System.out.println("%s -> with %d and %d".formatted(ans, s1 + g1 * ans.x(), s2 + g2 * ans.y()));
-
-
-    // From here any coefficients
-    // System.out.println("UP");
-    // Stream.iterate(start, p -> new Coefficients(p.x() + eq.b(), p.y() - eq.a())).limit(5).forEach(c -> {
-    //     System.out.println("%s -> with %d and %d".formatted(c, s1 + g1 * c.x(), s2 + g2 * c.y()));
-    //   });
-
-    // System.out.println("DOWN");
-    // Stream.iterate(start, p -> new Coefficients(p.x() - eq.b(), p.y() + eq.a())).limit(5).forEach(c -> {
-    //     System.out.println("%s -> with %d and %d".formatted(c, s1 + g1 * c.x(), s2 + g2 * c.y()));
-    //   });
-
+    if (s1 + g1 * ans2.x() != s2 + g2 * ans2.y()) {
+      System.out.println("Uh oh! %s is wrong.".formatted(ans));
+    }
+    if (t == t2) {
+      System.out.println("GOOD: %d (%f) vs %d (%f) %s and %s -> with %d and %d".formatted(t, td2, t2, td2, ans, ans2, s1 + g1 * ans.x(), s1 + g1 * ans2.x()));
+    } else {
+      System.out.println("BAD: %d (%f) vs %d (%f) %s and %s -> with %d and %d".formatted(t, td, t2, td2, ans, ans2, s1 + g1 * ans.x(), s1 + g1 * ans2.x()));
+      System.out.println(start);
+      System.out.println("-start.x(): %d; eq.b(): %d, start.y(): %d; eq.a(): %d".formatted(-start.x(), eq.b(), start.y(), eq.a()));;
+    }
   }
 
 }
