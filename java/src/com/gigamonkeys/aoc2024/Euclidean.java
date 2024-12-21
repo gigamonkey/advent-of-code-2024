@@ -123,25 +123,34 @@ public class Euclidean {
     System.out.println("BAD: %d (%f) %s -> with %d %s %d".formatted(t, td, coef, answer, answer == ff ? "==" : "!=", ff));
   }
 
-
-
-  public static void main(String[] args) {
-    long[] nums = Arrays.stream(args).mapToLong(Long::parseLong).toArray();
-
-    // These are the actual inputs in terms of the gap and starting points of two sequences.
-    long g1 = nums[0];
-    long g2 = nums[1];
-    long s1 = nums.length > 2 ? nums[2] : 0;
-    long s2 = nums.length > 3 ? nums[3] : 0;
-    Euclidean e = new Euclidean();
-
-    var ff = e.findFirst(g1, g2, s1, s2);
-    var answer = e.findFirstMath(g1, g2, s1, s2);
+  private void check(long g1, long g2, long s1, long s2) {
+    var ff = findFirst(g1, g2, s1, s2);
+    var answer = findFirstMath(g1, g2, s1, s2);
 
     if (answer == ff) {
       System.out.println("GOOD: %d".formatted(answer));
     } else {
-      e.showWork(g1, g2, s1, s1, ff);
+      showWork(g1, g2, s1, s1, ff);
+    }
+  }
+
+  public static void main(String[] args) {
+    int[] nums = Arrays.stream(args).mapToInt(Integer::parseInt).toArray();
+
+    // These are the actual inputs in terms of the gap and starting points of two sequences.
+    int arg = 0;
+    int g1 = nums[arg++];
+    int g2 = nums[arg++];
+    int s1 = nums.length > arg ? nums[arg++] : 0;
+    int e1 = nums.length > arg ? nums[arg++] : 0;
+    int s2 = nums.length > arg ? nums[arg++] : 0;
+    int e2 = nums.length > arg ? nums[arg++] : 0;
+    Euclidean e = new Euclidean();
+
+    for (int i = s1; i < e1; i++) {
+      for (int j = s2; j < e2; j++) {
+        e.check(g1, g2, i, j);
+      }
     }
   }
 
