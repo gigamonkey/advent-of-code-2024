@@ -78,7 +78,11 @@ public class Euclidean {
   }
 
   private long findFirst(long g1, long g2, long s1, long s2) {
-    return range(0, g1 * g2).map(i -> s2 + g2 * i).filter(n -> floorMod(n - s1, g1) == 0).findFirst().orElseThrow();
+    return range(0, g1 * g2)
+      .map(i -> s2 + g2 * i)
+      .filter(n -> n >= s1)
+      .filter(n -> floorMod(n - s1, g1) == 0)
+      .findFirst().orElseThrow();
   }
 
 
@@ -91,8 +95,6 @@ public class Euclidean {
     long s1 = nums.length > 2 ? nums[2] : 0;
     long s2 = nums.length > 3 ? nums[3] : 0;
     Euclidean e = new Euclidean();
-    System.out.println("findfirst: %d".formatted(e.findFirst(g1, g2, s1, s2)));
-    System.out.println("findfirst: %d".formatted(e.findFirst(g2, g1, s2, s1)));
 
     // We're looking for m and n such that s1 + g2 * m == s2 + g2 * n
     // Additonally we want the m such that (s1 + g2) * m is the smallest value
@@ -111,6 +113,9 @@ public class Euclidean {
     // XXX getting better. Not sure why t2 works better for the cases I've
     // tested so far. Feels like they should by symetrical.
 
+    // Find the t such that our sequence 1 answer is greater than or equal to
+    // s1. However that may not be greater than s2.
+
     // s1 + g1 * ans.x >= s1
     // g1 * ans.x >= 0
     // g1 * (start.x() + eq.b() * t) >= 0
@@ -122,6 +127,9 @@ public class Euclidean {
     var td = (double) -start.x() / eq.b();
     var t = (long) floor(td);
 
+    // Find the t such that our sequence 2 answer is greater than or equal to
+    // s2. However that may not be greater than s1.
+
     // s2 + g2 * ans.y >= s2
     // g2 * ans.y >= 0
     // g2 * (start.y() - eq.a() * t) >= 0
@@ -132,21 +140,43 @@ public class Euclidean {
     var td2 = (double) start.y() / eq.a();
     var t2 = (long) floor(td2);
 
+
+    // Need to pick the t so that the result we get is bigger than both s1 and
+    // s2.
+    // s1 + g1 * ans.x >= max(s1, s2)
+    // g1 * ans.x >= max(s1, s2) - s1
+    // g1 * (start.x() + eq.b() * t) >= max(s1, s2) - s1
+    // g1 * start.x() + g1 * eq.b() * t >= max(s1, s2) - s1
+    // g1 * start.x() + g1 * eq.b() * t >= max(s1, s2) - s1
+    // g1 * eq.b() * t >= (max(s1, s2) - s1) - (g1 * start.x())
+    // eq.b() * t >= (max(s1, s2) - s1) / g1 - start.x()
+    // t >= ((max(s1, s2) - s1) / g1 - start.x()) / eq.b()
+    var td3 = (double) ((max(s1, s2) - s1) / g1 - start.x()) / eq.b();
+    var t3 = (long) floor(td3);
+
     var ans = new Coefficients(start.x() + eq.b() * t, start.y() - eq.a() * t);
     var ans2 = new Coefficients(start.x() + eq.b() * t2, start.y() - eq.a() * t2);
+    var ans3 = new Coefficients(start.x() + eq.b() * t3, start.y() - eq.a() * t3);
 
     if (s1 + g1 * ans.x() != s2 + g2 * ans.y()) {
-      System.out.println("Uh oh! %s is wrong.".formatted(ans));
+      System.out.println("Uh oh! %s is wrong ans.".formatted(ans));
     }
     if (s1 + g1 * ans2.x() != s2 + g2 * ans2.y()) {
-      System.out.println("Uh oh! %s is wrong.".formatted(ans));
+      System.out.println("Uh oh! %s is wrong ans2.".formatted(ans));
     }
-    if (t == t2) {
+    if (s1 + g1 * ans3.x() != s2 + g2 * ans3.y()) {
+      System.out.println("Uh oh! %s is wrong for ans3.".formatted(ans));
+    }
+    if (t == t2 && t2 == t3) {
       System.out.println("GOOD: %d (%f) vs %d (%f) %s and %s -> with %d and %d".formatted(t, td2, t2, td2, ans, ans2, s1 + g1 * ans.x(), s1 + g1 * ans2.x()));
     } else {
+
       System.out.println("BAD: %d (%f) vs %d (%f) %s and %s -> with %d and %d".formatted(t, td, t2, td2, ans, ans2, s1 + g1 * ans.x(), s1 + g1 * ans2.x()));
+      var comb = s1 + g1 * ans3.x();
+      var ff = e.findFirst(g1, g2, s1, s2);
+      System.out.println("Combined: %d (%f) %s -> with %d %s %d".formatted(t3, td3, ans3, comb, comb == ff ? "==" : "!=", ff));
       System.out.println(start);
-      System.out.println("-start.x(): %d; eq.b(): %d, start.y(): %d; eq.a(): %d".formatted(-start.x(), eq.b(), start.y(), eq.a()));;
+      //System.out.println("-start.x(): %d; eq.b(): %d, start.y(): %d; eq.a(): %d".formatted(-start.x(), eq.b(), start.y(), eq.a()));;
     }
   }
 
